@@ -1,0 +1,487 @@
+/* Fondo general y centrado */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100vw;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #e0e0e0;
+    box-sizing: border-box;
+}
+
+/* Contenedor principal en dos columnas */
+/* From Uiverse.io by ami-hp */ 
+.darkThemeBtn * {
+  transition: all 0.3s;
+}
+
+.darkThemeBtn input {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.darkThemeBtn label {
+  border: 1px solid #efefef;
+  background: rgba(239, 239, 239, 0.5);
+  border-radius: 10px;
+  height: 35px;
+  width: 35px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.darkThemeBtn label:active {
+  border-radius: 5px;
+}
+
+.darkThemeBtn label svg {
+  position: absolute;
+  width: 16px;
+  transition: 0.3s;
+  z-index: 1;
+  fill: #000;
+}
+.darkThemeBtn {
+  position: fixed;
+  top: 8px;      /* Distancia desde arriba */
+  right: 24px;    /* Distancia desde la derecha */
+  z-index: 2000;  /* Asegura que esté por encima de otros elementos */
+}
+
+
+.darkThemeBtn label svg.sun {
+  width: 20px;
+  opacity: 0;
+  fill: #fff;
+}
+
+.darkThemeBtn label svg.moon {
+  opacity: 1;
+}
+
+.darkThemeBtn input:checked + label {
+  background: rgba(239, 239, 239, 0.5);
+}
+
+.darkThemeBtn input:checked + label svg.sun {
+  opacity: 1;
+}
+
+.darkThemeBtn input:checked + label svg.moon {
+  opacity: 0;
+}
+
+.darkThemeBtn input:checked ~ span {
+  background-color: #16174b;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Columna izquierda: logo */
+.left-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    background: #E3F9F4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top-right-radius: 22px;
+    border-bottom-right-radius: 22px;
+    min-width: 350px;
+    z-index: 2;
+}
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-title {
+    text-align: center;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+.logo {
+    width: 420px;
+    margin-bottom: 20px;
+}
+.logo-name {
+    width: 480px;
+}
+#logo-sena {
+    width: 480px;    /* Puedes aumentar este valor si quieres aún más grande */
+    max-width: 90%;
+    margin-top: 20px;
+}
+
+/* Columna derecha: formulario */
+.right-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 52vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #A8E6CF 0%, #82CBB5 100%);
+    overflow-y: auto;    /* Solo scroll vertical */
+    overflow-x: hidden;  /* Nunca scroll horizontal */
+    min-width: 350px;
+    padding-right: 40px;   /* Espacio a la derecha */
+    padding-left: 40px;    /* Espacio a la izquierda */
+    padding-top: 80px;     /* Espacio arriba */
+    padding-bottom: 40px;  /* Espacio abajo */
+    box-sizing: border-box;
+}
+
+/* Títulos */
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #003322;
+    margin-bottom: 5px;
+    text-align: center;
+}
+.form-subtitle {
+    font-size: 18px;
+    color: #003322;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Formulario */
+.form {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form input[type="text"],
+.form input[type="email"],
+.form input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #fff;
+    font-size: 15px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+/* Radios y checkbox */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.radio-group label {
+    font-size: 15px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.checkbox {
+    margin-bottom: 10px;
+}
+.checkbox label {
+    font-size: 14px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Botón */
+.btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #10B981;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn:hover {
+    background: #1da88a;
+}
+
+/* Personalización de radio y checkbox */
+input[type="radio"] {
+    accent-color: #26c6a2;
+}
+input[type="checkbox"] {
+    accent-color: #26c6a2;
+}
+.darkmode {
+/* Fondo general y centrado */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100vw;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #e0e0e0;
+    box-sizing: border-box;
+}
+
+/* Contenedor principal en dos columnas */
+/* From Uiverse.io by ami-hp */ 
+.darkThemeBtn * {
+  transition: all 0.3s;
+}
+
+.darkThemeBtn input {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.darkThemeBtn label {
+  border: 1px solid #efefef;
+  background: rgba(239, 239, 239, 0.5);
+  border-radius: 10px;
+  height: 35px;
+  width: 35px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.darkThemeBtn label:active {
+  border-radius: 5px;
+}
+
+.darkThemeBtn label svg {
+  position: absolute;
+  width: 28px;
+  transition: 0.3s;
+  z-index: 1;
+  fill: #000;
+}
+.darkThemeBtn {
+  position: fixed;
+  top: 8px;      /* Distancia desde arriba */
+  right: 24px;    /* Distancia desde la derecha */
+  z-index: 2000;  /* Asegura que esté por encima de otros elementos */
+}
+
+.darkThemeBtn label svg.sun {
+  width: 20px;
+  opacity: 0;
+  fill: #fff;
+}
+
+.darkThemeBtn label svg.moon {
+  opacity: 1;
+}
+
+.darkThemeBtn input:checked + label {
+  background: rgba(239, 239, 239, 0.5);
+}
+
+.darkThemeBtn input:checked + label svg.sun {
+  opacity: 1;
+}
+
+.darkThemeBtn input:checked + label svg.moon {
+  opacity: 0;
+}
+
+.darkThemeBtn input:checked ~ span {
+  background-color: #16174b;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Columna izquierda: logo */
+.left-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    background: #0B271B;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top-right-radius: 22px;
+    border-bottom-right-radius: 22px;
+    min-width: 350px;
+    z-index: 2;
+}
+
+.logo {
+    width: 420px;
+    margin-bottom: 20px;
+}
+/* Agranda el nombre del logo */
+#logo-sena {
+    width: 410px;    /* Puedes aumentar este valor si quieres aún más grande */
+    max-width: 90%;
+    margin-top: 20px;
+}
+/* Columna derecha: formulario */
+.right-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 52vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #1A2F2A 0%, #1A2F2A 100%);
+    overflow-y: auto;    /* Solo scroll vertical */
+    overflow-x: hidden;  /* Nunca scroll horizontal */
+    min-width: 350px;
+    padding-right: 40px;   /* Espacio a la derecha */
+    padding-left: 40px;    /* Espacio a la izquierda */
+    padding-top: 80px;     /* Espacio arriba */
+    padding-bottom: 40px;  /* Espacio abajo */
+    box-sizing: border-box;
+}
+
+/* Títulos */
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #E4EDEB;
+    margin-bottom: 5px;
+    text-align: center;
+}
+.form-subtitle {
+    font-size: 18px;
+    color: #E4EDEB;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Formulario */
+.form {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form input[type="text"],
+.form input[type="email"],
+.form input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #fff;
+    font-size: 15px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+/* Radios y checkbox */
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.radio-group label {
+    font-size: 15px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.checkbox {
+    margin-bottom: 10px;
+}
+.checkbox label {
+    font-size: 14px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Botón */
+.btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #26c6a2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn:hover {
+    background: #1da88a;
+}
+
+/* Personalización de radio y checkbox */
+input[type="radio"] {
+    accent-color: #26c6a2;
+}
+input[type="checkbox"] {
+    accent-color: #26c6a2;
+}
+}

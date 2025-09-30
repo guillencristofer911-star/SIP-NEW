@@ -1,0 +1,66 @@
+/* ...existing code... */
+
+/* Modal ayuda mejorado para scroll vertical y tamaño más pequeño */
+.modal-ayuda-content {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 2px 18px #0002;
+  padding: 32px 38px;
+  max-width: 400px;
+  width: 95vw;
+  max-height: 80vh;
+  text-align: left;
+  font-family: inherit;
+  position: relative;
+  overflow-y: auto;
+  /* Para scroll si el contenido es largo */
+}
+
+/* ...existing code... */.modal-recuperar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+}
+.modal-recuperar.activo {
+    display: flex;
+}
+.modal-recuperar form {
+    background: #fff;
+    border-radius: 18px;
+    padding: 32px 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    min-width: 350px;
+    max-width: 90vw;
+    text-align: center;
+}
+.modal-recuperar h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 2rem;
+    color: #184C3A;
+}
+.modal-recuperar input[type="email"] {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 18px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+.modal-recuperar .btn {
+    width: 90%;
+    margin-bottom: 10px;
+}
+.modal-recuperar .cerrar-modal {
+    background: none;
+    border: none;
+    color: #184C3A;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: underline;
+}

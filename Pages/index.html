@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIP - Inicio</title>
+    <!-- FontAwesome para el icono de pregunta -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="/login.css">
+</head>
+<body>
+<div class="container">
+    <div class="left-panel">
+        <img src="/img/logo.png" alt="SIP Logo" class="logo" id="logo-sip" style="margin-bottom: 10px;">
+        <img src="/img/nombre-del-logo.png" alt="SENA Logo" class="logo-sena" id="logo-sena">
+    </div>
+    <div class="right-panel">
+        <h1 class="title" style="margin-bottom: 0; font-size: 57px;  font-weight: 800; ">Bienvenido</h1>
+        <p class="form-subtitle" style="margin-top: 0; font-size: 27px;">Portal para aprendices<br>y egresados</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 16px; width: 220px; margin: 0 auto; margin-top: 30px;">
+            <!-- Botón de inicio de sesión como formulario -->
+            <form action="/login" method="GET">
+                <button type="submit" class="btn" style="width: 100%;">Iniciar sesión</button>
+            </form>
+
+            <!-- Botón de registro como formulario -->
+            <form action="/registro" method="GET">
+                <button type="submit" class="btn" style="width: 100%;">Registrarse</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Botón ayuda esquina -->
+<button class="ayuda-btn" id="ayudaBtn" title="Ayuda">
+  <i class="fa-regular fa-circle-question"></i>
+</button>
+
+<!-- Modal ayuda -->
+<div class="modal-ayuda" id="modalAyuda">
+  <div class="modal-ayuda-content">
+    <button class="close-ayuda" id="closeAyuda" title="Cerrar">&times;</button>
+    <h2>AYUDA<br>SIP (Sena Interactive Portal)</h2>
+    <div>
+      <span style="font-size:1.2em;">🎯 <b>¿Qué es SIP?</b></span><br>
+      <b>SIP (SENA Interactive Portal)</b> es la plataforma digital del SENA diseñada para conectar y brindar servicios integrales a aprendices y egresados. Es tu puerta de acceso a recursos educativos, oportunidades laborales y servicios de formación continua.
+      <br><br>
+      <span style="font-size:1.2em;">🌟 <b>¿Qué puedes hacer aquí?</b></span>
+      <ul>
+        <li>Acceder a tu información académica y certificados</li>
+        <li>Consultar ofertas de empleo y oportunidades laborales</li>
+        <li>Inscribirte en cursos de formación complementaria</li>
+        <li>Conectar con otros aprendices y egresados</li>
+        <li>Acceder a recursos y bibliotecas digitales</li>
+        <li>Gestionar tu perfil profesional</li>
+        <li>Recibir notificaciones sobre convocatorias</li>
+      </ul>
+      <span style="font-size:1.2em;">👥 <b>¿Quién puede usar SIP?</b></span><br>
+      <b>Aprendices:</b> Estudiantes activos del SENA que pueden acceder a sus cursos, notas, horarios y recursos académicos.<br>
+      <b>Egresados:</b> Personas que ya completaron su formación en el SENA y buscan oportunidades de empleo, formación continua o networking profesional.
+    </div>
+  </div>
+</div>
+
+<script>
+// Ayuda modal
+const ayudaBtn = document.getElementById('ayudaBtn');
+const modalAyuda = document.getElementById('modalAyuda');
+const closeAyuda = document.getElementById('closeAyuda');
+
+ayudaBtn.addEventListener('click', function() {
+  modalAyuda.style.display = 'flex';
+});
+closeAyuda.addEventListener('click', function() {
+  modalAyuda.style.display = 'none';
+});
+modalAyuda.addEventListener('click', function(e) {
+  if (e.target === modalAyuda) modalAyuda.style.display = 'none';
+});
+</script>
+</body>
+</html>

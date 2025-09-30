@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP - Proyecto Individual</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/Public/Configuracion.css">
+</head>
+<body>
+  <div class="main-container">
+    <!-- Header -->
+    <header class="header">
+      <img src="../../../3-registro/html/img/logo.png" alt="SIP Logo" class="logo-header">
+      <nav class="nav-header">
+        <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
+        <div class="user-info" id="perfil-btn">
+          <span class="user-avatar">D</span>
+          <span class="user-name">Daniela</span>
+        </div>
+      </nav>
+      
+      </div>
+    </header>
+      <div id="notificaciones-popover" class="notificaciones-popover">
+        <div class="notificaciones-arrow"></div>
+        <h3>Notificaciones</h3>
+        <div class="notificacion-item">
+          <span class="notif-avatar">A</span>
+          <div>
+            <strong>Respondió tu publicación</strong>
+            <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+          </div>
+        </div>
+        <div class="notificacion-item">
+          <span class="notif-avatar">J</span>
+          <div>
+            <strong>Respondió tu publicación</strong>
+            <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+          </div>
+        </div>
+        <div class="notificacion-item">
+          <span class="notif-avatar">D</span>
+          <div>
+            <strong>Respondió tu respuesta</strong>
+            <div class="notif-text">Muchas gracias me sirvió mucho, sig...</div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Menú Popover de Usuario -->
+    <div id="popover-menu" class="popover-menu">
+      <div class="popover-arrow"></div>
+      <div class="popover-content">
+        <ul class="popover-list">
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
+            <span>Perfil</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-solid fa-gear"></i>
+            </span>
+            <span>Configuración</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-star"></i>
+            </span>
+            <span>Favoritos</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+            <span>Ayuda</span>
+          </li>
+        </ul>
+        <form action="/api/logout" method="POST" id="logoutForm">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="email" value="pazdaniela1193@gmail.com">
+          <button type="submit" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+        </form>
+      </div>
+    </div>
+    <!-- Solo la sección de configuración de perfil -->
+    <main class="main-content config-main">
+      <div class="config-container">
+        <h1 class="config-title">Configuración</h1>
+        <div class="config-panels">
+          <div class="profile-card">
+            <div class="profile-avatar">D</div>
+            <div class="profile-name">Daniela Alejandra Paz Tellez</div>
+            <div class="profile-status">Egresado</div>
+            <div class="profile-info">1193324003</div>
+            <div class="profile-info">pazdaniela1193@gmail.com</div>
+            <div class="profile-info">3155577843</div>
+            <button class="profile-extra-btn" id="btn-eliminar-cuenta">Eliminar cuenta</button>
+          </div>
+          <div class="profile-form-card">
+            <h2 class="profile-form-title">Editar Datos Perfil</h2>
+            <form class="profile-form" action="#" method="POST" id="form-editar-perfil">
+              <input type="hidden" name="user_id" value="1193324003">
+              <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
+              <input type="email" name="email" class="profile-input" placeholder="correo electronico..." required>
+              <input type="email" name="email_confirm" class="profile-input" placeholder="confirmar correo electronico..." required>
+              <input type="tel" name="telefono" class="profile-input" placeholder="numero telefono..." pattern="[0-9]{10}" required>
+              <button type="submit" class="profile-save-btn">Guardar cambios</button>
+            </form>
+          </div>
+        </div>
+        <div class="profile-warning">
+          Si desea cambiar otros datos personales, debe comunicarse con tps2127@gmail.com para solicitar el cambio ya que son datos sensibles
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL ELIMINAR CUENTA -->
+    <div id="modal-eliminar-cuenta" class="modal-eliminar-cuenta" style="display:none;">
+      <div class="modal-eliminar-content">
+        <div class="modal-eliminar-title">¿Esta seguro de eliminar cuenta?</div>
+        <form action="/api/cuenta/eliminar" method="POST" id="form-eliminar-cuenta">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="email" value="pazdaniela1193@gmail.com">
+          <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
+          <input type="hidden" name="confirmacion" value="true">
+          <div class="modal-eliminar-btns">
+            <button type="submit" id="btn-confirmar-eliminar" class="btn-eliminar">Eliminar</button>
+            <button type="button" id="btn-cancelar-eliminar" class="btn-cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-content">
+        <hr class="footer-line">
+        <div class="footer-icons">
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-facebook-f"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+        <hr class="footer-line">
+      </div>
+      <div class="footer-text">
+        Copyright © 2025 SENA INTERACTIVE PORTAL
+      </div>
+      <div class="footer-links">
+        <span>Información legal</span>
+        <span>Política de privacidad</span>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // Interceptar todos los formularios para mostrar el tráfico de datos
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(form);
+          const method = form.method.toUpperCase();
+          const action = form.action;
+          
+          console.log('=== ENVÍO DE FORMULARIO ===');
+          console.log('Método:', method);
+          console.log('Action:', action);
+          console.log('Datos enviados:');
+          
+          const data = {};
+          for (let [key, value] of formData.entries()) {
+            data[key] = value;
+            console.log(`  ${key}: ${value}`);
+          }
+          
+          alert(`Formulario enviado!\nMétodo: ${method}\nAction: ${action}\n\nRevisa la consola (F12) para ver todos los datos`);
+        });
+      });
+    });
+
+    // Notificaciones Popover
+    const notiBtn = document.getElementById('notificaciones-btn');
+    const notiPopover = document.getElementById('notificaciones-popover');
+    notiBtn.onclick = function(e) {
+      e.stopPropagation();
+      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
+      const popoverMenu = document.getElementById('popover-menu');
+      if (popoverMenu) popoverMenu.style.display = 'none';
+    };
+    notiPopover.onclick = function(e) {
+      e.stopPropagation();
+    };
+  document.addEventListener('DOMContentLoaded', function() {
+    
+
+    // ===== MENÚ POPOVER USUARIO =====
+    const perfilBtn = document.getElementById('perfil-btn');
+    const popoverMenu = document.getElementById('popover-menu');
+
+    perfilBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (popoverMenu.style.display === 'block') {
+        popoverMenu.style.display = 'none';
+      } else {
+        // Calcula posición
+        const rect = perfilBtn.getBoundingClientRect();
+        popoverMenu.style.display = 'block';
+        popoverMenu.style.position = 'absolute';
+        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
+      }
+    });
+
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
+        popoverMenu.style.display = 'none';
+      }
+    });
+
+    // Opciones del menú (puedes personalizar acciones)
+    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+      li.addEventListener('click', () => {
+        switch(idx) {
+          case 0: alert('Ir al Perfil'); break;
+          case 1: alert('Ir a Configuración'); break;
+          case 2: alert('Ir a Favoritos'); break;
+          case 3: alert('Ir a Ayuda'); break;
+        }
+        popoverMenu.style.display = 'none';
+      });
+    });
+
+    // Modal eliminar cuenta
+    const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
+    const modalEliminar = document.getElementById('modal-eliminar-cuenta');
+    const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
+
+    btnEliminarCuenta.addEventListener('click', function() {
+      modalEliminar.style.display = 'flex';
+    });
+    btnCancelarEliminar.addEventListener('click', function() {
+      modalEliminar.style.display = 'none';
+    });
+    // Cerrar modal al hacer click fuera del contenido
+    modalEliminar.addEventListener('click', function(e) {
+      if (e.target === modalEliminar) modalEliminar.style.display = 'none';
+    });
+  });
+  </script>
+</body>
+</html>

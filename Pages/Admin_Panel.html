@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Gestión y Moderación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/Public/adminPanel.css">
+    <style>
+        /* Estilos para ocultar/mostrar secciones */
+        .content-section {
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Animación suave para transiciones */
+        .main-content {
+            transition: opacity 0.3s ease;
+        }
+        
+        .transitioning {
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+   <div class="container">
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <div class="LogoIMG">
+                        <img src="IMAGENES/logo copy.png" alt="Logo-SIP" class="logo-img">
+                    </div>
+                </div>
+            </div>
+            <div class="logo-text">
+                <p>Gestión y Moderación</p>
+            </div>
+            
+            <button class="menu-item active" data-section="history">Historial de Moderación</button>
+            <button class="menu-item" data-section="reported">Contenido Reportado</button>
+            <button class="menu-item" data-section="words">Gestión Palabras inapropiadas</button>
+            <form action="#" method="POST">
+                <button type="submit" class="menu-item logout-btn">Cerrar sesión</button>
+            </form>
+        </aside>
+
+        <main class="main-content">
+            <!-- SECCIÓN HISTORIAL DE MODERACIÓN -->
+            <div id="history-section" class="content-section active">
+                <header class="panel-header">
+                    <h2>Panel de control</h2>
+                    <p>Historial de Acciones de Moderación</p>
+                </header>
+
+                <div class="content-table">
+                    <div class="table-header">
+                        <div>Fecha/Hora</div>
+                        <div>Acción Realizada</div>
+                        <div>Contenido Afectado</div>
+                        <div>Usuario afectado</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó comentario</div>
+                        <div class="table-cell">Comentario<br>ID 214</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Se agregó palabra "XXXX"</div>
+                        <div class="table-cell">Lista de<br>palabras<br>inapropiadas</div>
+                        <div class="table-cell"></div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Se agregó palabra "XXXX"</div>
+                        <div class="table-cell">Lista de<br>palabras<br>inapropiadas</div>
+                        <div class="table-cell"></div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+
+                    <div class="table-row">
+                        <div class="table-cell">22/08/2025</div>
+                        <div class="table-cell">Eliminó publicación</div>
+                        <div class="table-cell">Publicación<br>ID 12345</div>
+                        <div class="table-cell">ID 1193324005</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN CONTENIDO REPORTADO -->
+            <div id="reported-section" class="content-section">
+                <header class="panel-header">
+                    <h2>Panel de control</h2>
+                    <p>Contenido Reportado</p>
+                </header>
+
+                <div class="content-table">
+                    <div class="table-header-rep">
+                        <div>Tipo de contenido</div>
+                        <div>Usuario</div>
+                        <div>Motivo</div>
+                        <div>Fecha</div>
+                        <div>Acciones</div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicación</div>
+                        <div>ID 1234567</div>
+                        <div>Inapropiado</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="1234567">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="1234567">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicación</div>
+                        <div>ID 5247852</div>
+                        <div>Spam</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5247852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5247852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicación</div>
+                        <div>ID 74598621</div>
+                        <div>Lenguaje<br>Ofensivo</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="74598621">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="74598621">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Comentario</div>
+                        <div>ID 12345678</div>
+                        <div>Inapropiado</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="12345678">
+                                <input type="hidden" name="content_type" value="comentario">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="12345678">
+                                <input type="hidden" name="content_type" value="comentario">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicacion</div>
+                        <div>ID 5147852</div>
+                        <div>Spam</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5147852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5147852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicacion</div>
+                        <div>ID 74589621</div>
+                        <div>Lenguaje<br>Ofensivo</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="74589621">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="74589621">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicacion</div>
+                        <div>ID 11247003</div>
+                        <div>Informacion<br>Falsa</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="11247003">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="11247003">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-rep">
+                        <div>Publicacion</div>
+                        <div>ID 5147852</div>
+                        <div>Lenguaje<br>Ofensivo</div>
+                        <div>22/08/2025</div>
+                        <div class="Acciones">
+                            <form action="#" method="GET" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5147852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-ver">Ver</button>
+                            </form>
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="content_id" value="5147852">
+                                <input type="hidden" name="content_type" value="publicacion">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN GESTIÓN DE PALABRAS -->
+            <div id="words-section" class="content-section">
+                <header class="panel-header">
+                    <h2>Panel de control</h2>
+                    <p>Gestión de Palabras Inapropiadas</p>
+                </header>
+
+                <div class="content-table">
+                    <!-- Input para agregar nueva palabra -->
+                    <form action="#" method="POST" class="add-word">
+                        <input type="text" name="palabra" placeholder="Agregar una nueva palabra inapropiada" id="word-input" required>
+                        <button type="submit" class="btn-agregar">Agregar</button>
+                    </form>
+                    <!-- Encabezado de tabla -->
+                    <div class="table-header-word">
+                        <div>Palabra</div>
+                        <div>Acción</div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">Maldito</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="Maldito">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">xxxxxxxxxx</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="xxxxxxxxxx">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">hhhhhh</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="hhhhhh">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">gggggggg</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="gggggggg">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">tttttt</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="tttttt">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">ffffff</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="ffffff">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">hhhhhhhhhh</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="hhhhhhhhhh">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">666666</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="666666">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="table-word">
+                        <div class="table-cell-word">bbbbbbbb</div>
+                        <div class="table-cell-word">
+                            <form action="#" method="POST" style="display: inline;">
+                                <input type="hidden" name="palabra" value="bbbbbbbb">
+                                <button type="submit" class="btn-eliminar">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-top-section">
+            <div class="linea-social"></div>
+            <div class="redes-sociales">
+                <a href="https://www.facebook.com" target="_blank" class="icono-borde">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com" target="_blank" class="icono-borde">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="https://www.twitter.com" target="_blank" class="icono-borde">
+                    <i class="fab fa-twitter"></i>
+                </a>
+            </div>
+            <div class="linea-social"></div>
+        </div>
+
+        <div class="texto-final">
+            <h6>Copyright © 2025 SENA INTERACTIVE PORTAL</h6>
+            <div class="creditos">
+                <h6 onclick="window.location.href='link de Información'">Información legal</h6>
+                <div class="linea-creditos"></div>
+                <h6 onclick="window.location.href='link de Politicas'">Politicas de privacidad</h6>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Variables globales
+        let currentSection = 'history';
+        
+        // Función principal para cambiar secciones
+        function switchSection(sectionName) {
+            // Agregar clase de transición
+            const mainContent = document.querySelector('.main-content');
+            mainContent.classList.add('transitioning');
+            
+            setTimeout(() => {
+                // Ocultar todas las secciones
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Mostrar la sección seleccionada
+                const targetSection = document.getElementById(sectionName + '-section');
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    currentSection = sectionName;
+                }
+                
+                // Remover clase de transición
+                mainContent.classList.remove('transitioning');
+                
+                // Reconfigurar eventos específicos de la sección
+                setupSectionEvents(sectionName);
+            }, 150);
+        }
+        
+        // Función para configurar botones activos
+        function setActiveButton(sectionName) {
+            document.querySelectorAll('.menu-item:not(.logout-btn)').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            const activeBtn = document.querySelector(`[data-section="${sectionName}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+        
+        // Función para configurar eventos específicos de cada sección
+        function setupSectionEvents(sectionName) {
+            switch(sectionName) {
+                case 'reported':
+                    setupReportedContentEvents();
+                    break;
+                case 'words':
+                    setupWordManagementEvents();
+                    break;
+                case 'history':
+                    setupHistoryEvents();
+                    break;
+            }
+        }
+        
+        // Eventos para sección de contenido reportado
+        function setupReportedContentEvents() {
+            // Los eventos ahora son manejados por los formularios
+        }
+        
+        // Eventos para sección de gestión de palabras
+        function setupWordManagementEvents() {
+            // Los eventos ahora son manejados por los formularios
+        }
+        
+        // Eventos para sección de historial
+        function setupHistoryEvents() {
+            // Configurar efectos hover para las filas
+            document.querySelectorAll('#history-section .table-row').forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(5px)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+                
+                row.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0)';
+                });
+            });
+        }
+        
+        // Configurar efectos hover generales para tablas
+        function setupTableEffects() {
+            const tableSelectors = ['.table-row', '.table-rep', '.table-word'];
+            
+            tableSelectors.forEach(selector => {
+                document.querySelectorAll(selector).forEach(row => {
+                    row.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateX(5px)';
+                        this.style.transition = 'transform 0.2s ease';
+                    });
+                    
+                    row.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateX(0)';
+                    });
+                });
+            });
+        }
+        
+        // Configurar iconos del footer
+        function setupFooterIcons() {
+            document.querySelectorAll('.icono-borde').forEach(icon => {
+                icon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const href = this.getAttribute('href');
+                    if (href && href !== '#') {
+                        window.open(href, '_blank');
+                    }
+                });
+            });
+        }
+        
+        // Inicialización principal
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar navegación del menú
+            document.querySelectorAll('.menu-item:not(.logout-btn)').forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    switchSection(section);
+                    setActiveButton(section);
+                });
+            });
+            
+            // Configurar efectos iniciales
+            setupTableEffects();
+            setupFooterIcons();
+            setupSectionEvents('history');
+            
+            // Establecer sección activa inicial
+            setActiveButton('history');
+            
+            console.log('Panel de administración unificado cargado correctamente');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP - Proyecto Individual</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="/Public/">
+</head>
+<body>
+  <div class="main-container">
+    <!-- Header -->
+    <header class="header">
+      <img src="../../3-registro/html/img/logo.png" alt="SIP Logo" class="logo-header">
+      <nav class="nav-header">
+        <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
+        <div class="user-info" id="perfil-btn">
+          <span class="user-avatar">D</span>
+          <span class="user-name">Daniela</span>
+        </div>
+      </nav>
+      <!-- Notificaciones Popover -->
+    <div id="notificaciones-popover" class="notificaciones-popover">
+      <div class="notificaciones-arrow"></div>
+      <h3>Notificaciones</h3>
+      <div class="notificacion-item">
+        <span class="notif-avatar">A</span>
+        <div>
+          <strong>Respondió tu publicación</strong>
+          <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+        </div>
+      </div>
+      <div class="notificacion-item">
+        <span class="notif-avatar">J</span>
+        <div>
+          <strong>Respondió tu publicación</strong>
+          <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+        </div>
+      </div>
+      <div class="notificacion-item">
+        <span class="notif-avatar">D</span>
+        <div>
+          <strong>Respondió tu respuesta</strong>
+          <div class="notif-text">Muchas gracias me sirvió mucho, sig...</div>
+        </div>
+      </div>
+    </div>
+    </header>
+
+    <!-- MODAL SUBIR PROYECTO -->
+    <div id="modal-subir-proyecto" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2>Subir Proyecto</h2>
+        <form action="/api/proyectos/crear" method="POST" enctype="multipart/form-data" id="form-subir-proyecto">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="autor" value="Daniela Paz">
+          <input type="text" name="titulo" placeholder="Título..." required />
+          <textarea name="descripcion" placeholder="Ingrese la descripción..." required></textarea>
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega maximo 5 imagenes...</div>
+          <input type="file" name="imagenes" accept="image/*" multiple style="margin-bottom:10px;">
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">
+            Agrega enlace de google drive (Documentación) o sube PDF...
+          </div>
+          <label for="pdf-doc" class="pdf-label">Seleccionar PDF</label>
+          <input type="file" name="documento_pdf" id="pdf-doc" accept="application/pdf" style="display:none;">
+          <span id="pdf-name"></span>
+          <div id="pdf-preview" style="margin-bottom:10px;"></div>
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega enlace de Github (Codigo)...</div>
+          <input type="url" name="github_url" placeholder="Opcional..." />
+          <div class="modal-btns">
+            <button type="submit" id="btn-publicar" class="btn-modal">Publicar</button>
+            <button type="button" id="btn-cancelar" class="btn-modal cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Menú Popover de Usuario -->
+    <div id="popover-menu" class="popover-menu">
+      <div class="popover-arrow"></div>
+      <div class="popover-content">
+        <ul class="popover-list">
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
+            <span>Perfil</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-solid fa-gear"></i>
+            </span>
+            <span>Configuración</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-star"></i>
+            </span>
+            <span>Favoritos</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+            <span>Ayuda</span>
+          </li>
+        </ul>
+        <form action="/api/logout" method="POST" id="logoutForm">
+          <input type="hidden" name="user_id" value="1193324003">
+          <button type="submit" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+        </form>
+      </div>
+    </div>
+
+    <main class="proyectos-main">
+      <!-- Panel de filtros -->
+      <aside class="filtros">
+        <button class="btn-subir" type="button">Subir proyecto</button>
+        <form class="filtros-form" action="/api/proyectos/buscar" method="GET" id="form-filtros">
+          <input type="text" name="keyword" placeholder="Buscar por palabra clave...">
+          <select name="programa">
+            <option value="">Todos los programas</option>
+            <option value="software">Desarrollo de Software</option>
+            <option value="redes">Redes y Telecomunicaciones</option>
+          </select>
+          <select name="rol">
+            <option value="">Todos los roles</option>
+            <option value="aprendiz">Aprendiz</option>
+            <option value="egresado">Egresado</option>
+            <option value="instructor">Instructor</option>
+          </select>
+          <input type="date" name="fecha" placeholder="dd/mm/aaaa">
+          <button type="submit" style="display:none;">Buscar</button>
+        </form>
+        <button class="btn-limpiar" type="button">Limpiar Filtros</button>
+      </aside>
+  <!-- Lista de proyectos -->
+  <section class="proyectos-lista">
+    <div class="proyecto-card">
+      <div class="proyecto-header">
+        <span class="proyecto-titulo">App Menú</span>
+        <span class="proyecto-etiqueta egresado">Egresado</span>
+        <span class="proyecto-fecha">14 agosto 2025, 03:01 pm</span>
+        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
+          <input type="hidden" name="proyecto_id" value="301">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="action" value="toggle">
+          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+        </form>
+      </div>
+      <div class="proyecto-autor">Daniela Paz</div>
+      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
+      <div class="proyecto-desc">
+        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
+      </div>
+      <div class="proyecto-footer">
+        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista3')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
+          <input type="hidden" name="proyecto_id" value="301">
+          <button type="submit" class="btn-abrir">Abrir</button>
+        </form>
+      </div>
+      <div class="comentarios-lista" id="comentariosLista3" style="display:none;">
+        <div class="comentario-vacio">No hay comentarios.</div>
+      </div>
+    </div>
+
+    <div class="proyecto-card">
+      <div class="proyecto-header">
+        <span class="proyecto-titulo">App SIP</span>
+        <span class="proyecto-etiqueta egresado">Egresado</span>
+        <span class="proyecto-fecha">13 agosto 2025, 10:30 pm</span>
+        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
+          <input type="hidden" name="proyecto_id" value="302">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="action" value="toggle">
+          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+        </form>
+      </div>
+      <div class="proyecto-autor">Ana Gomez</div>
+      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
+      <div class="proyecto-desc">
+        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
+      </div>
+      <div class="proyecto-footer">
+        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista1')" style="cursor:pointer; font-weight:600;">5 Respuestas</span>
+        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
+          <input type="hidden" name="proyecto_id" value="302">
+          <button type="submit" class="btn-abrir">Abrir</button>
+        </form>
+      </div>
+      <div class="comentarios-lista" id="comentariosLista1" style="display:none;">
+        <!-- Comentarios para publicación 1 -->
+        <div class="comentario-card">
+          <div class="comentario-header">
+            <span class="comentario-autor">Daniela Paz</span>
+            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+            <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
+            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="501">
+                <input type="hidden" name="user_id" value="1193324003">
+                <button type="submit">Reportar</button>
+              </form>
+              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="501">
+                <button type="submit">Editar</button>
+              </form>
+            </div>
+          </div>
+          <div class="comentario-texto">
+            Hola estoy interesada en hacer las practicas...
+          </div>
+        </div>
+        <div class="comentario-card">
+          <div class="comentario-header">
+            <span class="comentario-autor">Juan Perez</span>
+            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+            <span class="comentario-fecha">13 agosto 2025, 11:45 am</span>
+            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="502">
+                <input type="hidden" name="user_id" value="1193324003">
+                <button type="submit">Reportar</button>
+              </form>
+              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="502">
+                <button type="submit">Editar</button>
+              </form>
+            </div>
+          </div>
+          <div class="comentario-texto">
+            Me interesa Ana Gomez, mi correo es hola@mundo.com
+          </div>
+        </div>
+        <div class="comentario-card">
+          <div class="comentario-header">
+            <span class="comentario-autor">Oliver Aguayo</span>
+            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+            <span class="comentario-fecha">13 agosto 2025, 11:30 pm</span>
+            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="503">
+                <input type="hidden" name="user_id" value="1193324003">
+                <button type="submit">Reportar</button>
+              </form>
+              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="503">
+                <button type="submit">Editar</button>
+              </form>
+            </div>
+          </div>
+          <div class="comentario-texto">
+            Hola puedes por favor compartir el contacto
+          </div>
+        </div>
+        <div class="comentario-card">
+          <div class="comentario-header">
+            <span class="comentario-autor">Johan Ramos</span>
+            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+            <span class="comentario-fecha">13 agosto 2025, 09:30 pm</span>
+            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="504">
+                <input type="hidden" name="user_id" value="1193324003">
+                <button type="submit">Reportar</button>
+              </form>
+              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="504">
+                <button type="submit">Editar</button>
+              </form>
+            </div>
+          </div>
+          <div class="comentario-texto">
+            Gracias por información Ana, lo estaba necesitando
+          </div>
+        </div>
+        <div class="comentario-card">
+          <div class="comentario-header">
+            <span class="comentario-autor">Cristofér Rangel</span>
+            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+            <span class="comentario-fecha">14 agosto 2025, 02:30 pm</span>
+            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="505">
+                <input type="hidden" name="user_id" value="1193324003">
+                <button type="submit">Reportar</button>
+              </form>
+              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
+                <input type="hidden" name="comentario_id" value="505">
+                <button type="submit">Editar</button>
+              </form>
+            </div>
+          </div>
+          <div class="comentario-texto">
+            Uyyy, que buena información, GRACIASSS...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="proyecto-card">
+      <div class="proyecto-header">
+        <span class="proyecto-titulo">Videojuego de Jhon Wick</span>
+        <span class="proyecto-etiqueta egresado">Egresado</span>
+        <span class="proyecto-fecha">13 agosto 2025, 10:30 pm</span>
+        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
+          <input type="hidden" name="proyecto_id" value="303">
+          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="action" value="toggle">
+          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+        </form>
+      </div>
+      <div class="proyecto-autor">Ana Gomez</div>
+      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
+      <div class="proyecto-desc">
+        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
+      </div>
+      <div class="proyecto-footer">
+        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista3')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
+          <input type="hidden" name="proyecto_id" value="303">
+          <button type="submit" class="btn-abrir">Abrir</button>
+        </form>
+      </div>
+      <div class="comentarios-lista" id="comentariosLista3" style="display:none;">
+        <div class="comentario-vacio">No hay comentarios.</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <hr class="footer-line">
+        <div class="footer-icons">
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+        <hr class="footer-line">
+      </div>
+      <div class="footer-text">
+        Copyright © 2025 SENA INTERACTIVE PORTAL
+      </div>
+      <div class="footer-links">
+        <span>Información legal</span>
+        <span>Política de privacidad</span>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // Interceptar formularios para ver tráfico de datos
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          const formData = new FormData(form);
+          const method = form.method.toUpperCase();
+          const action = form.action;
+          
+          console.log('=== ENVÍO DE FORMULARIO ===');
+          console.log('Método:', method);
+          console.log('Action:', action);
+          console.log('Datos:');
+          
+          const data = {};
+          for (let [key, value] of formData.entries()) {
+            data[key] = value;
+            console.log(`  ${key}: ${value}`);
+          }
+          
+          alert(`Formulario enviado!\nMétodo: ${method}\nAction: ${action}\n\nRevisa la consola del navegador para ver los datos`);
+        });
+      });
+    });
+
+    // ===== MODAL SUBIR PROYECTO =====
+    document.querySelector('.btn-subir').addEventListener('click', function() {
+      document.getElementById('modal-subir-proyecto').style.display = 'flex';
+    });
+
+    // PDF personalizado
+    document.querySelector('.pdf-label').onclick = function() {
+      document.getElementById('pdf-doc').click();
+    };
+    document.getElementById('pdf-doc').addEventListener('change', function() {
+      const pdfName = document.getElementById('pdf-name');
+      const pdfPreview = document.getElementById('pdf-preview');
+      if (this.files.length > 0) {
+        pdfName.textContent = 'Archivo seleccionado: ' + this.files[0].name;
+        const file = this.files[0];
+        const url = URL.createObjectURL(file);
+        pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Ver PDF</a>`;
+      } else {
+        pdfName.textContent = '';
+        pdfPreview.innerHTML = '';
+      }
+    });
+
+    // Menú comentario
+    window.toggleMenu = function(btn) {
+      document.querySelectorAll('.comentario-menu').forEach(menu => menu.style.display = 'none');
+      var menu = btn.nextElementSibling;
+      menu.style.display = 'block';
+      window.currentMenu = menu;
+    }
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (window.currentMenu && !window.currentMenu.contains(e.target) && e.target.className.indexOf('menu-btn') === -1) {
+        window.currentMenu.style.display = 'none';
+        window.currentMenu = null;
+      }
+    });
+    // Evitar cierre al hacer clic en el botón de menú
+    document.querySelectorAll('.publicacion-menu-btn, .comentario-menu-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    });
+
+    // Mostrar/ocultar comentarios por publicación
+    function toggleComentarios(btn, listaId) {
+      var lista = document.getElementById(listaId);
+      if (lista.style.display === 'none' || lista.style.display === '') {
+        lista.style.display = 'block';
+      } else {
+        lista.style.display = 'none';
+      }
+    }
+
+    // Ocultar modal al hacer clic en "Cancelar" o fuera del contenido
+    document.getElementById('btn-cancelar').onclick = function() {
+      document.getElementById('modal-subir-proyecto').style.display = 'none';
+    };
+    document.getElementById('modal-subir-proyecto').addEventListener('click', function(e) {
+      if (e.target === this) this.style.display = 'none';
+    });
+
+    // Botón "Limpiar Filtros"
+    document.querySelector('.btn-limpiar').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.filtros-form input, .filtros-form select').forEach(function(el) {
+        if (!el.disabled) {
+          if (el.tagName === 'SELECT') el.selectedIndex = 0;
+          else el.value = '';
+        }
+      });
+      alert('Filtros limpiados.');
+    });
+
+    // Botones de estrella (favorito)
+    document.querySelectorAll('.proyecto-fav').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        btn.classList.toggle('active');
+        var icon = btn.querySelector('i');
+        if (btn.classList.contains('active')) {
+          icon.classList.remove('fa-regular');
+          icon.classList.add('fa-solid');
+        } else {
+          icon.classList.remove('fa-solid');
+          icon.classList.add('fa-regular');
+        }
+      });
+    });
+
+    // ===== MENÚ POPOVER USUARIO =====
+    const perfilBtn = document.getElementById('perfil-btn');
+    const popoverMenu = document.getElementById('popover-menu');
+
+    perfilBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (popoverMenu.style.display === 'block') {
+        popoverMenu.style.display = 'none';
+      } else {
+        const rect = perfilBtn.getBoundingClientRect();
+        popoverMenu.style.display = 'block';
+        popoverMenu.style.position = 'absolute';
+        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
+        popoverMenu.style.display = 'none';
+      }
+    });
+
+    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+      li.addEventListener('click', () => {
+        switch(idx) {
+          case 0: alert('Ir al Perfil'); break;
+          case 1: alert('Ir a Configuración'); break;
+          case 2: alert('Ir a Favoritos'); break;
+          case 3: alert('Ir a Ayuda'); break;
+        }
+        popoverMenu.style.display = 'none';
+      });
+    });
+    // Notificaciones Popover
+    const notiBtn = document.getElementById('notificaciones-btn');
+    const notiPopover = document.getElementById('notificaciones-popover');
+    notiBtn.onclick = function(e) {
+      e.stopPropagation();
+      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
+      popoverMenu.style.display = 'none';
+    };
+    notiPopover.onclick = function(e) {
+      e.stopPropagation();
+    };
+  </script>
+</body>
+</html>

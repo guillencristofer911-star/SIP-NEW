@@ -1,0 +1,219 @@
+/* Fondo general y centrado */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100vw;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #e0e0e0;
+    box-sizing: border-box;
+}
+/* Botón ayuda esquina inferior derecha */
+.ayuda-btn {
+  position: fixed;
+  right: 32px;
+  bottom: 32px;
+  width: 48px;
+  height: 48px;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  color: #184C3A;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: none;
+  transition: background 0.2s;
+}
+.ayuda-btn:hover {
+  background: rgba(24,76,58,0.08);
+}
+
+/* Icono pregunta */
+.ayuda-btn i {
+  font-size: 2.2rem;
+  color: #184C3A;
+}
+
+/* Modal ayuda */
+.modal-ayuda {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.18);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+/* ...existing code... */
+
+/* Modal ayuda mejorado para scroll vertical y tamaño más pequeño */
+.modal-ayuda-content {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 2px 18px #0002;
+  padding: 32px 38px;
+  max-width: 400px;
+  width: 95vw;
+  max-height: 80vh;
+  text-align: left;
+  font-family: inherit;
+  position: relative;
+  overflow-y: auto;
+  /* Para scroll si el contenido es largo */
+}
+
+/* ...existing code... */
+.modal-ayuda-content h2 {
+  background: #38cfa3;
+  color: #fff;
+  border-radius: 18px 18px 0 0;
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin: -32px -38px 24px -38px;
+  padding: 22px 0 12px 0;
+}
+.modal-ayuda-content .close-ayuda {
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #184C3A;
+  cursor: pointer;
+}
+.modal-ayuda-content ul {
+  margin: 0 0 0 18px;
+  padding: 0;
+}
+.modal-ayuda-content li {
+  margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+  .modal-ayuda-content {
+    padding: 18px 8px;
+    max-width: 98vw;
+  }
+  .modal-ayuda-content h2 {
+    font-size: 1.2rem;
+    padding: 12px 0 8px 0;
+  }
+}
+/* Contenedor principal en dos columnas */
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Columna izquierda: logo */
+.left-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 50vw;
+    height: 100vh;
+    background: #E3F9F4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-top-right-radius: 22px;
+    border-bottom-right-radius: 22px;
+    min-width: 350px;
+    z-index: 2;
+}
+
+.logo {
+    width: 420px;
+    margin-bottom: 20px;
+}
+
+/* Columna derecha: formulario */
+.right-panel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 52vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(120deg, #A8E6CF 0%, #82CBB5 100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: 350px;
+    padding-right: 40px;
+    padding-left: 40px;
+    padding-top: 80px;
+    padding-bottom: 40px;
+    box-sizing: border-box;
+}
+
+/* Títulos */
+.title {
+    font-size: 57px;
+    font-weight: 800;
+    color: #184C3A;
+    margin-bottom: 0;
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 0.5px;
+}
+.form-subtitle {
+    font-size: 27px;
+    color: #184C3A;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+    margin-top: 8px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* Formulario */
+.form {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.form input[type="text"],
+.form input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: none;
+    background: #fff;
+    font-size: 15px;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+}
+
+/* Botón */
+.btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #26c6a2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 8px rgba(38, 198, 162, 0.15);
+    margin-bottom: 10px;
+}
+.btn:hover {
+    background: #1da88a;
+    box-shadow: 0 6px 12px rgba(38, 198, 162, 0.22);
+}
