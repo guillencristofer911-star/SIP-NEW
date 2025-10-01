@@ -141,8 +141,91 @@ const [resultado] = await db.query(
     });
   }
 }
+/* FUNCIONES PARA RECUPERAR CONTRASEÑA*/
+
+// 1. Enviar enlace de recuperación al correo
+async function forgotPassword(req, res) {
+  try {
+    const { correo } = req.body;
+
+    const [usuarios] = await db.query(
+      'SELECT * FROM usuario WHERE correo = ?',
+      [correo]
+    );
+
+    if (usuarios.length === 0) {
+      return res.json({ success: true, message: "Si el correo existe, se enviará un enlace de recuperación." });
+    }
+
+    const usuario = usuarios[0];
+
+    // Generar token y fecha de expiración
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const expireDate = new Date(Date.now() + 3600000); // 1h
+
+    // Guardar en BD
+    await db.query(
+      "UPDATE usuario SET reset_token = ?, reset_expire = ? WHERE id = ?",
+      [tokenHash, expireDate, usuario.id]
+    );
+
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${rawToken}&email=${usuario.correo}`;
+
+    // Enviar email
+    await sendEmail({
+      to: usuario.correo,
+      subject: "Recupera tu contraseña",
+      text: `Entra a este enlace: ${resetUrl}`,
+      html: `<a href="${resetUrl}">Recuperar contraseña</a>`
+    });
+
+    res.json({ success: true, message: "Si el correo existe, se enviará un enlace de recuperación." });
+
+  } catch (error) {
+    console.error("Error en forgotPassword:", error);
+    res.status(500).json({ success: false, message: "Error en el servidor" });
+  }
+}
+
+// 2. Restablecer la contraseña con token
+async function resetPassword(req, res) {
+  try {
+    const { token, correo, nuevaContrasena } = req.body;
+
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+
+    const [usuarios] = await db.query(
+      "SELECT * FROM usuario WHERE correo = ? AND reset_token = ? AND reset_expire > NOW()",
+      [correo, tokenHash]
+    );
+
+    if (usuarios.length === 0) {
+      return res.status(400).json({ success: false, message: "Token inválido o expirado" });
+    }
+
+    const usuario = usuarios[0];
+    const hashedPass = await bcryptjs.hash(nuevaContrasena, 10);
+
+    await db.query(
+      "UPDATE usuario SET contrasena = ?, reset_token = NULL, reset_expire = NULL WHERE id = ?",
+      [hashedPass, usuario.id]
+    );
+
+    res.json({ success: true, message: "Contraseña cambiada con éxito" });
+
+  } catch (error) {
+    console.error("Error en resetPassword:", error);
+    res.status(500).json({ success: false, message: "Error en el servidor" });
+  }
+}
 
 export const methods = {
   login,
-  register
+  register,
+  forgotPassword,  
+  resetPassword     
+};
+
+
 };
