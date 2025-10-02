@@ -25,18 +25,19 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Login.html"));
 });
 
-
 app.get("/registro", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
 
-app.post("/api/login",authController.login);
+app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-
-
+// Rutas para recuperación de contraseña
+app.post("/api/forgot-password", authController.forgotPassword);
+app.post("/api/reset-password", authController.resetPassword);
 
 // Iniciar servidor
 app.listen(app.get("port"), () => {
   console.log(`Servidor corriendo en http://localhost:${app.get("port")}`);
 });
+
