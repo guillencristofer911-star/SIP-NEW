@@ -226,6 +226,6 @@ async function resetPassword(req, res) {
 export const methods = {
   login,
   register,
-  forgotPassword,   // <- NUEVO
-  resetPassword     // <- NUEVO
+  forgotPassword,  
+  resetPassword     
 };
