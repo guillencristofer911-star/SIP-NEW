@@ -229,3 +229,4 @@ export const methods = {
   forgotPassword,  
   resetPassword     
 };
+
