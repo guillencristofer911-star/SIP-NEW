@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIP - Proyecto Individual</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="../Public/Configuracion.css">
+  <link rel="stylesheet" href="/Public/Configuracion.css">
 </head>
 <body>
   <div class="main-container">
@@ -20,54 +20,62 @@
           <span class="user-name">Daniela</span>
         </div>
       </nav>
+      
+      </div>
     </header>
-
-    <!-- Notificaciones -->
-    <div id="notificaciones-popover" class="notificaciones-popover">
-      <div class="notificaciones-arrow"></div>
-      <h3>Notificaciones</h3>
-      <div class="notificacion-item">
-        <span class="notif-avatar">A</span>
-        <div>
-          <strong>Respondió tu publicación</strong>
-          <div class="notif-text">Te daré varias ideas para tu proyecto...</div>
+      <div id="notificaciones-popover" class="notificaciones-popover">
+        <div class="notificaciones-arrow"></div>
+        <h3>Notificaciones</h3>
+        <div class="notificacion-item">
+          <span class="notif-avatar">A</span>
+          <div>
+            <strong>Respondió tu publicación</strong>
+            <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+          </div>
+        </div>
+        <div class="notificacion-item">
+          <span class="notif-avatar">J</span>
+          <div>
+            <strong>Respondió tu publicación</strong>
+            <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+          </div>
+        </div>
+        <div class="notificacion-item">
+          <span class="notif-avatar">D</span>
+          <div>
+            <strong>Respondió tu respuesta</strong>
+            <div class="notif-text">Muchas gracias me sirvió mucho, sig...</div>
+          </div>
         </div>
       </div>
-      <div class="notificacion-item">
-        <span class="notif-avatar">J</span>
-        <div>
-          <strong>Respondió tu publicación</strong>
-          <div class="notif-text">Te daré varias ideas para tu proyecto...</div>
-        </div>
-      </div>
-      <div class="notificacion-item">
-        <span class="notif-avatar">D</span>
-        <div>
-          <strong>Respondió tu respuesta</strong>
-          <div class="notif-text">Muchas gracias me sirvió mucho, sig...</div>
-        </div>
-      </div>
-    </div>
-
+    </header>
     <!-- Menú Popover de Usuario -->
     <div id="popover-menu" class="popover-menu">
       <div class="popover-arrow"></div>
       <div class="popover-content">
         <ul class="popover-list">
           <li>
-            <span class="icon"><i class="fa-regular fa-user"></i></span>
+            <span class="icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
             <span>Perfil</span>
           </li>
           <li>
-            <span class="icon"><i class="fa-solid fa-gear"></i></span>
+            <span class="icon">
+              <i class="fa-solid fa-gear"></i>
+            </span>
             <span>Configuración</span>
           </li>
           <li>
-            <span class="icon"><i class="fa-regular fa-star"></i></span>
+            <span class="icon">
+              <i class="fa-regular fa-star"></i>
+            </span>
             <span>Favoritos</span>
           </li>
           <li>
-            <span class="icon"><i class="fa-regular fa-circle-question"></i></span>
+            <span class="icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
             <span>Ayuda</span>
           </li>
         </ul>
@@ -78,8 +86,7 @@
         </form>
       </div>
     </div>
-
-    <!-- Sección de configuración de perfil -->
+    <!-- Solo la sección de configuración de perfil -->
     <main class="main-content config-main">
       <div class="config-container">
         <h1 class="config-title">Configuración</h1>
@@ -92,42 +99,19 @@
             <div class="profile-info">pazdaniela1193@gmail.com</div>
             <div class="profile-info">3155577843</div>
             <button class="profile-extra-btn" id="btn-eliminar-cuenta">Eliminar cuenta</button>
-          </div> 
-
-          <div class="cards-container">
-            <!-- FORMULARIO CAMBIO DE CORREO -->
-            <div class="profile-form-card">
-              <h2 class="profile-form-title">Editar Correo Electrónico</h2>
-              <form class="profile-form" action="#" method="POST" id="form-editar-correo">
-                <input type="hidden" name="user_id" value="1193324003">
-                <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
-
-                <input type="email" id="email" name="email" class="profile-input" placeholder="Correo electrónico..." required>
-                <input type="email" id="email_confirm" name="email_confirm" class="profile-input" placeholder="Confirmar correo electrónico..." required>
-                <span id="error-email" style="color:red; font-size:14px;"></span>
-
-                <button type="submit" class="profile-save-btn">Guardar cambios</button>
-              </form>
-            </div>
-
-            <!-- FORMULARIO CAMBIO DE CONTRASEÑA -->
-            <div class="profile-form-card-2">
-              <h2 class="profile-form-title">Editar Contraseña</h2>
-              <form class="profile-form" action="#" method="POST" id="form-editar-contraseña">
-                <input type="hidden" name="user_id" value="1193324003">
-                <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
-
-                <input type="password" id="current_pass" name="current_pass" class="profile-input" placeholder="Contraseña actual..." required>
-                <input type="password" id="new_pass" name="new_pass" class="profile-input" placeholder="Nueva contraseña..." required>
-                <input type="password" id="confirm_pass" name="confirm_pass" class="profile-input" placeholder="Confirmar nueva contraseña..." required>
-                <span id="error-pass" style="color:red; font-size:14px;"></span>
-
-                <button type="submit" class="profile-save-btn">Guardar cambios</button>
-              </form>
-            </div>
+          </div>
+          <div class="profile-form-card">
+            <h2 class="profile-form-title">Editar Datos Perfil</h2>
+            <form class="profile-form" action="#" method="POST" id="form-editar-perfil">
+              <input type="hidden" name="user_id" value="1193324003">
+              <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
+              <input type="email" name="email" class="profile-input" placeholder="correo electronico..." required>
+              <input type="email" name="email_confirm" class="profile-input" placeholder="confirmar correo electronico..." required>
+              <input type="tel" name="telefono" class="profile-input" placeholder="numero telefono..." pattern="[0-9]{10}" required>
+              <button type="submit" class="profile-save-btn">Guardar cambios</button>
+            </form>
           </div>
         </div>
-
         <div class="profile-warning">
           Si desea cambiar otros datos personales, debe comunicarse con tps2127@gmail.com para solicitar el cambio ya que son datos sensibles
         </div>
@@ -137,7 +121,7 @@
     <!-- MODAL ELIMINAR CUENTA -->
     <div id="modal-eliminar-cuenta" class="modal-eliminar-cuenta" style="display:none;">
       <div class="modal-eliminar-content">
-        <div class="modal-eliminar-title">¿Está seguro de eliminar cuenta?</div>
+        <div class="modal-eliminar-title">¿Esta seguro de eliminar cuenta?</div>
         <form action="/api/cuenta/eliminar" method="POST" id="form-eliminar-cuenta">
           <input type="hidden" name="user_id" value="1193324003">
           <input type="hidden" name="email" value="pazdaniela1193@gmail.com">
@@ -171,33 +155,34 @@
       </div>
     </footer>
   </div>
-
-  <!-- SCRIPTS -->
   <script>
-    // Interceptar formularios para ver tráfico de datos
+    // Interceptar todos los formularios para mostrar el tráfico de datos
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('form').forEach(function(form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
+          
           const formData = new FormData(form);
           const method = form.method.toUpperCase();
           const action = form.action;
-
+          
           console.log('=== ENVÍO DE FORMULARIO ===');
           console.log('Método:', method);
           console.log('Action:', action);
           console.log('Datos enviados:');
+          
           const data = {};
           for (let [key, value] of formData.entries()) {
             data[key] = value;
             console.log(`  ${key}: ${value}`);
           }
+          
           alert(`Formulario enviado!\nMétodo: ${method}\nAction: ${action}\n\nRevisa la consola (F12) para ver todos los datos`);
         });
       });
     });
 
-    // ===== Notificaciones Popover =====
+    // Notificaciones Popover
     const notiBtn = document.getElementById('notificaciones-btn');
     const notiPopover = document.getElementById('notificaciones-popover');
     notiBtn.onclick = function(e) {
@@ -206,163 +191,66 @@
       const popoverMenu = document.getElementById('popover-menu');
       if (popoverMenu) popoverMenu.style.display = 'none';
     };
-    notiPopover.onclick = function(e) { e.stopPropagation(); };
+    notiPopover.onclick = function(e) {
+      e.stopPropagation();
+    };
+  document.addEventListener('DOMContentLoaded', function() {
+    
 
-    // ===== Menú Popover Usuario =====
-    document.addEventListener('DOMContentLoaded', function() {
-      const perfilBtn = document.getElementById('perfil-btn');
-      const popoverMenu = document.getElementById('popover-menu');
+    // ===== MENÚ POPOVER USUARIO =====
+    const perfilBtn = document.getElementById('perfil-btn');
+    const popoverMenu = document.getElementById('popover-menu');
 
-      perfilBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        if (popoverMenu.style.display === 'block') {
-          popoverMenu.style.display = 'none';
-        } else {
-          const rect = perfilBtn.getBoundingClientRect();
-          popoverMenu.style.display = 'block';
-          popoverMenu.style.position = 'absolute';
-          popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-          popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
-        }
-      });
-
-      document.addEventListener('click', function(e) {
-        if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-          popoverMenu.style.display = 'none';
-        }
-      });
-
-      document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-        li.addEventListener('click', () => {
-          switch(idx) {
-            case 0: alert('Ir al Perfil'); break;
-            case 1: alert('Ir a Configuración'); break;
-            case 2: alert('Ir a Favoritos'); break;
-            case 3: alert('Ir a Ayuda'); break;
-          }
-          popoverMenu.style.display = 'none';
-        });
-      });
-
-      // Modal eliminar cuenta
-      const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
-      const modalEliminar = document.getElementById('modal-eliminar-cuenta');
-      const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
-
-      btnEliminarCuenta.addEventListener('click', function() {
-        modalEliminar.style.display = 'flex';
-      });
-      btnCancelarEliminar.addEventListener('click', function() {
-        modalEliminar.style.display = 'none';
-      });
-      modalEliminar.addEventListener('click', function(e) {
-        if (e.target === modalEliminar) modalEliminar.style.display = 'none';
-      });
-    });
-
-    // ===== Validación de correos =====
-    document.getElementById("form-editar-correo").addEventListener("submit", function(e) {
-      const email = document.getElementById("email").value;
-      const confirmEmail = document.getElementById("email_confirm").value;
-      const errorEmail = document.getElementById("error-email");
-      if (email !== confirmEmail) {
-        e.preventDefault();
-        errorEmail.textContent = "⚠️ Los correos no coinciden.";
+    perfilBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (popoverMenu.style.display === 'block') {
+        popoverMenu.style.display = 'none';
       } else {
-        errorEmail.textContent = "";
+        // Calcula posición
+        const rect = perfilBtn.getBoundingClientRect();
+        popoverMenu.style.display = 'block';
+        popoverMenu.style.position = 'absolute';
+        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
       }
     });
-    <!-- ===== Validación de contraseñas (mejorada) ===== -->
 
-  // Asegúrate de que este script esté dentro del mismo <script> donde están los demás handlers
-  // o justo donde tengas tus scripts, después de los inputs en el DOM.
-
-  document.getElementById("form-editar-contraseña").addEventListener("submit", function(e) {
-    const current = document.getElementById("current_pass").value;
-    const newPass  = document.getElementById("new_pass").value;
-    const confirm  = document.getElementById("confirm_pass").value;
-    const errorEl  = document.getElementById("error-pass");
-
-    // Limpia cualquier mensaje previo
-    if (errorEl) errorEl.textContent = "";
-
-    // 1) Asegurarnos que el usuario puso la contraseña actual (HTML tiene required, pero por si acaso)
-    if (!current) {
-      e.preventDefault();
-      if (errorEl) errorEl.textContent = "⚠️ Ingresa tu contraseña actual.";
-      return;
-    }
-
-    // 2) La nueva contraseña NO puede ser igual a la actual
-    if (current === newPass) {
-      e.preventDefault();
-      if (errorEl) errorEl.textContent = "⚠️ La nueva contraseña no puede ser igual a la actual.";
-      return;
-    }
-
-    // 3) Validar que nueva y confirmación coincidan
-    if (newPass !== confirm) {
-      e.preventDefault();
-      if (errorEl) errorEl.textContent = "⚠️ Las contraseñas no coinciden.";
-      return;
-    }
-
-    // 4) Validación mínima de seguridad (longitud)
-    if (newPass.length < 8) {
-      e.preventDefault();
-      if (errorEl) errorEl.textContent = "⚠️ La contraseña debe tener al menos 8 caracteres.";
-      return;
-    }
-
-    // Si llegamos aquí, todo OK: el formulario puede enviarse (si no hay otro listener que lo bloquee).
-  });
-
-        /*
-      ⚠️ IMPORTANTE:
-      El script de simulación de envío de formularios (simularEnvio) 
-      es SOLO para pruebas de frontend con JavaScript. 
-      No se utilizó PHP ni backend real en esta etapa. 
-
-      Este bloque NO debe quedar en el producto final, 
-      ya que únicamente muestra los datos en consola o en pantalla. 
-
-      Cuando el proyecto se conecte al backend real, 
-      debe eliminarse o comentarse este bloque de abajo
-      y configurar el action del formulario con la ruta correcta 
-      (por ejemplo: procesar.php o una API).
-      att: Eladio
-      -->*/
-
-  function simularEnvio(formId) {
-  const form = document.getElementById(formId);
-  form.addEventListener("submit", function(event) {
-    event.preventDefault();
-
-    const formData = new FormData(this);
-    let datos = {};
-    formData.forEach((value, key) => {
-      datos[key] = value;
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
+        popoverMenu.style.display = 'none';
+      }
     });
 
-    console.log("=== SIMULACIÓN ENVÍO FORMULARIO ===");
-    console.log("Formulario:", formId);
-    console.log(datos);
+    // Opciones del menú (puedes personalizar acciones)
+    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+      li.addEventListener('click', () => {
+        switch(idx) {
+          case 0: alert('Ir al Perfil'); break;
+          case 1: alert('Ir a Configuración'); break;
+          case 2: alert('Ir a Favoritos'); break;
+          case 3: alert('Ir a Ayuda'); break;
+        }
+        popoverMenu.style.display = 'none';
+      });
+    });
 
-    let salida = `<h3>Datos enviados desde <b>${formId}</b>:</h3><table border="1" cellpadding="5">`;
-    for (let key in datos) {
-      salida += `<tr><td><b>${key}</b></td><td>${datos[key]}</td></tr>`;
-    }
-    salida += "</table>";
+    // Modal eliminar cuenta
+    const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
+    const modalEliminar = document.getElementById('modal-eliminar-cuenta');
+    const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
 
-    document.getElementById("resultado").innerHTML = salida;
+    btnEliminarCuenta.addEventListener('click', function() {
+      modalEliminar.style.display = 'flex';
+    });
+    btnCancelarEliminar.addEventListener('click', function() {
+      modalEliminar.style.display = 'none';
+    });
+    // Cerrar modal al hacer click fuera del contenido
+    modalEliminar.addEventListener('click', function(e) {
+      if (e.target === modalEliminar) modalEliminar.style.display = 'none';
+    });
   });
-}
-
-// Activa para ambos formularios
-simularEnvio("form-editar-correo");
-simularEnvio("form-editar-contraseña");
-
-   
   </script>
 </body>
 </html>
