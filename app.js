@@ -1,22 +1,27 @@
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import { methods as authController } from "./controllers/authentication.controller.js";
+import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
+
+dotenv.config();
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-import { methods as authController } from "./controllers/authentication.controller.js"; 
 
-
-//Server
+// Server
 const app = express();
-app.set("port", 4000);
+app.set("port", process.env.PORT || 4000);
 
 // Configuración
 app.use(express.json());
 
 // Servir archivos estáticos SOLO desde Public (CSS, JS, imágenes)
-// NO incluir Pages aquí
 app.use(express.static(path.join(__dirname, "Public")));
 
-// Rutas ESPECÍFICAS primero (antes de cualquier otra cosa)
+// ==================== RUTAS PÚBLICAS ====================
+
+// Páginas HTML públicas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
