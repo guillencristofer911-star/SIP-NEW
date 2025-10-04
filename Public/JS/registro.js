@@ -1,45 +1,88 @@
-const mensajeError = document.getElementsByClassName("error")[0];
+document.addEventListener('DOMContentLoaded', () => {
+  const openModalBtn = document.getElementById('open-modal-btn');
+  const closeModalBtn = document.getElementById('close-modal-btn');
+  const modal = document.getElementById('modal-terms');
+  const registerForm = document.getElementById('register-form');
 
-document.getElementById("register-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const form = e.target;
-  
-  const data = {
-    documento: form["documento"].value,
-    nombres: form["nombres"].value,
-    apellidos: form["apellidos"].value,
-    correo: form["correo"].value,
-    programa: form["programa"].value,
-    contrasena: form["contrasena"].value,
-    confirmar_contrasena: form["confirmar_contrasena"].value
-  };
-  
-  try {
-    const res = await fetch("http://localhost:4000/api/register", {  // <- CAMBIO AQUÍ
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
+  // Modal de términos
+  if (openModalBtn) {
+    openModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.add('active');
     });
+  }
 
-    const responseData = await res.json();
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.remove('active');
+    });
+  }
 
-    if (res.ok) {
-      alert("Registro exitoso");
-      window.location.href = "/login";
-    } else {
-      if (mensajeError) {
-        mensajeError.textContent = responseData.message || "Error en el registro";
-        mensajeError.style.display = "block";
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+    }
+  });
+
+  // Manejo del formulario de registro
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Obtener datos del formulario
+      const formData = new FormData(registerForm);
+      
+      // Validar que las contraseñas coincidan
+      const contrasena = formData.get('contrasena');
+      const confirmarContrasena = formData.get('confirmar_contrasena');
+
+      if (contrasena !== confirmarContrasena) {
+        alert('Las contraseñas no coinciden');
+        return;
       }
-    }
-  } catch (error) {
-    console.error("Error:", error);
-    if (mensajeError) {
-      mensajeError.textContent = "Error de conexión con el servidor";
-      mensajeError.style.display = "block";
-    }
+
+      // Validar que los términos estén aceptados
+      const terminos = formData.get('terminos');
+      if (!terminos) {
+        alert('Debes aceptar los términos y condiciones');
+        return;
+      }
+
+      // Crear objeto con los datos (sin incluir terminos ni tipo ya que no se usan en backend)
+      const datos = {
+        documento: formData.get('documento'),
+        nombres: formData.get('nombres'),
+        apellidos: formData.get('apellidos'),
+        correo: formData.get('correo'),
+        programa: formData.get('programa'),
+        contrasena: formData.get('contrasena'),
+        confirmar_contrasena: formData.get('confirmar_contrasena')
+      };
+
+      console.log('Datos a enviar:', datos); // Para debug
+
+      try {
+        const response = await fetch('http://localhost:4000/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert('¡Registro exitoso! Ahora puedes iniciar sesión');
+          window.location.href = '/login';
+        } else {
+          alert(result.message || 'Error en el registro');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión con el servidor');
+      }
+    });
   }
 });

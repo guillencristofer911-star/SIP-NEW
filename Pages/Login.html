@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/login.css">
-    <link rel="stylesheet" href="/login.css">
+    <link rel="stylesheet" href="/modal.css">
     <title>Iniciar sesión - SIP</title>
 </head>
 <body>
@@ -19,7 +19,7 @@
             
             <!-- Formulario de login -->
             <form class="form" id="login-form" action="/login" method="POST">
-                <input type="text" id="usuario" name="usuario" placeholder="Ingrese documento" required>
+                <input type="text" id="usuario" name="documento" placeholder="Ingrese documento" required>
                 <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese contraseña" required>
                 <a href="#" id="enlace-olvido" style="font-size: 13px; color: #184C3A; text-align: left; margin-bottom: 16px; display: block; margin-top: 2px;">¿Olvidaste tu contraseña?</a>
                 <button type="submit" class="btn">Iniciar sesión</button>
@@ -41,8 +41,8 @@
       </form>
     </div>
 
-    <script>
-    // Modal recuperar contraseña
+    <script src="/js/login.js">
+        // Modal recuperar contraseña
     document.getElementById('enlace-olvido').onclick = function(e) {
         e.preventDefault();
         document.getElementById('modal-recuperar').classList.add('activo');
