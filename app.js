@@ -9,43 +9,48 @@ dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Server
+// ==================== CONFIGURACIÓN DEL SERVIDOR ====================
+
+// Inicializa la aplicación Express y configura el puerto
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-// Configuración
+// Middleware para parsear JSON en las solicitudes
 app.use(express.json());
 
-// Servir archivos estáticos SOLO desde Public (CSS, JS, imágenes)
+// Servir archivos estáticos SOLO desde la carpeta Public (CSS, JS, imágenes)
 app.use(express.static(path.join(__dirname, "Public")));
 
 // ==================== RUTAS PÚBLICAS ====================
 
-// Páginas HTML públicas
+// Rutas para servir páginas HTML públicas
 app.get("/", (req, res) => {
+  // Página principal
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
 
 app.get("/login", (req, res) => {
+  // Página de inicio de sesión
   res.sendFile(path.join(__dirname, "Pages", "Login.html"));
 });
 
 app.get("/registro", (req, res) => {
+  // Página de registro de usuario
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
 
 app.get("/publicaciones", (req, res) => {
+  // Página de publicaciones públicas
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
 
-
-// API de autenticación (públicas)
-app.post("/api/login", authController.login);
-app.post("/api/register", authController.register);
+// API de autenticación (rutas públicas)
+app.post("/api/login", authController.login);      // Iniciar sesión
+app.post("/api/register", authController.register); // Registrar usuario
 
 // ==================== RUTAS PROTEGIDAS ====================
 
-// Ruta de prueba - solo usuarios autenticados
+// Ruta de prueba: solo usuarios autenticados pueden acceder
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -54,7 +59,7 @@ app.get("/api/perfil", verificarToken, (req, res) => {
   });
 });
 
-// Ruta solo para administradores
+// Ruta solo para administradores (ID_rol = 1)
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
   // Aquí podrías obtener todos los usuarios de la base de datos
   res.json({
@@ -63,7 +68,7 @@ app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) 
   });
 });
 
-// Ruta para verificar token (útil para el frontend)
+// Ruta para verificar si el token es válido (útil para el frontend)
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -72,7 +77,7 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
-// Ruta para cerrar sesión (opcional - invalidar token del lado del cliente)
+// Ruta para cerrar sesión (la invalidación real del token es del lado del cliente)
 app.post("/api/logout", verificarToken, (req, res) => {
   // En JWT no hay forma de "invalidar" tokens del lado del servidor
   // La invalidación se hace eliminando el token del localStorage en el cliente
@@ -84,7 +89,7 @@ app.post("/api/logout", verificarToken, (req, res) => {
 
 // ==================== MANEJO DE ERRORES ====================
 
-// Ruta no encontrada
+// Ruta para manejar solicitudes a rutas no existentes
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -92,7 +97,7 @@ app.use((req, res) => {
   });
 });
 
-// Manejo de errores global
+// Middleware global para manejo de errores del servidor
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
@@ -101,7 +106,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Iniciar servidor
+// ==================== INICIAR SERVIDOR ====================
+
+// Inicia el servidor y muestra el puerto en consola
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
