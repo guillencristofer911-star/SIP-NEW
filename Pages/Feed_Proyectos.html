@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIP - Proyecto Individual</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="/Public/">
+  <link rel="stylesheet" href="/Feed_Proyectos.css">
 </head>
 <body>
   <div class="main-container">
     <!-- Header -->
     <header class="header">
-      <img src="../../3-registro/html/img/logo.png" alt="SIP Logo" class="logo-header">
+      <img src="/img/logo.png" alt="SIP Logo" class="logo-header">
       <nav class="nav-header">
-        <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="/feed-proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
         <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
         <div class="user-info" id="perfil-btn">
           <span class="user-avatar">D</span>
@@ -52,25 +52,78 @@
     <div id="modal-subir-proyecto" class="modal-publicacion" style="display:none;">
       <div class="modal-content">
         <h2>Subir Proyecto</h2>
-        <form action="/api/proyectos/crear" method="POST" enctype="multipart/form-data" id="form-subir-proyecto">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="autor" value="Daniela Paz">
+        <form id="form-subir-proyecto" enctype="multipart/form-data">
+          <input type="hidden" name="user_id" id="user_id" value="16">
+          
           <input type="text" name="titulo" placeholder="Título..." required />
           <textarea name="descripcion" placeholder="Ingrese la descripción..." required></textarea>
+          
+          <!-- SELECT DE PROGRAMA -->
+          <select name="programa" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
+            <option value="">Selecciona tu programa</option>
+            <option value="Desarrollo de Software">Tecnología en Desarrollo de Software</option>
+            <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
+          </select>
+          
           <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega maximo 5 imagenes...</div>
           <input type="file" name="imagenes" accept="image/*" multiple style="margin-bottom:10px;">
+          
           <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">
-            Agrega enlace de google drive (Documentación) o sube PDF...
+            Agrega documentación (PDF)...
           </div>
-          <label for="pdf-doc" class="pdf-label">Seleccionar PDF</label>
           <input type="file" name="documento_pdf" id="pdf-doc" accept="application/pdf" style="display:none;">
+          <label for="pdf-doc" class="pdf-label">Seleccionar PDF</label>
           <span id="pdf-name"></span>
           <div id="pdf-preview" style="margin-bottom:10px;"></div>
+          
           <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega enlace de Github (Codigo)...</div>
-          <input type="url" name="github_url" placeholder="Opcional..." />
+          <input type="url" name="github_url" placeholder="https://github.com/usuario/proyecto" />
+          
           <div class="modal-btns">
             <button type="submit" id="btn-publicar" class="btn-modal">Publicar</button>
             <button type="button" id="btn-cancelar" class="btn-modal cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL EDITAR PROYECTO -->
+    <div id="modal-editar-proyecto" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2>Editar Proyecto</h2>
+        <form id="form-editar-proyecto" enctype="multipart/form-data">
+          <input type="hidden" name="user_id" id="edit_user_id" value="16">
+          <input type="hidden" name="proyecto_id" id="edit_proyecto_id">
+          
+          <input type="text" name="titulo" id="edit_titulo" placeholder="Título..." required />
+          <textarea name="descripcion" id="edit_descripcion" placeholder="Ingrese la descripción..." required></textarea>
+          
+          <!-- SELECT DE PROGRAMA -->
+          <select name="programa" id="edit_programa" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
+            <option value="">Selecciona tu programa</option>
+            <option value="Desarrollo de Software">Tecnología en Desarrollo de Software</option>
+            <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
+          </select>
+          
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega maximo 5 imagenes...</div>
+          <input type="file" name="imagenes" id="edit_imagenes" accept="image/*" multiple style="margin-bottom:10px;">
+          <div id="edit_imagenes_actuales" style="margin-bottom:10px;"></div>
+          
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">
+            Agrega documentación (PDF)...
+          </div>
+          <input type="file" name="documento_pdf" id="edit_pdf-doc" accept="application/pdf" style="display:none;">
+          <label for="edit_pdf-doc" class="pdf-label">Seleccionar PDF</label>
+          <span id="edit_pdf-name"></span>
+          <div id="edit_pdf-preview" style="margin-bottom:10px;"></div>
+          <div id="edit_pdf_actual" style="margin-bottom:10px;"></div>
+          
+          <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega enlace de Github (Codigo)...</div>
+          <input type="url" name="github_url" id="edit_github_url" placeholder="https://github.com/usuario/proyecto" />
+          
+          <div class="modal-btns">
+            <button type="submit" id="btn-actualizar" class="btn-modal">Actualizar</button>
+            <button type="button" id="btn-cancelar-edicion" class="btn-modal cancelar">Cancelar</button>
           </div>
         </form>
       </div>
@@ -107,7 +160,7 @@
           </li>
         </ul>
         <form action="/api/logout" method="POST" id="logoutForm">
-          <input type="hidden" name="user_id" value="1193324003">
+          <input type="hidden" name="user_id" value="16">
           <button type="submit" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
         </form>
       </div>
@@ -135,206 +188,13 @@
         </form>
         <button class="btn-limpiar" type="button">Limpiar Filtros</button>
       </aside>
-  <!-- Lista de proyectos -->
-  <section class="proyectos-lista">
-    <div class="proyecto-card">
-      <div class="proyecto-header">
-        <span class="proyecto-titulo">App Menú</span>
-        <span class="proyecto-etiqueta egresado">Egresado</span>
-        <span class="proyecto-fecha">14 agosto 2025, 03:01 pm</span>
-        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
-          <input type="hidden" name="proyecto_id" value="301">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="action" value="toggle">
-          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
-        </form>
-      </div>
-      <div class="proyecto-autor">Daniela Paz</div>
-      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-      <div class="proyecto-desc">
-        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
-      </div>
-      <div class="proyecto-footer">
-        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista3')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
-        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
-          <input type="hidden" name="proyecto_id" value="301">
-          <button type="submit" class="btn-abrir">Abrir</button>
-        </form>
-      </div>
-      <div class="comentarios-lista" id="comentariosLista3" style="display:none;">
-        <div class="comentario-vacio">No hay comentarios.</div>
-      </div>
-    </div>
 
-    <div class="proyecto-card">
-      <div class="proyecto-header">
-        <span class="proyecto-titulo">App SIP</span>
-        <span class="proyecto-etiqueta egresado">Egresado</span>
-        <span class="proyecto-fecha">13 agosto 2025, 10:30 pm</span>
-        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
-          <input type="hidden" name="proyecto_id" value="302">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="action" value="toggle">
-          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
-        </form>
-      </div>
-      <div class="proyecto-autor">Ana Gomez</div>
-      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-      <div class="proyecto-desc">
-        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
-      </div>
-      <div class="proyecto-footer">
-        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista1')" style="cursor:pointer; font-weight:600;">5 Respuestas</span>
-        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
-          <input type="hidden" name="proyecto_id" value="302">
-          <button type="submit" class="btn-abrir">Abrir</button>
-        </form>
-      </div>
-      <div class="comentarios-lista" id="comentariosLista1" style="display:none;">
-        <!-- Comentarios para publicación 1 -->
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Daniela Paz</span>
-            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-            <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="501">
-                <input type="hidden" name="user_id" value="1193324003">
-                <button type="submit">Reportar</button>
-              </form>
-              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="501">
-                <button type="submit">Editar</button>
-              </form>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Hola estoy interesada en hacer las practicas...
-          </div>
-        </div>
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Juan Perez</span>
-            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-            <span class="comentario-fecha">13 agosto 2025, 11:45 am</span>
-            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="502">
-                <input type="hidden" name="user_id" value="1193324003">
-                <button type="submit">Reportar</button>
-              </form>
-              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="502">
-                <button type="submit">Editar</button>
-              </form>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Me interesa Ana Gomez, mi correo es hola@mundo.com
-          </div>
-        </div>
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Oliver Aguayo</span>
-            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-            <span class="comentario-fecha">13 agosto 2025, 11:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="503">
-                <input type="hidden" name="user_id" value="1193324003">
-                <button type="submit">Reportar</button>
-              </form>
-              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="503">
-                <button type="submit">Editar</button>
-              </form>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Hola puedes por favor compartir el contacto
-          </div>
-        </div>
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Johan Ramos</span>
-            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-            <span class="comentario-fecha">13 agosto 2025, 09:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="504">
-                <input type="hidden" name="user_id" value="1193324003">
-                <button type="submit">Reportar</button>
-              </form>
-              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="504">
-                <button type="submit">Editar</button>
-              </form>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Gracias por información Ana, lo estaba necesitando
-          </div>
-        </div>
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Cristofér Rangel</span>
-            <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-            <span class="comentario-fecha">14 agosto 2025, 02:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <form action="/api/comentarios/reportar" method="POST" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="505">
-                <input type="hidden" name="user_id" value="1193324003">
-                <button type="submit">Reportar</button>
-              </form>
-              <form action="/api/comentarios/editar" method="GET" style="display:inline;">
-                <input type="hidden" name="comentario_id" value="505">
-                <button type="submit">Editar</button>
-              </form>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Uyyy, que buena información, GRACIASSS...
-          </div>
-        </div>
-      </div>
-    </div>
+      <!-- Lista de proyectos -->
+      <section class="proyectos-lista" id="proyectos-lista">
+        <!-- Los proyectos se cargarán dinámicamente aquí -->
+      </section>
+    </main>
 
-    <div class="proyecto-card">
-      <div class="proyecto-header">
-        <span class="proyecto-titulo">Videojuego de Jhon Wick</span>
-        <span class="proyecto-etiqueta egresado">Egresado</span>
-        <span class="proyecto-fecha">13 agosto 2025, 10:30 pm</span>
-        <form action="/api/favoritos" method="POST" style="display:inline;" class="form-favorito">
-          <input type="hidden" name="proyecto_id" value="303">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="action" value="toggle">
-          <button type="submit" class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
-        </form>
-      </div>
-      <div class="proyecto-autor">Ana Gomez</div>
-      <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-      <div class="proyecto-desc">
-        La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
-      </div>
-      <div class="proyecto-footer">
-        <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista3')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
-        <form action="/api/proyectos/abrir" method="GET" style="display:inline; margin-left:auto;">
-          <input type="hidden" name="proyecto_id" value="303">
-          <button type="submit" class="btn-abrir">Abrir</button>
-        </form>
-      </div>
-      <div class="comentarios-lista" id="comentariosLista3" style="display:none;">
-        <div class="comentario-vacio">No hay comentarios.</div>
-      </div>
-    </div>
-  </section>
-</main>
 
     <!-- Footer -->
     <footer class="footer">
@@ -356,34 +216,342 @@
       </div>
     </footer>
   </div>
+
   <script>
-    // Interceptar formularios para ver tráfico de datos
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const formData = new FormData(form);
-          const method = form.method.toUpperCase();
-          const action = form.action;
-          
-          console.log('=== ENVÍO DE FORMULARIO ===');
-          console.log('Método:', method);
-          console.log('Action:', action);
-          console.log('Datos:');
-          
-          const data = {};
-          for (let [key, value] of formData.entries()) {
-            data[key] = value;
-            console.log(`  ${key}: ${value}`);
-          }
-          
-          alert(`Formulario enviado!\nMétodo: ${method}\nAction: ${action}\n\nRevisa la consola del navegador para ver los datos`);
-        });
-      });
+    // ===== FUNCIONES PARA SUBIR Y MOSTRAR PROYECTOS =====
+
+    // Función para cargar proyectos desde la API
+    async function cargarProyectos() {
+        try {
+            console.log('Cargando proyectos...');
+            
+            const response = await fetch('/api/proyectos');
+            
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            console.log('Proyectos cargados:', data);
+            
+            if (data.success) {
+                mostrarProyectos(data.proyectos);
+            } else {
+                throw new Error(data.message || 'Error al cargar proyectos');
+            }
+        } catch (error) {
+            console.error('Error al cargar proyectos:', error);
+            // Mantener los proyectos de ejemplo si hay error
+            document.getElementById('proyectos-lista').innerHTML = `
+                <div class="proyecto-card">
+                    <div class="proyecto-header">
+                        <span class="proyecto-titulo">App SIP</span>
+                        <span class="proyecto-etiqueta egresado">Egresado</span>
+                        <span class="proyecto-fecha">${new Date().toLocaleDateString('es-ES')}</span>
+                        <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+                    </div>
+                    <div class="proyecto-autor">Ana Gomez</div>
+                    <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
+                    <div class="proyecto-desc">
+                        Proyecto de ejemplo - Los proyectos reales se cargarán del servidor
+                    </div>
+                    <div class="proyecto-footer">
+                        <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+                        <button class="btn-abrir">Abrir</button>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // Función para mostrar proyectos en la interfaz
+    // Función para mostrar proyectos en la interfaz (VERSIÓN SIMPLIFICADA)
+    function mostrarProyectos(proyectos) {
+        const contenedor = document.getElementById('proyectos-lista');
+        
+        if (!proyectos || proyectos.length === 0) {
+            contenedor.innerHTML = `
+                <div class="proyecto-card" style="text-align: center; padding: 40px;">
+                    <h3>No hay proyectos publicados aún</h3>
+                    <p>Sé el primero en compartir tu proyecto!</p>
+                </div>
+            `;
+            return;
+        }
+
+        contenedor.innerHTML = proyectos.map((proyecto, index) => `
+            <div class="proyecto-card" data-proyecto-id="${proyecto.ID_proyecto}">
+                <div class="proyecto-header">
+                    <span class="proyecto-titulo">${proyecto.nombre || 'Sin título'}</span>
+                    <span class="proyecto-etiqueta egresado">Egresado</span>
+                    <span class="proyecto-fecha">${formatearFecha(proyecto.fecha_creacion)}</span>
+                    
+                    <!-- BOTONES DE ACCIÓN -->
+                    <div class="proyecto-acciones">
+                        <button class="btn-editar" onclick="editarProyecto(${proyecto.ID_proyecto})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-eliminar" onclick="eliminarProyecto(${proyecto.ID_proyecto})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+                    </div>
+                </div>
+                
+                <!-- SOLO TÍTULO Y DESCRIPCIÓN -->
+                <div class="proyecto-desc">${proyecto.descripcion || 'Sin descripción'}</div>
+                
+                <!-- BOTÓN PARA VER MÁS DETALLES -->
+                <div class="proyecto-footer">
+                    <button class="btn-ver-detalles" onclick="verDetallesProyecto(${proyecto.ID_proyecto})">
+                        <i class="fas fa-eye"></i> Ver detalles
+                    </button>
+                    <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">
+                        <i class="far fa-comment"></i> Comentarios
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+// Función para ver detalles completos del proyecto
+function verDetallesProyecto(proyectoId) {
+    // Aquí puedes redirigir a una página de detalles o mostrar un modal
+    alert(`Viendo detalles del proyecto ${proyectoId}\n\nEsta funcionalidad se puede expandir para mostrar:\n- Imágenes\n- PDF\n- GitHub\n- Información completa`);
+    
+    // O puedes cargar los detalles en un modal
+    // cargarDetallesProyecto(proyectoId);
+}
+
+    // Función para formatear fecha
+    function formatearFecha(fechaString) {
+        try {
+            const fecha = new Date(fechaString);
+            return fecha.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (error) {
+            return 'Fecha no disponible';
+        }
+    }
+
+    // Función para abrir proyecto
+    function abrirProyecto(proyectoId) {
+        alert(`Abriendo proyecto ${proyectoId} - Esta funcionalidad se implementará después`);
+    }
+
+    // ===== MANEJAR ENVÍO DEL FORMULARIO =====
+
+    document.getElementById('form-subir-proyecto').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('btn-publicar');
+        
+        // Validar campos requeridos
+        const titulo = formData.get('titulo');
+        const descripcion = formData.get('descripcion');
+        const programa = formData.get('programa');
+        
+        if (!titulo || !descripcion || !programa) {
+            alert('❌ Por favor completa todos los campos requeridos');
+            return;
+        }
+        
+        // Mostrar loading
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+        submitBtn.disabled = true;
+        
+        try {
+            console.log('Enviando formulario...');
+            
+            const response = await fetch('/api/proyectos/crear', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
+            
+            if (data.success) {
+                alert('✅ Proyecto publicado exitosamente!');
+                
+                // Cerrar modal
+                document.getElementById('modal-subir-proyecto').style.display = 'none';
+                
+                // Limpiar formulario
+                this.reset();
+                document.getElementById('pdf-name').textContent = '';
+                document.getElementById('pdf-preview').innerHTML = '';
+                
+                // Recargar proyectos
+                await cargarProyectos();
+            } else {
+                throw new Error(data.message || 'Error al publicar proyecto');
+            }
+            
+        } catch (error) {
+            console.error('Error al publicar proyecto:', error);
+            alert('❌ Error al publicar proyecto: ' + error.message);
+        } finally {
+            // Restaurar botón
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     });
 
-    // ===== MODAL SUBIR PROYECTO =====
+    // ===== FUNCIONES PARA EDITAR Y ELIMINAR PROYECTOS =====
+
+    // FUNCIÓN PARA EDITAR PROYECTO
+    async function editarProyecto(proyectoId) {
+        try {
+            console.log('Editando proyecto:', proyectoId);
+            
+            // Obtener datos actuales del proyecto
+            const response = await fetch(`/api/proyectos/${proyectoId}`);
+            const data = await response.json();
+            
+            if (data.success && data.proyecto) {
+                const proyecto = data.proyecto;
+                
+                // Llenar el modal de edición con los datos actuales
+                document.getElementById('edit_proyecto_id').value = proyectoId;
+                document.getElementById('edit_titulo').value = proyecto.nombre || '';
+                document.getElementById('edit_descripcion').value = proyecto.descripcion || '';
+                document.getElementById('edit_programa').value = proyecto.programa_autor || '';
+                document.getElementById('edit_github_url').value = proyecto.github_url || '';
+                
+                // Mostrar imágenes actuales
+                const imagenesContainer = document.getElementById('edit_imagenes_actuales');
+                if (proyecto.imagenes && proyecto.imagenes.length > 0) {
+                    imagenesContainer.innerHTML = `
+                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
+                            Imágenes actuales (se mantendrán si no seleccionas nuevas):
+                        </div>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            ${proyecto.imagenes.map(img => `
+                                <img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            `).join('')}
+                        </div>
+                    `;
+                } else {
+                    imagenesContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay imágenes actuales</div>';
+                }
+                
+                // Mostrar PDF actual
+                const pdfContainer = document.getElementById('edit_pdf_actual');
+                if (proyecto.documento_pdf) {
+                    pdfContainer.innerHTML = `
+                        <div style="font-size: 12px; color: #666;">
+                            PDF actual: <a href="${proyecto.documento_pdf}" target="_blank" style="color: #10b981;">Ver PDF actual</a>
+                        </div>
+                    `;
+                } else {
+                    pdfContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay PDF actual</div>';
+                }
+                
+                // Mostrar modal de edición
+                document.getElementById('modal-editar-proyecto').style.display = 'flex';
+            } else {
+                alert('Error al cargar proyecto para editar');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar proyecto para editar');
+        }
+    }
+
+    // FUNCIÓN PARA ELIMINAR PROYECTO
+    async function eliminarProyecto(proyectoId) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este proyecto?\nEsta acción no se puede deshacer.')) {
+            return;
+        }
+
+        try {
+            const user_id = document.getElementById('user_id').value;
+            
+            const response = await fetch(`/api/proyectos/${proyectoId}/eliminar`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Proyecto eliminado exitosamente');
+                // Recargar la lista de proyectos
+                await cargarProyectos();
+            } else {
+                alert('❌ Error: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error al eliminar proyecto');
+        }
+    }
+
+    // MANEJAR ENVÍO DEL FORMULARIO DE EDICIÓN
+    document.getElementById('form-editar-proyecto').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitBtn = document.getElementById('btn-actualizar');
+        const proyectoId = document.getElementById('edit_proyecto_id').value;
+        
+        // Mostrar loading
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+        submitBtn.disabled = true;
+        
+        try {
+            console.log('Actualizando proyecto...');
+            
+            const response = await fetch(`/api/proyectos/${proyectoId}/editar`, {
+                method: 'PUT',
+                body: formData
+            });
+            
+            const data = await response.json();
+            console.log('Respuesta del servidor:', data);
+            
+            if (data.success) {
+                alert('✅ Proyecto actualizado exitosamente!');
+                
+                // Cerrar modal
+                document.getElementById('modal-editar-proyecto').style.display = 'none';
+                
+                // Limpiar formulario
+                this.reset();
+                document.getElementById('edit_imagenes_actuales').innerHTML = '';
+                document.getElementById('edit_pdf_actual').innerHTML = '';
+                
+                // Recargar proyectos
+                await cargarProyectos();
+            } else {
+                throw new Error(data.message || 'Error al actualizar proyecto');
+            }
+            
+        } catch (error) {
+            console.error('Error al actualizar proyecto:', error);
+            alert('❌ Error al actualizar proyecto: ' + error.message);
+        } finally {
+            // Restaurar botón
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // ===== FUNCIONALIDAD EXISTENTE =====
+
+    // MODAL SUBIR PROYECTO
     document.querySelector('.btn-subir').addEventListener('click', function() {
       document.getElementById('modal-subir-proyecto').style.display = 'flex';
     });
@@ -404,6 +572,34 @@
         pdfName.textContent = '';
         pdfPreview.innerHTML = '';
       }
+    });
+
+    // PDF personalizado para edición
+    document.querySelector('label[for="edit_pdf-doc"]').onclick = function() {
+        document.getElementById('edit_pdf-doc').click();
+    };
+
+    document.getElementById('edit_pdf-doc').addEventListener('change', function() {
+        const pdfName = document.getElementById('edit_pdf-name');
+        const pdfPreview = document.getElementById('edit_pdf-preview');
+        if (this.files.length > 0) {
+            pdfName.textContent = 'Nuevo archivo seleccionado: ' + this.files[0].name;
+            const file = this.files[0];
+            const url = URL.createObjectURL(file);
+            pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Vista previa del nuevo PDF</a>`;
+        } else {
+            pdfName.textContent = '';
+            pdfPreview.innerHTML = '';
+        }
+    });
+
+    // CERRAR MODAL DE EDICIÓN
+    document.getElementById('btn-cancelar-edicion').onclick = function() {
+        document.getElementById('modal-editar-proyecto').style.display = 'none';
+    };
+
+    document.getElementById('modal-editar-proyecto').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
     });
 
     // Menú comentario
@@ -472,7 +668,7 @@
       });
     });
 
-    // ===== MENÚ POPOVER USUARIO =====
+    // MENÚ POPOVER USUARIO
     const perfilBtn = document.getElementById('perfil-btn');
     const popoverMenu = document.getElementById('popover-menu');
 
@@ -506,6 +702,7 @@
         popoverMenu.style.display = 'none';
       });
     });
+
     // Notificaciones Popover
     const notiBtn = document.getElementById('notificaciones-btn');
     const notiPopover = document.getElementById('notificaciones-popover');
@@ -517,6 +714,15 @@
     notiPopover.onclick = function(e) {
       e.stopPropagation();
     };
+
+    // ===== INICIALIZAR =====
+
+    // Cargar proyectos cuando la página se carga
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarProyectos();
+    });
+
+   
   </script>
 </body>
 </html>
