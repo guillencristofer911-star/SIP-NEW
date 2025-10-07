@@ -136,8 +136,9 @@ CREATE TABLE `estado_proyecto` (
 --
 
 CREATE TABLE `estado_publicacion` (
-  `ID_publicacion` int(100) NOT NULL,
-  `estado` varchar(100) NOT NULL
+  `ID_estado_publicacion` int(100) NOT NULL AUTO_INCREMENT,
+  `estado` varchar(100) NOT NULL,
+  PRIMARY KEY (`ID_estado_publicacion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -261,8 +262,8 @@ CREATE TABLE `publicacion` (
   `ID_usuario` int(100) NOT NULL,
   `titulo` varchar(100) NOT NULL,
   `contenido` varchar(100) NOT NULL,
-  `fecha_creacion` date NOT NULL,
-  `fecha_ultima_edicion` date NOT NULL,
+  `fecha_creacion` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `fecha_ultima_edicion` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ID_estado_publicacion` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
