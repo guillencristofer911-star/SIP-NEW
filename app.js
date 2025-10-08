@@ -127,4 +127,4 @@ app.use((err, req, res, next) => {
 // Iniciar servidor
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
-}); 
+});

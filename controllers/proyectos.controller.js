@@ -23,6 +23,22 @@ export const methods = {
                 });
             }
 
+            // OBTENER DATOS DEL USUARIO PARA EL AUTOR
+            const [usuarios] = await pool.execute(
+                'SELECT nombre, apellido FROM usuario WHERE ID_usuario = ?',
+                [user_id]
+            );
+
+            if (usuarios.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Usuario no encontrado'
+                });
+            }
+
+            const usuario = usuarios[0];
+            const nombreAutor = `${usuario.nombre} ${usuario.apellido}`;
+
             // Procesar archivos subidos
             let imagenesPaths = [];
             let pdfPath = null;
@@ -41,7 +57,7 @@ export const methods = {
                 }
             }
 
-            // INSERT CORREGIDO - INCLUYENDO ID_categoria e ID_estado_proyecto
+            // INSERT CORREGIDO - USANDO 'titulo' PARA EL NOMBRE DEL PROYECTO
             const [result] = await pool.execute(
                 `INSERT INTO proyecto 
                 (ID_usuario, nombre, descripcion, github_url, documento_pdf, imagenes, 
@@ -50,7 +66,7 @@ export const methods = {
                 VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, 'egresado', 'activo', ?, ?)`,
                 [
                     user_id, 
-                    titulo, 
+                    titulo,  // ← Este es el TÍTULO del proyecto
                     descripcion, 
                     github_url || null, 
                     pdfPath, 
@@ -66,7 +82,8 @@ export const methods = {
             res.json({
                 success: true,
                 message: 'Proyecto creado exitosamente',
-                proyecto_id: result.insertId
+                proyecto_id: result.insertId,
+                autor: nombreAutor // Devolver el nombre del autor
             });
 
         } catch (error) {
@@ -80,19 +97,45 @@ export const methods = {
 
     obtenerProyectos: async (req, res) => {
         try {
+            // CONSULTA MEJORADA - OBTENER DATOS COMPLETOS DEL AUTOR
             const [proyectos] = await pool.execute(`
-                SELECT p.*, u.nombre, u.apellido 
+                SELECT 
+                    p.ID_proyecto,
+                    p.nombre as titulo_proyecto,  -- ← Título del proyecto
+                    p.descripcion,
+                    p.github_url,
+                    p.documento_pdf,
+                    p.imagenes,
+                    p.fecha_creacion,
+                    p.programa_autor,
+                    p.rol_autor,
+                    u.ID_usuario,
+                    u.nombre as nombre_autor,      -- ← Nombre del autor
+                    u.apellido as apellido_autor   -- ← Apellido del autor
                 FROM proyecto p 
                 JOIN usuario u ON p.ID_usuario = u.ID_usuario 
                 WHERE p.estado = 'activo' OR p.ID_estado_proyecto = 1
                 ORDER BY p.fecha_creacion DESC
             `);
 
-            // Parsear las imágenes de JSON a array
+            // Parsear las imágenes de JSON a array y estructurar datos
             const proyectosConImagenes = proyectos.map(proyecto => ({
-                ...proyecto,
-                imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : []
+                ID_proyecto: proyecto.ID_proyecto,
+                nombre: proyecto.titulo_proyecto,  // Título del proyecto
+                descripcion: proyecto.descripcion,
+                github_url: proyecto.github_url,
+                documento_pdf: proyecto.documento_pdf,
+                imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : [],
+                fecha_creacion: proyecto.fecha_creacion,
+                programa_autor: proyecto.programa_autor,
+                rol_autor: proyecto.rol_autor,
+                // Datos del autor
+                nombre_autor: proyecto.nombre_autor,
+                apellido_autor: proyecto.apellido_autor,
+                autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
             }));
+
+            console.log('Proyectos cargados:', proyectosConImagenes.length);
 
             res.json({
                 success: true,
@@ -103,18 +146,21 @@ export const methods = {
             console.error('Error al obtener proyectos:', error);
             res.status(500).json({
                 success: false,
-                message: 'Error al cargar proyectos'
+                message: 'Error al cargar proyectos: ' + error.message
             });
         }
     },
 
-    // OBTENER UN PROYECTO POR ID
+    // OBTENER UN PROYECTO POR ID (ACTUALIZADO)
     obtenerProyectoPorId: async (req, res) => {
         try {
             const proyectoId = req.params.id;
             
             const [proyectos] = await pool.execute(`
-                SELECT p.*, u.nombre, u.apellido 
+                SELECT 
+                    p.*,
+                    u.nombre as nombre_autor,
+                    u.apellido as apellido_autor
                 FROM proyecto p 
                 JOIN usuario u ON p.ID_usuario = u.ID_usuario 
                 WHERE p.ID_proyecto = ? AND (p.estado = 'activo' OR p.ID_estado_proyecto = 1)
@@ -144,7 +190,8 @@ export const methods = {
                 success: true,
                 proyecto: {
                     ...proyecto,
-                    imagenes: imagenesArray
+                    imagenes: imagenesArray,
+                    autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
                 }
             });
 
@@ -157,7 +204,7 @@ export const methods = {
         }
     },
 
-    // EDITAR PROYECTO
+    // ... (mantener las funciones editarProyecto y eliminarProyecto igual)
     editarProyecto: async (req, res) => {
         try {
             console.log('=== EDITANDO PROYECTO ===');
@@ -240,7 +287,6 @@ export const methods = {
         }
     },
 
-    // ELIMINAR PROYECTO (borrado lógico)
     eliminarProyecto: async (req, res) => {
         try {
             const proyectoId = req.params.id;

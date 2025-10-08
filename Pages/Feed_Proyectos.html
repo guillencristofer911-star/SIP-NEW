@@ -6,6 +6,113 @@
   <title>SIP - Proyecto Individual</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="/Feed_Proyectos.css">
+  <style>
+    /* ESTILOS ORIGINALES - MANTENER */
+    .proyecto-acciones {
+        display: flex;
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .btn-editar, .btn-eliminar {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-editar {
+        color: #3ec9a7;
+    }
+
+    .btn-editar:hover {
+        background-color: #e8f8f4;
+        transform: scale(1.1);
+    }
+
+    .btn-eliminar {
+        color: #e53e3e;
+    }
+
+    .btn-eliminar:hover {
+        background-color: #fde8e8;
+        transform: scale(1.1);
+    }
+
+    /* ESTILOS PARA EL MENÚ DE 3 PUNTOS - AGREGAR */
+    .proyecto-acciones {
+        position: relative;
+    }
+
+    .menu-tres-puntos {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #666;
+        transition: all 0.3s ease;
+    }
+
+    .menu-tres-puntos:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.1);
+    }
+
+    .menu-desplegable {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 8px 0;
+        min-width: 120px;
+        z-index: 100;
+        display: none;
+    }
+
+    .menu-desplegable.mostrar {
+        display: block;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: none;
+        border: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font-size: 14px;
+        color: #333;
+        transition: background-color 0.2s;
+    }
+
+    .menu-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .menu-item.editar {
+        color: #3ec9a7;
+    }
+
+    .menu-item.eliminar {
+        color: #e53e3e;
+    }
+
+    .menu-item i {
+        font-size: 14px;
+        width: 16px;
+    }
+  </style>
 </head>
 <body>
   <div class="main-container">
@@ -195,6 +302,7 @@
       </section>
     </main>
 
+    
 
     <!-- Footer -->
     <footer class="footer">
@@ -218,6 +326,31 @@
   </div>
 
   <script>
+    // ===== FUNCIONES PARA EL MENÚ DE 3 PUNTOS =====
+    let menuAbierto = null;
+
+    function toggleProyectoMenu(proyectoId, event) {
+        event.stopPropagation();
+        const menu = document.getElementById(`menu-${proyectoId}`);
+        
+        // Cerrar menú anterior si hay uno abierto
+        if (menuAbierto && menuAbierto !== menu) {
+            menuAbierto.classList.remove('mostrar');
+        }
+        
+        // Alternar el menú actual
+        menu.classList.toggle('mostrar');
+        menuAbierto = menu.classList.contains('mostrar') ? menu : null;
+    }
+
+    // Cerrar menú al hacer clic fuera de él
+    document.addEventListener('click', function(e) {
+        if (menuAbierto && !e.target.closest('.proyecto-acciones')) {
+            menuAbierto.classList.remove('mostrar');
+            menuAbierto = null;
+        }
+    });
+
     // ===== FUNCIONES PARA SUBIR Y MOSTRAR PROYECTOS =====
 
     // Función para cargar proyectos desde la API
@@ -265,7 +398,6 @@
     }
 
     // Función para mostrar proyectos en la interfaz
-    // Función para mostrar proyectos en la interfaz (VERSIÓN SIMPLIFICADA)
     function mostrarProyectos(proyectos) {
         const contenedor = document.getElementById('proyectos-lista');
         
@@ -286,42 +418,57 @@
                     <span class="proyecto-etiqueta egresado">Egresado</span>
                     <span class="proyecto-fecha">${formatearFecha(proyecto.fecha_creacion)}</span>
                     
-                    <!-- BOTONES DE ACCIÓN -->
+                    <!-- MENÚ DE 3 PUNTOS -->
                     <div class="proyecto-acciones">
-                        <button class="btn-editar" onclick="editarProyecto(${proyecto.ID_proyecto})" title="Editar">
-                            <i class="fas fa-edit"></i>
+                        <button class="menu-tres-puntos" onclick="toggleProyectoMenu(${proyecto.ID_proyecto}, event)">
+                            <i class="fas fa-ellipsis-v"></i>
                         </button>
-                        <button class="btn-eliminar" onclick="eliminarProyecto(${proyecto.ID_proyecto})" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        
+                        <div class="menu-desplegable" id="menu-${proyecto.ID_proyecto}">
+                            <button class="menu-item editar" onclick="editarProyecto(${proyecto.ID_proyecto})">
+                                <i class="fas fa-edit"></i>
+                                Editar
+                            </button>
+                            <button class="menu-item eliminar" onclick="eliminarProyecto(${proyecto.ID_proyecto})">
+                                <i class="fas fa-trash"></i>
+                                Eliminar
+                            </button>
+                        </div>
+                        
                         <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
                     </div>
                 </div>
                 
-                <!-- SOLO TÍTULO Y DESCRIPCIÓN -->
+                <!-- AUTOR Y CARRERA -->
+                <div class="proyecto-autor">${proyecto.autor_completo || (proyecto.nombre_autor + ' ' + proyecto.apellido_autor) || 'Autor no disponible'}</div>
+                <div class="proyecto-carrera">${proyecto.programa_autor || 'Tecnología en Desarrollo de Software'}</div>
+                
+                <!-- DESCRIPCIÓN -->
                 <div class="proyecto-desc">${proyecto.descripcion || 'Sin descripción'}</div>
                 
-                <!-- BOTÓN PARA VER MÁS DETALLES -->
+                ${proyecto.github_url ? `
+                    <div class="proyecto-github" style="margin: 8px 0;">
+                        <a href="${proyecto.github_url}" target="_blank" style="color: #10b981; text-decoration: none; font-weight: 600;">
+                            <i class="fab fa-github"></i> Ver código en GitHub
+                        </a>
+                    </div>
+                ` : ''}
+                
+                ${proyecto.documento_pdf ? `
+                    <div class="proyecto-pdf" style="margin: 8px 0;">
+                        <a href="${proyecto.documento_pdf}" target="_blank" style="color: #e53e3e; text-decoration: none; font-weight: 600;">
+                            <i class="far fa-file-pdf"></i> Ver documentación PDF
+                        </a>
+                    </div>
+                ` : ''}
+                
                 <div class="proyecto-footer">
-                    <button class="btn-ver-detalles" onclick="verDetallesProyecto(${proyecto.ID_proyecto})">
-                        <i class="fas fa-eye"></i> Ver detalles
-                    </button>
-                    <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">
-                        <i class="far fa-comment"></i> Comentarios
-                    </span>
+                    <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+                    <button class="btn-abrir" onclick="abrirProyecto(${proyecto.ID_proyecto})">Abrir</button>
                 </div>
             </div>
         `).join('');
     }
-
-// Función para ver detalles completos del proyecto
-function verDetallesProyecto(proyectoId) {
-    // Aquí puedes redirigir a una página de detalles o mostrar un modal
-    alert(`Viendo detalles del proyecto ${proyectoId}\n\nEsta funcionalidad se puede expandir para mostrar:\n- Imágenes\n- PDF\n- GitHub\n- Información completa`);
-    
-    // O puedes cargar los detalles en un modal
-    // cargarDetallesProyecto(proyectoId);
-}
 
     // Función para formatear fecha
     function formatearFecha(fechaString) {
@@ -722,7 +869,7 @@ function verDetallesProyecto(proyectoId) {
         cargarProyectos();
     });
 
-   
+    
   </script>
 </body>
 </html>
