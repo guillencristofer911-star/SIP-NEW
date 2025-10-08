@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIP - Proyecto Individual</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Font Awesome - Versión actualizada -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/sesion-publicados.css">
   <link rel="stylesheet" href="/modal-publicacion.css">
   <link rel="stylesheet" href="/modal-notificaciones.css">
@@ -517,61 +520,6 @@
       });
     });
 
-    // ===== MENÚ POPOVER USUARIO =====
-    const perfilBtn = document.getElementById('perfil-btn');
-    const popoverMenu = document.getElementById('popover-menu');
-
-    perfilBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (popoverMenu.style.display === 'block') {
-        popoverMenu.style.display = 'none';
-      } else {
-        // Calcula posición
-        const rect = perfilBtn.getBoundingClientRect();
-        popoverMenu.style.display = 'block';
-        popoverMenu.style.position = 'absolute';
-        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
-      }
-    });
-
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-        popoverMenu.style.display = 'none';
-      }
-    });
-
-    // Botón cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      alert('Sesión cerrada.');
-      popoverMenu.style.display = 'none';
-    });
-
-    // Opciones del menú (puedes personalizar acciones)
-    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-      li.addEventListener('click', () => {
-        switch(idx) {
-          case 0: alert('Ir al Perfil'); break;
-          case 1: alert('Ir a Configuración'); break;
-          case 2: alert('Ir a Favoritos'); break;
-          case 3: alert('Ir a Ayuda'); break;
-        }
-        popoverMenu.style.display = 'none';
-      });
-    });
-    // Notificaciones Popover
-    const notiBtn = document.getElementById('notificaciones-btn');
-    const notiPopover = document.getElementById('notificaciones-popover');
-    notiBtn.onclick = function(e) {
-      e.stopPropagation();
-      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
-      perfilMenu.style.display = 'none';
-    };
-    notiPopover.onclick = function(e) {
-      e.stopPropagation();
-    };
-
     function mostrarEditarModal() {
   document.getElementById('modal-editar').style.display = 'flex';
   document.getElementById('modal-advertencia').style.display = 'flex';
@@ -656,6 +604,754 @@ function eliminarComentario(btn) {
   }
 }
 
+// ========== FUNCIONES PARA VERIFICAR TIEMPO DE EDICIÓN ==========
+function puedeEditar(fechaCreacion) {
+  try {
+    // Parsear la fecha correctamente manejando zona horaria
+    const fechaCreacionDate = new Date(fechaCreacion);
+    const ahora = new Date();
+    
+    // Calcular diferencia en milisegundos y convertir a minutos
+    const diferenciaMs = ahora.getTime() - fechaCreacionDate.getTime();
+    const diferenciaMinutos = diferenciaMs / (1000 * 60);
+    
+    console.log('Verificando edición:', {
+      fechaCreacion,
+      fechaCreacionDate: fechaCreacionDate.toISOString(),
+      ahora: ahora.toISOString(),
+      diferenciaMinutos: diferenciaMinutos.toFixed(2)
+    });
+    
+    return diferenciaMinutos <= 15;
+  } catch (error) {
+    console.error('Error al verificar tiempo de edición:', error);
+    return false;
+  }
+}
+
+function calcularTiempoRestante(fechaCreacion) {
+  try {
+    const fechaCreacionDate = new Date(fechaCreacion);
+    const ahora = new Date();
+    
+    const diferenciaMs = ahora.getTime() - fechaCreacionDate.getTime();
+    const diferenciaMinutos = diferenciaMs / (1000 * 60);
+    const minutosRestantes = Math.max(0, 15 - diferenciaMinutos);
+    
+    return Math.floor(minutosRestantes);
+  } catch (error) {
+    console.error('Error al calcular tiempo restante:', error);
+    return 0;
+  }
+}
+
+// ========== CONFIGURACIÓN INICIAL ==========
+const token = localStorage.getItem('token');
+let usuarioActual = null;
+
+// Verificar autenticación al cargar la página
+async function verificarAutenticacion() {
+  if (!token) {
+    console.log('No hay token, redirigiendo a login...');
+    alert('Debes iniciar sesión para acceder a esta página');
+    window.location.href = '/login';
+    return false;
+  }
+
+  try {
+    const response = await fetch('/api/verificar-token', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+    console.log('Verificación de token:', data);
+
+    if (data.success) {
+      usuarioActual = data.usuario;
+      const userNameElement = document.querySelector('.user-name');
+      const userAvatarElement = document.querySelector('.user-avatar');
+      
+      if (userNameElement && usuarioActual.nombre) {
+        userNameElement.textContent = usuarioActual.nombre;
+      }
+      if (userAvatarElement && usuarioActual.nombre) {
+        userAvatarElement.textContent = usuarioActual.nombre.charAt(0).toUpperCase();
+      }
+      return true;
+    } else {
+      localStorage.removeItem('token');
+      alert('Tu sesión ha expirado. Por favor inicia sesión nuevamente.');
+      window.location.href = '/login';
+      return false;
+    }
+  } catch (error) {
+    console.error('Error al verificar autenticación:', error);
+    return false;
+  }
+}
+
+// ========== CARGAR PUBLICACIONES CON INDICADOR DE TIEMPO ==========
+async function cargarPublicaciones() {
+  console.log('Cargando publicaciones...');
+  
+  const listaPublicaciones = document.querySelector('.proyectos-lista');
+  
+  if (!listaPublicaciones) {
+    console.error('No se encontró .proyectos-lista');
+    return;
+  }
+
+  listaPublicaciones.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><i class="fa fa-spinner fa-spin" style="font-size:24px;"></i><br>Cargando publicaciones...</div>';
+  
+  try {
+    const response = await fetch('/api/publicaciones');
+    const data = await response.json();
+
+    console.log('Respuesta del servidor:', data);
+
+    if (data.success && data.publicaciones && data.publicaciones.length > 0) {
+      listaPublicaciones.innerHTML = '';
+
+      data.publicaciones.forEach((pub, index) => {
+        const esAutor = usuarioActual && usuarioActual.id === pub.ID_usuario;
+        // Usar los datos calculados por el backend
+        const puedeEditarPublicacion = esAutor && pub.puedeEditar;
+        const tiempoRestante = pub.minutosRestantes || 0;
+        
+        // Indicador visual de tiempo restante
+        let indicadorTiempo = '';
+        if (esAutor && tiempoRestante > 0) {
+          indicadorTiempo = `<span style="color:#28a745; font-size:12px; margin-left:8px;">${tiempoRestante} min para editar</span>`;
+        } else if (esAutor && tiempoRestante === 0) {
+          indicadorTiempo = `<span style="color:#dc3545; font-size:12px; margin-left:8px;">Tiempo de edición expirado</span>`;
+        }
+        
+        const publicacionHTML = `
+          <div class="proyecto-card" data-id="${pub.ID_publicacion}" data-fecha="${pub.fecha_creacion}">
+            <div class="proyecto-header">
+              <span class="proyecto-titulo">${escapeHtml(pub.titulo)}</span>
+              <span class="proyecto-fecha">${formatearFecha(pub.fecha_creacion)}${indicadorTiempo}</span>
+              <button class="proyecto-fav" type="button"><i class="fa-regular fa-star"></i></button>
+              ${esAutor ? `
+                <button class="publicacion-menu-btn" onclick="togglePublicacionMenu(this)">...</button>
+                <div class="publicacion-menu" style="display:none;">
+                  <div class="popover-arrow"></div>
+                  ${puedeEditarPublicacion ? `
+                    <button onclick="editarPublicacion(${pub.ID_publicacion})">Editar</button>
+                  ` : `
+                    <button disabled style="opacity:0.5; cursor:not-allowed;" title="Tiempo de edición expirado (15 min)">Editar (Expirado)</button>
+                  `}
+                  <button class="menu-btn eliminar" onclick="eliminarPublicacion(${pub.ID_publicacion})">Eliminar</button>
+                </div>
+              ` : ''}
+            </div>
+            <div class="proyecto-autor">
+              ${escapeHtml(pub.nombre)} ${escapeHtml(pub.apellido)}
+              <span class="proyecto-etiqueta egresado">Usuario</span>
+            </div>
+            <div class="proyecto-carrera">${escapeHtml(pub.programa || 'Sin programa')}</div>
+            <div class="proyecto-desc">
+              ${escapeHtml(pub.contenido)}
+            </div>
+            <div class="proyecto-footer" style="display: flex; align-items: center; gap: 12px;">
+              <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista${index}')" style="cursor:pointer; font-weight:600;">
+                No hay comentarios
+              </span>
+              <button class="btn-abrir" type="button" style="margin-left:auto;" onclick="mostrarResponderModal()">Responder</button>
+            </div>
+            <div class="comentarios-lista" id="comentariosLista${index}" style="display:none;">
+              <div class="comentario-vacio">No hay comentarios.</div>
+            </div>
+          </div>
+        `;
+        listaPublicaciones.innerHTML += publicacionHTML;
+      });
+
+      console.log('Publicaciones cargadas:', data.publicaciones.length);
+      aplicarEventListenersFavoritos();
+      
+      // Actualizar contadores de tiempo cada minuto
+      setInterval(actualizarContadoresTiempo, 60000);
+    } else {
+      console.log('No hay publicaciones');
+      listaPublicaciones.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><i class="fa fa-inbox" style="font-size:48px; opacity:0.3;"></i><br><br>No hay publicaciones aún.<br>¡Sé el primero en publicar!</div>';
+    }
+  } catch (error) {
+    console.error('Error al cargar publicaciones:', error);
+    listaPublicaciones.innerHTML = '<div style="text-align:center; padding:40px; color:#dc3545;"><i class="fa fa-exclamation-triangle"></i> Error al cargar las publicaciones. Por favor recarga la página.</div>';
+  }
+}
+
+// ========== ACTUALIZAR CONTADORES DE TIEMPO EN TIEMPO REAL ==========
+function actualizarContadoresTiempo() {
+  document.querySelectorAll('.proyecto-card').forEach(card => {
+    const fechaCreacion = card.getAttribute('data-fecha');
+    if (!fechaCreacion) return;
+    
+    const tiempoRestante = calcularTiempoRestante(fechaCreacion);
+    const fechaSpan = card.querySelector('.proyecto-fecha');
+    
+    if (fechaSpan) {
+      // Extraer solo la fecha sin los indicadores de tiempo
+      const fechaBase = fechaSpan.textContent
+        .replace(/\d+ min para editar/g, '')
+        .replace(/Tiempo de edición expirado/g, '')
+        .trim();
+      
+      if (tiempoRestante > 0) {
+        fechaSpan.innerHTML = `${fechaBase}<span style="color:#28a745; font-size:12px; margin-left:8px;">${tiempoRestante} min para editar</span>`;
+      } else {
+        fechaSpan.innerHTML = `${fechaBase}<span style="color:#dc3545; font-size:12px; margin-left:8px;">Tiempo de edición expirado</span>`;
+        
+        // Deshabilitar botón de editar si existe
+        const menuBtn = card.querySelector('.publicacion-menu button:not(.eliminar)');
+        if (menuBtn && !menuBtn.disabled) {
+          menuBtn.disabled = true;
+          menuBtn.style.opacity = '0.5';
+          menuBtn.style.cursor = 'not-allowed';
+          menuBtn.title = 'Tiempo de edición expirado (15 min)';
+          menuBtn.textContent = 'Editar (Expirado)';
+        }
+      }
+    }
+  });
+}
+
+// Función auxiliar para escapar HTML y evitar XSS
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+// ========== CREAR PUBLICACIÓN ==========
+function configurarModalPublicacion() {
+  const btnSubir = document.querySelector('.btn-subir');
+  const btnPublicar = document.getElementById('btn-publicar');
+  const btnCancelar = document.getElementById('btn-cancelar');
+  const modalPublicacion = document.getElementById('modal-publicacion');
+
+  if (btnSubir) {
+    btnSubir.addEventListener('click', function() {
+      console.log('Abriendo modal de publicación...');
+      modalPublicacion.style.display = 'flex';
+    });
+  }
+
+  if (btnCancelar) {
+    btnCancelar.addEventListener('click', function(e) {
+      e.preventDefault();
+      modalPublicacion.style.display = 'none';
+    });
+  }
+
+  if (modalPublicacion) {
+    modalPublicacion.addEventListener('click', function(e) {
+      if (e.target === this) this.style.display = 'none';
+    });
+  }
+
+  if (btnPublicar) {
+    btnPublicar.addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const titulo = document.getElementById('titulo-publicacion').value.trim();
+      const contenido = document.getElementById('desc-publicacion').value.trim();
+
+      console.log('Intentando publicar:', { titulo, contenido });
+
+      if (!titulo || !contenido) {
+        alert('El título y contenido son obligatorios');
+        return;
+      }
+
+      if (titulo.length < 5 || titulo.length > 100) {
+        alert('El título debe tener entre 5 y 100 caracteres');
+        return;
+      }
+
+      if (contenido.length < 10) {
+        alert('El contenido debe tener al menos 10 caracteres');
+        return;
+      }
+
+      try {
+        console.log('Enviando petición al servidor...');
+        const response = await fetch('/api/publicaciones', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            titulo: titulo,
+            contenido: contenido,
+            etiquetas: []
+          })
+        });
+
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data);
+
+        if (data.success) {
+          modalPublicacion.style.display = 'none';
+          document.getElementById('titulo-publicacion').value = '';
+          document.getElementById('desc-publicacion').value = '';
+          
+          await cargarPublicaciones();
+          
+          alert('¡Publicación creada exitosamente!');
+          
+          const primeraPublicacion = document.querySelector('.proyecto-card');
+          if (primeraPublicacion) {
+            primeraPublicacion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            primeraPublicacion.style.backgroundColor = '#e8f5e9';
+            setTimeout(() => {
+              primeraPublicacion.style.backgroundColor = '';
+            }, 2000);
+          }
+        } else {
+          alert(data.message || 'Error al crear la publicación');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión con el servidor');
+      }
+    });
+  }
+}
+
+// ========== EDITAR PUBLICACIÓN CON VALIDACIÓN DE TIEMPO ==========
+let publicacionEditandoId = null;
+
+window.editarPublicacion = async function(id) {
+  console.log('Editando publicación:', id);
+  
+  // Verificar tiempo límite en el frontend
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (card) {
+    const fechaCreacion = card.getAttribute('data-fecha');
+    if (!puedeEditar(fechaCreacion)) {
+      alert('El tiempo límite para editar esta publicación (15 minutos) ha expirado.');
+      return;
+    }
+  }
+  
+  publicacionEditandoId = id;
+  
+  try {
+    const response = await fetch(`/api/publicaciones/${id}`);
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById('editar-titulo').value = data.publicacion.titulo;
+      document.getElementById('editar-desc').value = data.publicacion.contenido;
+      mostrarEditarModal();
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+function configurarModalEditar() {
+  const btnEditarPublicar = document.getElementById('btn-editar-publicar');
+  
+  if (btnEditarPublicar) {
+    btnEditarPublicar.addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const titulo = document.getElementById('editar-titulo').value.trim();
+      const contenido = document.getElementById('editar-desc').value.trim();
+
+      if (!titulo || !contenido) {
+        alert('El título y contenido son obligatorios');
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/publicaciones/${publicacionEditandoId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            titulo: titulo,
+            contenido: contenido
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('modal-editar').style.display = 'none';
+          document.getElementById('modal-advertencia').style.display = 'none';
+          
+          await cargarPublicaciones();
+          
+          alert('Publicación actualizada exitosamente');
+          
+          const publicacionEditada = document.querySelector(`[data-id="${publicacionEditandoId}"]`);
+          if (publicacionEditada) {
+            publicacionEditada.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            publicacionEditada.style.backgroundColor = '#fff3cd';
+            setTimeout(() => {
+              publicacionEditada.style.backgroundColor = '';
+            }, 2000);
+          }
+        } else {
+          // Manejar error de tiempo expirado
+          if (data.message && data.message.includes('tiempo límite')) {
+            alert(data.message);
+            document.getElementById('modal-editar').style.display = 'none';
+            document.getElementById('modal-advertencia').style.display = 'none';
+            await cargarPublicaciones();
+          } else {
+            alert(data.message || 'Error al actualizar la publicación');
+          }
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión con el servidor');
+      }
+    });
+  }
+
+  const btnEditarCancelar = document.getElementById('btn-editar-cancelar');
+  if (btnEditarCancelar) {
+    btnEditarCancelar.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-editar').style.display = 'none';
+      document.getElementById('modal-advertencia').style.display = 'none';
+    });
+  }
+
+  const btnCerrarAdvertencia = document.getElementById('btn-cerrar-advertencia');
+  if (btnCerrarAdvertencia) {
+    btnCerrarAdvertencia.addEventListener('click', function() {
+      document.getElementById('modal-advertencia').style.display = 'none';
+    });
+  }
+}
+
+// ========== ELIMINAR PUBLICACIÓN ==========
+window.eliminarPublicacion = async function(id) {
+  console.log('Eliminando publicación:', id);
+  
+  if (!confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/publicaciones/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert('Publicación eliminada exitosamente');
+      await cargarPublicaciones();
+    } else {
+      alert(data.message || 'Error al eliminar la publicación');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error de conexión con el servidor');
+  }
+};
+
+// ========== FUNCIONES AUXILIARES ==========
+function formatearFecha(fecha) {
+  const date = new Date(fecha);
+  const opciones = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  return date.toLocaleDateString('es-ES', opciones);
+}
+
+function aplicarEventListenersFavoritos() {
+  document.querySelectorAll('.proyecto-fav').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('active');
+      var icon = btn.querySelector('i');
+      if (btn.classList.contains('active')) {
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-solid');
+      } else {
+        icon.classList.remove('fa-solid');
+        icon.classList.add('fa-regular');
+      }
+    });
+  });
+}
+
+// ========== FUNCIONES PARA MENÚS Y POPOVER ==========
+window.togglePublicacionMenu = function(btn) {
+  document.querySelectorAll('.publicacion-menu').forEach(menu => menu.style.display = 'none');
+  var menu = btn.nextElementSibling;
+  menu.style.display = 'block';
+  window.currentMenu = menu;
+};
+
+window.toggleMenu = function(btn) {
+  document.querySelectorAll('.comentario-menu').forEach(menu => menu.style.display = 'none');
+  var menu = btn.nextElementSibling;
+  menu.style.display = 'block';
+  window.currentMenu = menu;
+};
+
+window.toggleComentarios = function(btn, listaId) {
+  var lista = document.getElementById(listaId);
+  if (lista.style.display === 'none' || lista.style.display === '') {
+    lista.style.display = 'block';
+  } else {
+    lista.style.display = 'none';
+  }
+};
+
+window.mostrarEditarModal = function() {
+  document.getElementById('modal-editar').style.display = 'flex';
+  document.getElementById('modal-advertencia').style.display = 'flex';
+};
+
+window.mostrarEditarComentarioModal = function(btn) {
+  const comentarioTexto = btn.closest('.comentario-card').querySelector('.comentario-texto').innerText;
+  document.getElementById('editar-comentario-texto').value = comentarioTexto;
+  document.getElementById('modal-editar-comentario').style.display = 'flex';
+};
+
+window.mostrarReportarComentarioModal = function() {
+  document.getElementById('modal-reportar-comentario').style.display = 'flex';
+};
+
+window.mostrarResponderModal = function() {
+  document.getElementById('modal-responder').style.display = 'flex';
+};
+
+window.eliminarComentario = function(btn) {
+  if (confirm('¿Seguro que deseas eliminar este comentario?')) {
+    const comentarioCard = btn.closest('.comentario-card');
+    comentarioCard.remove();
+  }
+};
+
+// ========== CONFIGURAR OTROS MODALES ==========
+function configurarOtrosModales() {
+  const btnEditarComentarioCancelar = document.getElementById('btn-editar-comentario-cancelar');
+  if (btnEditarComentarioCancelar) {
+    btnEditarComentarioCancelar.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-editar-comentario').style.display = 'none';
+    });
+  }
+
+  const btnCancelarReporte = document.getElementById('btn-cancelar-reporte');
+  if (btnCancelarReporte) {
+    btnCancelarReporte.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-reportar-comentario').style.display = 'none';
+    });
+  }
+
+  const btnReportarComentario = document.getElementById('btn-reportar-comentario');
+  if (btnReportarComentario) {
+    btnReportarComentario.addEventListener('click', function(e) {
+      e.preventDefault();
+      const motivo = document.getElementById('motivo-reporte').value;
+      if (!motivo) {
+        alert('Seleccione un motivo para el reporte.');
+        return;
+      }
+      alert('Comentario reportado por: ' + motivo);
+      document.getElementById('modal-reportar-comentario').style.display = 'none';
+    });
+  }
+
+  const btnResponderCancelar = document.getElementById('btn-responder-cancelar');
+  if (btnResponderCancelar) {
+    btnResponderCancelar.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('modal-responder').style.display = 'none';
+    });
+  }
+
+  const btnResponderPublicar = document.getElementById('btn-responder-publicar');
+  if (btnResponderPublicar) {
+    btnResponderPublicar.addEventListener('click', function(e) {
+      e.preventDefault();
+      const respuesta = document.getElementById('respuesta-desc').value;
+      if (!respuesta.trim()) {
+        alert('Por favor ingrese la descripción.');
+        return;
+      }
+      alert('Respuesta publicada: ' + respuesta);
+      document.getElementById('modal-responder').style.display = 'none';
+    });
+  }
+}
+
+// ========== CONFIGURAR MENÚS DE USUARIO ==========
+function configurarMenusUsuario() {
+  const btnLimpiar = document.querySelector('.btn-limpiar');
+  if (btnLimpiar) {
+    btnLimpiar.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.filtros-form input, .filtros-form select').forEach(function(el) {
+        if (!el.disabled) {
+          if (el.tagName === 'SELECT') el.selectedIndex = 0;
+          else el.value = '';
+        }
+      });
+      alert('Filtros limpiados.');
+    });
+  }
+
+  // Cerrar menús al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    if (window.currentMenu && !window.currentMenu.contains(e.target) && 
+        e.target.className.indexOf('menu-btn') === -1 &&
+        e.target.className.indexOf('publicacion-menu-btn') === -1 &&
+        e.target.className.indexOf('comentario-menu-btn') === -1) {
+      window.currentMenu.style.display = 'none';
+      window.currentMenu = null;
+    }
+  });
+
+  // ===== MENÚ POPOVER USUARIO =====
+  const perfilBtn = document.getElementById('perfil-btn');
+  const popoverMenu = document.getElementById('popover-menu');
+
+  if (perfilBtn && popoverMenu) {
+    perfilBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const isVisible = popoverMenu.style.display === 'block';
+      
+      // Cerrar notificaciones si están abiertas
+      const notiPopover = document.getElementById('notificaciones-popover');
+      if (notiPopover) notiPopover.style.display = 'none';
+      
+      if (isVisible) {
+        popoverMenu.style.display = 'none';
+      } else {
+        const rect = perfilBtn.getBoundingClientRect();
+        popoverMenu.style.display = 'block';
+        popoverMenu.style.position = 'absolute';
+        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
+      }
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!popoverMenu.contains(e.target) && !perfilBtn.contains(e.target)) {
+        popoverMenu.style.display = 'none';
+      }
+    });
+  }
+
+  // ===== BOTÓN LOGOUT =====
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      localStorage.removeItem('token');
+      alert('Sesión cerrada.');
+      window.location.href = '/login';
+    });
+  }
+
+  // ===== OPCIONES DEL MENÚ USUARIO =====
+  document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+    li.addEventListener('click', () => {
+      switch(idx) {
+        case 0: alert('Ir al Perfil'); break;
+        case 1: alert('Ir a Configuración'); break;
+        case 2: alert('Ir a Favoritos'); break;
+        case 3: alert('Ir a Ayuda'); break;
+      }
+      if (popoverMenu) popoverMenu.style.display = 'none';
+    });
+  });
+
+  // ===== NOTIFICACIONES POPOVER =====
+  const notiBtn = document.getElementById('notificaciones-btn');
+  const notiPopover = document.getElementById('notificaciones-popover');
+  
+  if (notiBtn && notiPopover) {
+    notiBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const isVisible = notiPopover.style.display === 'block';
+      
+      // Cerrar menú de perfil si está abierto
+      if (popoverMenu) popoverMenu.style.display = 'none';
+      
+      if (isVisible) {
+        notiPopover.style.display = 'none';
+      } else {
+        const rect = notiBtn.getBoundingClientRect();
+        notiPopover.style.display = 'block';
+        notiPopover.style.position = 'absolute';
+        notiPopover.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        notiPopover.style.right = '20px';
+      }
+    });
+
+    // Evitar que se cierre al hacer clic dentro
+    notiPopover.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!notiPopover.contains(e.target) && !notiBtn.contains(e.target)) {
+        notiPopover.style.display = 'none';
+      }
+    });
+  }
+
+  // ===== LINK PROYECTOS =====
+  const proyectosLink = document.querySelector('.nav-header a[href="#"]');
+  if (proyectosLink) {
+    proyectosLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Ver todos los proyectos');
+    });
+  }
+}
+
+// ========== INICIALIZACIÓN ==========
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log('DOM cargado, iniciando...');
+  
+  // Configurar todos los componentes
+  configurarModalPublicacion();
+  configurarModalEditar();
+  configurarOtrosModales();
+  configurarMenusUsuario();
+  
+  // Verificar autenticación y cargar publicaciones
+  const autenticado = await verificarAutenticacion();
+  if (autenticado) {
+    await cargarPublicaciones();
+  }
+});
 
   </script>
 </body>
