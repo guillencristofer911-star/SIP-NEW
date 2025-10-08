@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIP - Proyecto Individual</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Font Awesome - Versión actualizada -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" 
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="/sesion-publicados.css">
   <link rel="stylesheet" href="/modal-publicacion.css">
   <link rel="stylesheet" href="/modal-notificaciones.css">
@@ -523,61 +526,6 @@
         }
       });
     });
-
-    // ===== MENÚ POPOVER USUARIO =====
-    const perfilBtn = document.getElementById('perfil-btn');
-    const popoverMenu = document.getElementById('popover-menu');
-
-    perfilBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (popoverMenu.style.display === 'block') {
-        popoverMenu.style.display = 'none';
-      } else {
-        // Calcula posición
-        const rect = perfilBtn.getBoundingClientRect();
-        popoverMenu.style.display = 'block';
-        popoverMenu.style.position = 'absolute';
-        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
-      }
-    });
-
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-        popoverMenu.style.display = 'none';
-      }
-    });
-
-    // Botón cerrar sesión
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      alert('Sesión cerrada.');
-      popoverMenu.style.display = 'none';
-    });
-
-    // Opciones del menú (puedes personalizar acciones)
-    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-      li.addEventListener('click', () => {
-        switch(idx) {
-          case 0: alert('Ir al Perfil'); break;
-          case 1: alert('Ir a Configuración'); break;
-          case 2: alert('Ir a Favoritos'); break;
-          case 3: alert('Ir a Ayuda'); break;
-        }
-        popoverMenu.style.display = 'none';
-      });
-    });
-    // Notificaciones Popover
-    const notiBtn = document.getElementById('notificaciones-btn');
-    const notiPopover = document.getElementById('notificaciones-popover');
-    notiBtn.onclick = function(e) {
-      e.stopPropagation();
-      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
-      perfilMenu.style.display = 'none';
-    };
-    notiPopover.onclick = function(e) {
-      e.stopPropagation();
-    };
 
     function mostrarEditarModal() {
   document.getElementById('modal-editar').style.display = 'flex';
@@ -1280,6 +1228,7 @@ function configurarMenusUsuario() {
     });
   }
 
+  // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
     if (window.currentMenu && !window.currentMenu.contains(e.target) && 
         e.target.className.indexOf('menu-btn') === -1 &&
@@ -1290,6 +1239,7 @@ function configurarMenusUsuario() {
     }
   });
 
+  // ===== MENÚ POPOVER USUARIO =====
   const perfilBtn = document.getElementById('perfil-btn');
   const popoverMenu = document.getElementById('popover-menu');
 
@@ -1298,6 +1248,7 @@ function configurarMenusUsuario() {
       e.stopPropagation();
       const isVisible = popoverMenu.style.display === 'block';
       
+      // Cerrar notificaciones si están abiertas
       const notiPopover = document.getElementById('notificaciones-popover');
       if (notiPopover) notiPopover.style.display = 'none';
       
@@ -1312,6 +1263,7 @@ function configurarMenusUsuario() {
       }
     });
 
+    // Cerrar al hacer clic fuera
     document.addEventListener('click', function(e) {
       if (!popoverMenu.contains(e.target) && !perfilBtn.contains(e.target)) {
         popoverMenu.style.display = 'none';
@@ -1319,6 +1271,7 @@ function configurarMenusUsuario() {
     });
   }
 
+  // ===== BOTÓN LOGOUT =====
   const logoutBtn = document.getElementById('logoutBtn');
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function(e) {
@@ -1329,6 +1282,7 @@ function configurarMenusUsuario() {
     });
   }
 
+  // ===== OPCIONES DEL MENÚ USUARIO =====
   document.querySelectorAll('.popover-list li').forEach((li, idx) => {
     li.addEventListener('click', () => {
       switch(idx) {
@@ -1341,21 +1295,50 @@ function configurarMenusUsuario() {
     });
   });
 
+  // ===== NOTIFICACIONES POPOVER =====
   const notiBtn = document.getElementById('notificaciones-btn');
   const notiPopover = document.getElementById('notificaciones-popover');
   
   if (notiBtn && notiPopover) {
     notiBtn.addEventListener('click', function(e) {
+      e.preventDefault();
       e.stopPropagation();
+      
       const isVisible = notiPopover.style.display === 'block';
       
+      // Cerrar menú de perfil si está abierto
       if (popoverMenu) popoverMenu.style.display = 'none';
       
-      notiPopover.style.display = isVisible ? 'none' : 'block';
+      if (isVisible) {
+        notiPopover.style.display = 'none';
+      } else {
+        const rect = notiBtn.getBoundingClientRect();
+        notiPopover.style.display = 'block';
+        notiPopover.style.position = 'absolute';
+        notiPopover.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+        notiPopover.style.right = '20px';
+      }
     });
 
+    // Evitar que se cierre al hacer clic dentro
     notiPopover.addEventListener('click', function(e) {
       e.stopPropagation();
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', function(e) {
+      if (!notiPopover.contains(e.target) && !notiBtn.contains(e.target)) {
+        notiPopover.style.display = 'none';
+      }
+    });
+  }
+
+  // ===== LINK PROYECTOS =====
+  const proyectosLink = document.querySelector('.nav-header a[href="#"]');
+  if (proyectosLink) {
+    proyectosLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      alert('Ver todos los proyectos');
     });
   }
 }
