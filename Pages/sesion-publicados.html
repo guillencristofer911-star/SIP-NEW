@@ -88,19 +88,16 @@
       <aside class="filtros">
         <button class="btn-subir" type="button">¡Hablemos!</button>
         <form class="filtros-form" action="#" method="GET">
-          <input type="text"  name="palabraclave"  placeholder="Buscar por palabra clave...">
+          <input type="text" id="input-busqueda" placeholder="Buscar por palabra clave...">
           <select>
             <option>Todos los programas</option>
           </select>
-          <select>
-            <option>Todos los roles</option>
-          </select>
-          <input type="date" name="fecha_filtro" placeholder="dd/mm/aaaa">
+          <input type="date" id="input-fecha" placeholder="dd/mm/aaaa">
         </form>
         <button class="btn-limpiar" type="button">Limpiar Filtros</button>
       </aside>
 
-      <section class="proyectos-lista">
+      <section class="proyectos-lista" id="proyectos-lista">
         <!-- Publicación 1 -->
         <div class="proyecto-card">
           <div class="proyecto-header">
@@ -1369,6 +1366,53 @@ document.addEventListener('DOMContentLoaded', async function() {
     await cargarPublicaciones();
   }
 });
+
+
+function filtrarPublicaciones() {
+  const texto = document.getElementById('input-busqueda').value.toLowerCase();
+  const fechaInput = document.getElementById('input-fecha').value; // formato: "2025-08-14"
+
+  document.querySelectorAll('#proyectos-lista .proyecto-card').forEach(function(card) {
+    const titulo = card.querySelector('.proyecto-titulo')?.innerText.toLowerCase() || "";
+    const carrera = card.querySelector('.proyecto-carrera')?.innerText.toLowerCase() || "";
+    const descripcion = card.querySelector('.proyecto-desc')?.innerText.toLowerCase() || "";
+    const fechaCard = card.querySelector('.proyecto-fecha')?.innerText || "";
+
+    // Normaliza la fecha de la card a formato YYYY-MM-DD
+    let fechaCardValue = "";
+    if (fechaCard) {
+      const partes = fechaCard.split(',')[0].trim(); // Ej: "14 agosto 2025"
+      const meses = {
+        enero: "01", febrero: "02", marzo: "03", abril: "04", mayo: "05", junio: "06",
+        julio: "07", agosto: "08", septiembre: "09", octubre: "10", noviembre: "11", diciembre: "12"
+      };
+      const match = partes.match(/^(\d{1,2}) (\w+) (\d{4})$/);
+      if (match) {
+        const dia = match[1].padStart(2, '0');
+        const mes = meses[match[2].toLowerCase()];
+        const anio = match[3];
+        if (mes) fechaCardValue = `${anio}-${mes}-${dia}`;
+      }
+    }
+
+    const coincideTexto = (
+      titulo.includes(texto) ||
+      carrera.includes(texto) ||
+      descripcion.includes(texto)
+    );
+    const coincideFecha = !fechaInput || fechaInput === fechaCardValue;
+
+    if ((texto === "" || coincideTexto) && coincideFecha) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+document.getElementById('input-busqueda').addEventListener('input', filtrarPublicaciones);
+document.getElementById('input-fecha').addEventListener('input', filtrarPublicaciones);
+
 
   </script>
 </body>
