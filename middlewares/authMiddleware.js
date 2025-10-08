@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Middleware para verificar token JWT
 /**
  * Middleware para verificar el token JWT en las solicitudes protegidas.
  * Si el token es válido, agrega la información del usuario al objeto req.
@@ -50,6 +51,7 @@ export const verificarToken = (req, res, next) => {
   }
 };
 
+// Middleware para verificar roles específicos
 /**
  * Middleware para verificar si el usuario autenticado tiene uno de los roles permitidos.
  * @param  {...any} rolesPermitidos - Lista de roles permitidos para acceder al recurso.
@@ -75,6 +77,7 @@ export const verificarRol = (...rolesPermitidos) => {
   };
 };
 
+// Middleware para verificar que el usuario sea admin (ID_rol = 1)
 /**
  * Middleware para verificar si el usuario autenticado es administrador (ID_rol = 1).
  * Si no es admin, responde con error 403.

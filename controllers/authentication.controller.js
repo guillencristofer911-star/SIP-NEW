@@ -5,6 +5,10 @@ import db from '../database/db.js';
 
 dotenv.config();
 
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCK_TIME = 15 * 60 * 1000;
+
 // Mapa para rastrear intentos de inicio de sesión por documento
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5; // Máximo de intentos fallidos permitidos

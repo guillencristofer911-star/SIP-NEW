@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('modal-terms');
   const registerForm = document.getElementById('register-form');
 
+  // Modal de términos
   // Abre el modal de términos al hacer clic en el botón correspondiente
   if (openModalBtn) {
     openModalBtn.addEventListener('click', (e) => {
@@ -33,6 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Obtener datos del formulario
+      const formData = new FormData(registerForm);
+      
+      // Validar que las contraseñas coincidan
       // Obtener datos del formulario usando FormData
       const formData = new FormData(registerForm);
       
@@ -45,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Validar que los términos estén aceptados
       // Validar que los términos y condiciones estén aceptados
       const terminos = formData.get('terminos');
       if (!terminos) {
@@ -52,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Crear objeto con los datos (sin incluir terminos ni tipo ya que no se usan en backend)
       // Crear objeto con los datos a enviar al backend
       const datos = {
         documento: formData.get('documento'),

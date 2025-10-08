@@ -15,6 +15,7 @@
     <header class="header">
       <img src="/img/logo.png" alt="SIP Logo" class="logo-header">
       <nav class="nav-header">
+        <a href="/feed-proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
         <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
         <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
         <div class="user-info" id="perfil-btn">
@@ -88,6 +89,14 @@
       <aside class="filtros">
         <button class="btn-subir" type="button">¡Hablemos!</button>
         <form class="filtros-form" action="#" method="GET">
+          <input type="text"  name="palabraclave"  placeholder="Buscar por palabra clave...">
+          <select>
+            <option>Todos los programas</option>
+          </select>
+          <select>
+            <option>Todos los roles</option>
+          </select>
+          <input type="date" name="fecha_filtro" placeholder="dd/mm/aaaa">
           <input type="text" id="input-busqueda" placeholder="Buscar por palabra clave...">
           <select>
             <option>Todos los programas</option>
@@ -97,6 +106,7 @@
         <button class="btn-limpiar" type="button">Limpiar Filtros</button>
       </aside>
 
+      <section class="proyectos-lista">
       <section class="proyectos-lista" id="proyectos-lista">
         <!-- Publicación 1 -->
         <div class="proyecto-card">

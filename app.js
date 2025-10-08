@@ -3,6 +3,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { methods as authController } from "./controllers/authentication.controller.js";
+import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
+import { methods as proyectosController } from "./controllers/proyectos.controller.js";
+import { upload } from './middlewares/upload.js';
+
+dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Server
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 
@@ -19,6 +28,15 @@ app.set("port", process.env.PORT || 4000);
 // Middleware para parsear JSON en las solicitudes
 app.use(express.json());
 
+// Servir archivos estáticos SOLO desde Public (CSS, JS, imágenes)
+app.use(express.static(path.join(__dirname, "Public")));
+
+// Servir archivos subidos
+app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
+
+// ==================== RUTAS PÚBLICAS ====================
+
+// Páginas HTML públicas
 // Servir archivos estáticos SOLO desde la carpeta Public (CSS, JS, imágenes)
 app.use(express.static(path.join(__dirname, "Public")));
 
@@ -41,6 +59,55 @@ app.get("/registro", (req, res) => {
 });
 
 app.get("/publicaciones", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
+});
+
+app.get("/feed-proyectos", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "Feed_Proyectos.html"));
+});
+
+// API de autenticación (públicas)
+app.post("/api/login", authController.login);
+app.post("/api/register", authController.register);
+
+// ==================== RUTAS DE PROYECTOS (PÚBLICAS TEMPORALMENTE) ====================
+
+// RUTAS DE PROYECTOS EXISTENTES
+app.post("/api/proyectos/crear", upload.fields([
+    { name: 'imagenes', maxCount: 5 },
+    { name: 'documento_pdf', maxCount: 1 }
+]), proyectosController.crearProyecto);
+
+app.get("/api/proyectos", proyectosController.obtenerProyectos);
+
+// NUEVAS RUTAS PARA EDITAR Y ELIMINAR PROYECTOS
+app.get("/api/proyectos/:id", proyectosController.obtenerProyectoPorId);
+app.put("/api/proyectos/:id/editar", upload.fields([
+    { name: 'imagenes', maxCount: 5 },
+    { name: 'documento_pdf', maxCount: 1 }
+]), proyectosController.editarProyecto);
+app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
+
+// ==================== RUTAS PROTEGIDAS ====================
+
+// Ruta de prueba - solo usuarios autenticados
+app.get("/api/perfil", verificarToken, (req, res) => {
+  res.json({
+    success: true,
+    message: "Perfil de usuario",
+    usuario: req.usuario
+  });
+});
+
+// Ruta solo para administradores
+app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
+  res.json({
+    success: true,
+    message: "Lista de usuarios (solo admin)"
+  });
+});
+
+// Ruta para verificar token (útil para el frontend)
   // Página de publicaciones públicas
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
@@ -83,6 +150,8 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
+// Ruta para cerrar sesión
+app.post("/api/logout", verificarToken, (req, res) => {
 // Ruta para cerrar sesión (la invalidación real del token es del lado del cliente)
 app.post("/api/logout", verificarToken, (req, res) => {
   // En JWT no hay forma de "invalidar" tokens del lado del servidor
@@ -90,6 +159,25 @@ app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
     message: "Sesión cerrada exitosamente"
+  });
+});
+
+// ==================== MANEJO DE ERRORES ====================
+
+// Ruta no encontrada
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
+});
+
+// Manejo de errores global
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Error interno del servidor"
   });
 });
 
@@ -134,4 +222,5 @@ app.use((err, req, res, next) => {
 // Inicia el servidor y muestra el puerto en consola
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
+});
 });
