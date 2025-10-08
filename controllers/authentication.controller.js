@@ -9,6 +9,16 @@ const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000;
 
+// Mapa para rastrear intentos de inicio de sesión por documento
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5; // Máximo de intentos fallidos permitidos
+const LOCK_TIME = 15 * 60 * 1000; // Tiempo de bloqueo en milisegundos (15 minutos)
+
+/**
+ * Verifica si un usuario puede intentar iniciar sesión según sus intentos previos.
+ * @param {string} documento - Documento del usuario.
+ * @returns {Object} - Indica si está permitido y minutos restantes si está bloqueado.
+ */
 function checkLoginAttempts(documento) {
   const now = Date.now();
   const attempts = loginAttempts.get(documento) || { count: 0, lockedUntil: 0 };
@@ -27,16 +37,30 @@ function checkLoginAttempts(documento) {
   return { allowed: true };
 }
 
+/**
+ * Registra un intento fallido de inicio de sesión para un usuario.
+ * @param {string} documento - Documento del usuario.
+ */
 function recordFailedAttempt(documento) {
   const attempts = loginAttempts.get(documento) || { count: 0, lockedUntil: 0 };
   attempts.count++;
   loginAttempts.set(documento, attempts);
 }
 
+/**
+ * Reinicia el contador de intentos de inicio de sesión para un usuario.
+ * @param {string} documento - Documento del usuario.
+ */
 function resetLoginAttempts(documento) {
   loginAttempts.delete(documento);
 }
 
+/**
+ * Controlador para el inicio de sesión de usuarios.
+ * Valida credenciales, controla intentos fallidos y genera JWT si es exitoso.
+ * @param {Object} req - Objeto de solicitud Express.
+ * @param {Object} res - Objeto de respuesta Express.
+ */
 async function login(req, res) {
   try {
     const { documento, contrasena } = req.body;
@@ -132,6 +156,12 @@ async function login(req, res) {
   }
 }
 
+/**
+ * Controlador para el registro de nuevos usuarios.
+ * Valida datos, verifica unicidad y almacena el usuario en la base de datos.
+ * @param {Object} req - Objeto de solicitud Express.
+ * @param {Object} res - Objeto de respuesta Express.
+ */
 async function register(req, res) {
   try {
     const { documento, nombres, apellidos, correo, programa, contrasena, confirmar_contrasena } = req.body;
@@ -230,6 +260,7 @@ async function register(req, res) {
   }
 }
 
+// Exporta los métodos de autenticación
 export const methods = {
   login,
   register

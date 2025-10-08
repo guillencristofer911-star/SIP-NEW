@@ -3,10 +3,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Crea un pool de conexiones a la base de datos MySQL usando variables de entorno.
+ * Permite manejar múltiples conexiones simultáneas de manera eficiente.
+ */
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'hector',        // CAMBIADO: 'hector' en lugar de 'root'
-  password: process.env.DB_PASSWORD || '12345', // CAMBIADO: '12345' en lugar de '21032007'
+  user: process.env.DB_USER || 'sena',
+  password: process.env.DB_PASSWORD || '1234',
   database: process.env.DB_NAME || 'bd_sip',
   waitForConnections: true,
   connectionLimit: 10,
@@ -16,6 +20,11 @@ const pool = mysql.createPool({
 });
 
 // Verificar conexión con mejor mensaje
+/**
+ * Verifica la conexión inicial al pool de la base de datos.
+ * Si la conexión es exitosa, muestra un mensaje en consola.
+ * Si falla, muestra el error correspondiente.
+ */
 pool.getConnection()
   .then(connection => {
     console.log('✅ Conectado a la base de datos MySQL - bd_sip');
@@ -37,4 +46,7 @@ pool.getConnection()
     process.exit(1);
   });
 
+/**
+ * Exporta el pool de conexiones para ser usado en otras partes de la aplicación.
+ */
 export default pool;

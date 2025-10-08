@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ==================== MANEJO DEL MODAL DE TÉRMINOS Y CONDICIONES ====================
   const openModalBtn = document.getElementById('open-modal-btn');
   const closeModalBtn = document.getElementById('close-modal-btn');
   const modal = document.getElementById('modal-terms');
   const registerForm = document.getElementById('register-form');
 
   // Modal de términos
+  // Abre el modal de términos al hacer clic en el botón correspondiente
   if (openModalBtn) {
     openModalBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -12,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Cierra el modal de términos al hacer clic en el botón de cerrar
   if (closeModalBtn) {
     closeModalBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -19,13 +22,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Cierra el modal si el usuario hace clic fuera del contenido del modal
   window.addEventListener('click', (e) => {
     if (e.target === modal) {
       modal.classList.remove('active');
     }
   });
 
-  // Manejo del formulario de registro
+  // ==================== MANEJO DEL FORMULARIO DE REGISTRO ====================
   if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -34,6 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const formData = new FormData(registerForm);
       
       // Validar que las contraseñas coincidan
+      // Obtener datos del formulario usando FormData
+      const formData = new FormData(registerForm);
+      
+      // Validar que las contraseñas coincidan antes de enviar
       const contrasena = formData.get('contrasena');
       const confirmarContrasena = formData.get('confirmar_contrasena');
 
@@ -43,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Validar que los términos estén aceptados
+      // Validar que los términos y condiciones estén aceptados
       const terminos = formData.get('terminos');
       if (!terminos) {
         alert('Debes aceptar los términos y condiciones');
@@ -50,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Crear objeto con los datos (sin incluir terminos ni tipo ya que no se usan en backend)
+      // Crear objeto con los datos a enviar al backend
       const datos = {
         documento: formData.get('documento'),
         nombres: formData.get('nombres'),
@@ -63,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Datos a enviar:', datos); // Para debug
 
       try {
+        // Enviar solicitud POST al backend para registrar usuario
         const response = await fetch('http://localhost:4000/api/register', {
           method: 'POST',
           headers: {
