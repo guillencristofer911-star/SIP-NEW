@@ -21,93 +21,31 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ==================== CONFIGURACIÓN DEL SERVIDOR ====================
 
-// Inicializa la aplicación Express y configura el puerto
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-// Middleware para parsear JSON en las solicitudes
+// ✅ Middleware para procesar JSON y formularios HTML
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // <--- ✅ IMPORTANTE para leer datos enviados desde forms
 
-// Servir archivos estáticos SOLO desde Public (CSS, JS, imágenes)
-app.use(express.static(path.join(__dirname, "Public")));
-
-// Servir archivos subidos
-app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
-
-// ==================== RUTAS PÚBLICAS ====================
-
-// Páginas HTML públicas
 // Servir archivos estáticos SOLO desde la carpeta Public (CSS, JS, imágenes)
 app.use(express.static(path.join(__dirname, "Public")));
 
 // ==================== RUTAS PÚBLICAS ====================
 
-// Rutas para servir páginas HTML públicas
 app.get("/", (req, res) => {
-  // Página principal
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
 
 app.get("/login", (req, res) => {
-  // Página de inicio de sesión
   res.sendFile(path.join(__dirname, "Pages", "Login.html"));
 });
 
 app.get("/registro", (req, res) => {
-  // Página de registro de usuario
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
 
 app.get("/publicaciones", (req, res) => {
-  res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
-});
-
-app.get("/feed-proyectos", (req, res) => {
-  res.sendFile(path.join(__dirname, "Pages", "Feed_Proyectos.html"));
-});
-
-// API de autenticación (públicas)
-app.post("/api/login", authController.login);
-app.post("/api/register", authController.register);
-
-// ==================== RUTAS DE PROYECTOS (PÚBLICAS TEMPORALMENTE) ====================
-
-// RUTAS DE PROYECTOS EXISTENTES
-app.post("/api/proyectos/crear", upload.fields([
-    { name: 'imagenes', maxCount: 5 },
-    { name: 'documento_pdf', maxCount: 1 }
-]), proyectosController.crearProyecto);
-
-app.get("/api/proyectos", proyectosController.obtenerProyectos);
-
-// NUEVAS RUTAS PARA EDITAR Y ELIMINAR PROYECTOS
-app.get("/api/proyectos/:id", proyectosController.obtenerProyectoPorId);
-app.put("/api/proyectos/:id/editar", upload.fields([
-    { name: 'imagenes', maxCount: 5 },
-    { name: 'documento_pdf', maxCount: 1 }
-]), proyectosController.editarProyecto);
-app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
-
-// ==================== RUTAS PROTEGIDAS ====================
-
-// Ruta de prueba - solo usuarios autenticados
-app.get("/api/perfil", verificarToken, (req, res) => {
-  res.json({
-    success: true,
-    message: "Perfil de usuario",
-    usuario: req.usuario
-  });
-});
-
-// Ruta solo para administradores
-app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
-  res.json({
-    success: true,
-    message: "Lista de usuarios (solo admin)"
-  });
-});
-
-// Ruta para verificar token (útil para el frontend)
   // Página de publicaciones públicas
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
@@ -117,13 +55,15 @@ app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
 
-// API de autenticación (rutas públicas)
-app.post("/api/login", authController.login);      // Iniciar sesión
-app.post("/api/register", authController.register); // Registrar usuario
+// ==================== API DE AUTENTICACIÓN ====================
+
+// ✅ Registro e inicio de sesión
+app.post("/api/register", authController.register);
+app.post("/api/login", authController.login);
 
 // ==================== RUTAS PROTEGIDAS ====================
 
-// Ruta de prueba: solo usuarios autenticados pueden acceder
+// Perfil del usuario autenticado
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -132,16 +72,15 @@ app.get("/api/perfil", verificarToken, (req, res) => {
   });
 });
 
-// Ruta solo para administradores (ID_rol = 1)
+// Solo para administradores
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
-  // Aquí podrías obtener todos los usuarios de la base de datos
   res.json({
     success: true,
     message: "Lista de usuarios (solo admin)"
   });
 });
 
-// Ruta para verificar si el token es válido (útil para el frontend)
+// Verificar validez del token
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -150,12 +89,8 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
-// Ruta para cerrar sesión
-app.post("/api/logout", verificarToken, (req, res) => {
 // Ruta para cerrar sesión (la invalidación real del token es del lado del cliente)
 app.post("/api/logout", verificarToken, (req, res) => {
-  // En JWT no hay forma de "invalidar" tokens del lado del servidor
-  // La invalidación se hace eliminando el token del localStorage en el cliente
   res.json({
     success: true,
     message: "Sesión cerrada exitosamente"
@@ -164,7 +99,6 @@ app.post("/api/logout", verificarToken, (req, res) => {
 
 // ==================== MANEJO DE ERRORES ====================
 
-// Ruta no encontrada
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -172,43 +106,6 @@ app.use((req, res) => {
   });
 });
 
-// Manejo de errores global
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(500).json({
-    success: false,
-    message: "Error interno del servidor"
-  });
-});
-
-// ==================== RUTAS DE PUBLICACIONES ====================
-
-// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
-app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
-
-// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
-app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
-
-// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
-app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
-
-// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
-app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
-
-// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
-app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
-
-// ==================== MANEJO DE ERRORES ====================
-
-// Ruta para manejar solicitudes a rutas no existentes
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Ruta no encontrada"
-  });
-});
-
-// Middleware global para manejo de errores del servidor
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
@@ -219,7 +116,6 @@ app.use((err, req, res, next) => {
 
 // ==================== INICIAR SERVIDOR ====================
 
-// Inicia el servidor y muestra el puerto en consola
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });

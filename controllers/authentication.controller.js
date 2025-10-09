@@ -1,267 +1,182 @@
-import bcryptjs from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import db from '../database/db.js';
+import pool from "../database/db.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-dotenv.config();
-
-const loginAttempts = new Map();
-const MAX_ATTEMPTS = 5;
-const LOCK_TIME = 15 * 60 * 1000;
-
-// Mapa para rastrear intentos de inicio de sesión por documento
-const loginAttempts = new Map();
-const MAX_ATTEMPTS = 5; // Máximo de intentos fallidos permitidos
-const LOCK_TIME = 15 * 60 * 1000; // Tiempo de bloqueo en milisegundos (15 minutos)
-
-/**
- * Verifica si un usuario puede intentar iniciar sesión según sus intentos previos.
- * @param {string} documento - Documento del usuario.
- * @returns {Object} - Indica si está permitido y minutos restantes si está bloqueado.
- */
-function checkLoginAttempts(documento) {
-  const now = Date.now();
-  const attempts = loginAttempts.get(documento) || { count: 0, lockedUntil: 0 };
-  
-  if (attempts.lockedUntil > now) {
-    const minutesLeft = Math.ceil((attempts.lockedUntil - now) / 60000);
-    return { allowed: false, minutesLeft };
-  }
-  
-  if (attempts.count >= MAX_ATTEMPTS) {
-    attempts.lockedUntil = now + LOCK_TIME;
-    loginAttempts.set(documento, attempts);
-    return { allowed: false, minutesLeft: 15 };
-  }
-  
-  return { allowed: true };
-}
-
-/**
- * Registra un intento fallido de inicio de sesión para un usuario.
- * @param {string} documento - Documento del usuario.
- */
-function recordFailedAttempt(documento) {
-  const attempts = loginAttempts.get(documento) || { count: 0, lockedUntil: 0 };
-  attempts.count++;
-  loginAttempts.set(documento, attempts);
-}
-
-/**
- * Reinicia el contador de intentos de inicio de sesión para un usuario.
- * @param {string} documento - Documento del usuario.
- */
-function resetLoginAttempts(documento) {
-  loginAttempts.delete(documento);
-}
-
-/**
- * Controlador para el inicio de sesión de usuarios.
- * Valida credenciales, controla intentos fallidos y genera JWT si es exitoso.
- * @param {Object} req - Objeto de solicitud Express.
- * @param {Object} res - Objeto de respuesta Express.
- */
+// ==================== LOGIN ====================
 async function login(req, res) {
   try {
-    const { documento, contrasena } = req.body;
+    const { documento, password } = req.body;
 
-    if (!documento || !contrasena) {
+    if (!documento || !password) {
       return res.status(400).json({
         success: false,
-        message: "Documento y contraseña son obligatorios"
+        message: "Por favor, ingresa documento y contraseña."
       });
     }
 
-    if (!/^\d+$/.test(documento)) {
-      return res.status(400).json({
-        success: false,
-        message: "El documento debe contener solo números"
-      });
-    }
-
-    const attemptCheck = checkLoginAttempts(documento);
-    if (!attemptCheck.allowed) {
-      return res.status(429).json({
-        success: false,
-        message: `Demasiados intentos fallidos. Intenta de nuevo en ${attemptCheck.minutesLeft} minutos`
-      });
-    }
-
-    const [usuarios] = await db.query(
-      'SELECT * FROM usuario WHERE documento = ?',
+    // 🔹 Buscar por documento
+    const [rows] = await pool.query(
+      "SELECT * FROM usuario WHERE documento = ?",
       [documento]
     );
 
-    if (usuarios.length === 0) {
-      recordFailedAttempt(documento);
+    if (rows.length === 0) {
       return res.status(401).json({
         success: false,
-        message: "Documento o contraseña incorrectos"
+        message: "Documento o contraseña incorrectos."
       });
     }
 
-    const usuario = usuarios[0];
+    const usuario = rows[0];
 
-    if (usuario.ID_estado_cuenta !== 1) {
-      return res.status(403).json({
-        success: false,
-        message: "Tu cuenta está inactiva. Contacta al administrador"
-      });
-    }
+    // 🔹 Validar contraseña
+    const passwordValida = await bcrypt.compare(password, usuario.contresena);
 
-    const contrasenaValida = await bcryptjs.compare(contrasena, usuario.contresena);
-
-    if (!contrasenaValida) {
-      recordFailedAttempt(documento);
+    if (!passwordValida) {
       return res.status(401).json({
         success: false,
-        message: "Documento o contraseña incorrectos"
+        message: "Documento o contraseña incorrectos."
       });
     }
 
-    resetLoginAttempts(documento);
-
+    // 🔹 Crear token JWT
     const token = jwt.sign(
-      { 
-        id: usuario.ID_usuario,
+      {
+        ID_usuario: usuario.ID_usuario,
         documento: usuario.documento,
-        correo: usuario.correo,
-        rol: usuario.ID_rol
+        ID_rol: usuario.ID_rol
       },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      process.env.JWT_SECRET || "secretKey",
+      { expiresIn: "2h" }
     );
 
     res.json({
       success: true,
-      message: "Login exitoso",
+      message: "Inicio de sesión exitoso",
       token,
       usuario: {
         id: usuario.ID_usuario,
-        documento: usuario.documento,
         nombre: usuario.nombre,
         apellido: usuario.apellido,
-        correo: usuario.correo,
+        documento: usuario.documento,
         programa: usuario.programa,
         rol: usuario.ID_rol
       }
     });
-
   } catch (error) {
     console.error("Error en login:", error);
     res.status(500).json({
       success: false,
-      message: "Error en el servidor"
+      message: "Error del servidor.",
+      error: error.message
     });
   }
 }
 
-/**
- * Controlador para el registro de nuevos usuarios.
- * Valida datos, verifica unicidad y almacena el usuario en la base de datos.
- * @param {Object} req - Objeto de solicitud Express.
- * @param {Object} res - Objeto de respuesta Express.
- */
+// ==================== REGISTRO ====================
 async function register(req, res) {
   try {
-    const { documento, nombres, apellidos, correo, programa, contrasena, confirmar_contrasena } = req.body;
+    const { documento, nombre, apellido, correo, programa, password } = req.body;
 
-    if (!documento || !nombres || !apellidos || !correo || !programa || !contrasena || !confirmar_contrasena) {
+    if (!documento || !nombre || !apellido || !correo || !programa || !password) {
       return res.status(400).json({
         success: false,
-        message: "Todos los campos son obligatorios"
+        message: "Por favor, completa todos los campos."
       });
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(correo)) {
-      return res.status(400).json({
-        success: false,
-        message: "Formato de correo inválido"
-      });
-    }
-
-    if (!/^\d+$/.test(documento)) {
-      return res.status(400).json({
-        success: false,
-        message: "El documento debe contener solo números"
-      });
-    }
-
-    if (contrasena !== confirmar_contrasena) {
-      return res.status(400).json({
-        success: false,
-        message: "Las contraseñas no coinciden"
-      });
-    }
-
-    if (contrasena.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "La contraseña debe tener al menos 8 caracteres"
-      });
-    }
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
-    if (!passwordRegex.test(contrasena)) {
-      return res.status(400).json({
-        success: false,
-        message: "La contraseña debe contener al menos una mayúscula, una minúscula y un número"
-      });
-    }
-
-    const [usuariosExistentes] = await db.query(
-      'SELECT * FROM usuario WHERE correo = ? OR documento = ?',
-      [correo, documento]
+    const [existe] = await pool.query(
+      "SELECT * FROM usuario WHERE documento = ?",
+      [documento]
     );
 
-    if (usuariosExistentes.length > 0) {
-      const existe = usuariosExistentes[0];
-      if (existe.correo === correo) {
-        return res.status(409).json({
-          success: false,
-          message: "El correo ya está registrado"
-        });
-      } else {
-        return res.status(409).json({
-          success: false,
-          message: "El documento ya está registrado"
-        });
-      }
+    if (existe.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "El documento ya está registrado."
+      });
     }
 
-    const contrasenaHash = await bcryptjs.hash(contrasena, 10);
-    const fechaRegistro = new Date().toISOString().split('T')[0];
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [resultado] = await db.query(
-      'INSERT INTO usuario (documento, nombre, apellido, correo, programa, contresena, ID_rol, ID_estado_cuenta, fecha_registro, `imagen perfil`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [documento, nombres, apellidos, correo, programa, contrasenaHash, 2, 1, fechaRegistro, '']
+    await pool.query(
+      `INSERT INTO usuario 
+      (documento, nombre, apellido, correo, programa, contresena, ID_rol, ID_estado_cuenta, fecha_registro)
+      VALUES (?, ?, ?, ?, ?, ?, 2, 1, CURDATE())`,
+      [documento, nombre, apellido, correo, programa, hashedPassword]
     );
 
     res.status(201).json({
       success: true,
-      message: "Usuario registrado exitosamente",
-      usuario: {
-        id: resultado.insertId,
-        documento,
-        nombres,
-        apellidos,
-        correo,
-        programa
-      }
+      message: "Usuario registrado exitosamente."
     });
-
   } catch (error) {
     console.error("Error en registro:", error);
     res.status(500).json({
       success: false,
-      message: "Error en el servidor"
+      message: "Error del servidor.",
+      error: error.message
     });
   }
 }
 
-// Exporta los métodos de autenticación
+// ==================== CAMBIAR CONTRASEÑA ====================
+async function changePassword(req, res) {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.usuario?.ID_usuario;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Debes ingresar la contraseña actual y la nueva."
+      });
+    }
+
+    const [rows] = await pool.query(
+      "SELECT contresena FROM usuario WHERE ID_usuario = ?",
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado."
+      });
+    }
+
+    const passwordValida = await bcrypt.compare(oldPassword, rows[0].contresena);
+    if (!passwordValida) {
+      return res.status(401).json({
+        success: false,
+        message: "La contraseña actual es incorrecta."
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      "UPDATE usuario SET contresena = ? WHERE ID_usuario = ?",
+      [hashedPassword, userId]
+    );
+
+    return res.json({
+      success: true,
+      message: "Contraseña actualizada correctamente."
+    });
+  } catch (error) {
+    console.error("Error al cambiar contraseña:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error del servidor al cambiar la contraseña.",
+      error: error.message
+    });
+  }
+}
+
+// ==================== EXPORTAR MÉTODOS ====================
 export const methods = {
   login,
-  register
+  register,
+  changePassword
 };

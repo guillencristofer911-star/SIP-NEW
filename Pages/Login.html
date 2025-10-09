@@ -1,55 +1,89 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/login.css">
-    <link rel="stylesheet" href="/modal.css">
-    <title>Iniciar sesión - SIP</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión - SIP</title>
+  <link rel="stylesheet" href="/login.css" />
+  <link rel="stylesheet" href="/modal.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="left-panel">
-            <img src="/img/logo.png" alt="SIP Logo" class="logo" style="margin-bottom: 10px;">
-            <img src="/img/nombre-del-logo.png" alt="SENA Logo" class="logo-sena">
-        </div>
-        <div class="right-panel">
-            <h1 class="title" style="margin-bottom: 0;">Bienvenido</h1>
-            <p class="form-subtitle" style="margin-top: 0;">Inicia sesión<br>en SIP</p>
-            
-            <!-- Formulario de login -->
-            <form class="form" id="login-form" action="/login" method="POST">
-                <input type="text" id="usuario" name="documento" placeholder="Ingrese documento" required>
-                <input type="password" id="contrasena" name="contrasena" placeholder="Ingrese contraseña" required>
-                <a href="#" id="enlace-olvido" style="font-size: 13px; color: #184C3A; text-align: left; margin-bottom: 16px; display: block; margin-top: 2px;">¿Olvidaste tu contraseña?</a>
-                <button type="submit" class="btn">Iniciar sesión</button>
-            </form>
-        </div>
+  <div class="container">
+    <div class="left-panel">
+      <img src="/img/logo.png" alt="SIP Logo" class="logo" style="margin-bottom: 10px;" />
+      <img src="/img/nombre-del-logo.png" alt="SENA Logo" class="logo-sena" />
     </div>
 
-    <!-- Modal de Recuperar Contraseña -->
-    <div id="modal-recuperar" class="modal-recuperar">
-      <form action="/recuperar" method="POST">
-        <h2>Recupera tu contraseña</h2>
-        <p style="font-size: 1rem; color: #184C3A; margin-bottom: 18px;">
-          Ingresa el correo electrónico asociado a tu cuenta para cambiar tu contraseña.
-        </p>
-        <input type="email" name="email" placeholder="Ingrese correo electrónico" required>
-        <button type="submit" class="btn">Enviar</button>
-        <br>
-        <button type="button" class="cerrar-modal" id="cerrar-modal">Cerrar</button>
+    <div class="right-panel">
+      <h1 class="title" style="margin-bottom: 0;">Bienvenido</h1>
+      <p class="form-subtitle" style="margin-top: 0;">Inicia sesión<br>en SIP</p>
+
+      <!-- Formulario de login -->
+      <form class="form" id="login-form">
+        <input type="text" id="documento" name="documento" placeholder="Ingrese documento" required />
+        <input type="password" id="password" name="password" placeholder="Ingrese contraseña" required />
+        <a href="#" id="enlace-olvido" style="font-size: 13px; color: #184C3A; text-align: left; margin-bottom: 16px; display: block; margin-top: 2px;">¿Olvidaste tu contraseña?</a>
+        <button type="submit" class="btn">Iniciar sesión</button>
       </form>
-    </div>
 
-    <script src="/js/login.js">
-        // Modal recuperar contraseña
-    document.getElementById('enlace-olvido').onclick = function(e) {
-        e.preventDefault();
-        document.getElementById('modal-recuperar').classList.add('activo');
+      <p id="mensaje" style="color: red; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+  <!-- Modal de Recuperar Contraseña -->
+  <div id="modal-recuperar" class="modal-recuperar">
+    <form action="/recuperar" method="POST">
+      <h2>Recupera tu contraseña</h2>
+      <p style="font-size: 1rem; color: #184C3A; margin-bottom: 18px;">
+        Ingresa el correo electrónico asociado a tu cuenta para cambiar tu contraseña.
+      </p>
+      <input type="email" name="email" placeholder="Ingrese correo electrónico" required />
+      <button type="submit" class="btn">Enviar</button>
+      <br />
+      <button type="button" class="cerrar-modal" id="cerrar-modal">Cerrar</button>
+    </form>
+  </div>
+
+  <!-- ==================== SCRIPT LOGIN ==================== -->
+  <script>
+    // Modal recuperar contraseña
+    document.getElementById("enlace-olvido").onclick = function (e) {
+      e.preventDefault();
+      document.getElementById("modal-recuperar").classList.add("activo");
     };
-    document.getElementById('cerrar-modal').onclick = function() {
-        document.getElementById('modal-recuperar').classList.remove('activo');
+    document.getElementById("cerrar-modal").onclick = function () {
+      document.getElementById("modal-recuperar").classList.remove("activo");
     };
-    </script>
+
+    // ==================== LOGIN ====================
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const documento = document.getElementById("documento").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documento, password }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          alert("Inicio de sesión exitoso. ¡Bienvenido!");
+          window.location.href = "/publicaciones"; // ✅ Redirige al dashboard o página principal
+        } else {
+          document.getElementById("mensaje").textContent = data.message;
+        }
+      } catch (error) {
+        console.error("Error en login:", error);
+        document.getElementById("mensaje").textContent =
+          "Error al conectar con el servidor.";
+      }
+    });
+  </script>
 </body>
 </html>
