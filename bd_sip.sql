@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-10-2025 a las 22:26:00
+-- Tiempo de generación: 10-10-2025 a las 19:41:42
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -315,10 +315,10 @@ CREATE TABLE `publicacion` (
   `ID_usuario` int(100) NOT NULL,
   `ID_rol_autor` int(11) DEFAULT NULL,
   `titulo` varchar(100) NOT NULL,
-  `contenido` varchar(100) NOT NULL,
-  `fecha_creacion` date NOT NULL,
-  `fecha_ultima_edicion` date NOT NULL,
-  `ID_estado_publicacion` int(100) NOT NULL
+  `contenido` text NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_ultima_edicion` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `ID_estado_publicacion` int(100) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -326,13 +326,8 @@ CREATE TABLE `publicacion` (
 --
 
 INSERT INTO `publicacion` (`ID_publicacion`, `ID_usuario`, `ID_rol_autor`, `titulo`, `contenido`, `fecha_creacion`, `fecha_ultima_edicion`, `ID_estado_publicacion`) VALUES
-(0, 0, NULL, 'test de publicaciones #1', 'test de pruebas 12313', '2025-10-09', '2025-10-09', 1),
-(0, 0, NULL, 'adadasfa', 'gafafafagafaf', '2025-10-09', '2025-10-09', 1),
-(0, 18, NULL, 'sgsgsgqrfqrqfq', 'qtwtqtqqgafagq', '2025-10-09', '2025-10-09', 1),
-(0, 0, NULL, 'afafqtgtqr', 'qtqtyyqweqweq', '2025-10-09', '2025-10-09', 1),
-(0, 0, NULL, 'Prueba en la reunión', 'Esto es una prueba para todos los miembros de sip', '2025-10-09', '2025-10-09', 1),
-(0, 3, 2, 'Prueba desde el usuario cristofer', 'esta es una prueba el usuario cristofer y el rol aprendiz', '2025-10-09', '2025-10-09', 1),
-(0, 4, 3, 'Esta es una prueba desde el usuario Juan', 'Esta es una prueba desde el usuario juan, con el rol egresado', '2025-10-09', '2025-10-09', 1);
+(1, 3, 2, 'Prueba de publicación', 'Este es un contenido de prueba', '2025-10-10 12:38:53', '2025-10-10 12:38:53', 1),
+(2, 4, 3, 'testing editar publicaciones', 'este es un testing sobre editar publicaciones desde el usuario juan, aqui se debe editar por un nuevo texto', '2025-10-10 12:40:09', '2025-10-10 12:40:29', 1);
 
 -- --------------------------------------------------------
 
@@ -511,6 +506,21 @@ ALTER TABLE `proyecto`
   ADD PRIMARY KEY (`ID_proyecto`);
 
 --
+-- Indices de la tabla `publicacion`
+--
+ALTER TABLE `publicacion`
+  ADD PRIMARY KEY (`ID_publicacion`),
+  ADD KEY `ID_usuario` (`ID_usuario`),
+  ADD KEY `ID_rol_autor` (`ID_rol_autor`),
+  ADD KEY `ID_estado_publicacion` (`ID_estado_publicacion`);
+
+--
+-- Indices de la tabla `publicacion_etiqueta`
+--
+ALTER TABLE `publicacion_etiqueta`
+  ADD PRIMARY KEY (`ID_publicacion`,`ID_etiqueta`);
+
+--
 -- Indices de la tabla `rol`
 --
 ALTER TABLE `rol`
@@ -547,6 +557,12 @@ ALTER TABLE `estado_publicacion`
 --
 ALTER TABLE `proyecto`
   MODIFY `ID_proyecto` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `publicacion`
+--
+ALTER TABLE `publicacion`
+  MODIFY `ID_publicacion` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`

@@ -54,11 +54,11 @@ async function crearPublicacion(req, res) {
 
     console.log('💾 Guardando publicación con rol:', usuario.rol_nombre);
 
-    // 🔥 INSERT MEJORADO: Incluye ID_rol_autor
+    // 🔥 INSERT MEJORADO: NO especifica fecha_creacion para que use DEFAULT
     const [resultado] = await db.query(
       `INSERT INTO publicacion 
-       (ID_usuario, titulo, contenido, ID_rol_autor, fecha_creacion, fecha_ultima_edicion, ID_estado_publicacion) 
-       VALUES (?, ?, ?, ?, NOW(), NOW(), ?)`,
+       (ID_usuario, titulo, contenido, ID_rol_autor, ID_estado_publicacion) 
+       VALUES (?, ?, ?, ?, ?)`,
       [ID_usuario, titulo, contenido, usuario.ID_rol, ID_estado_publicacion]
     );
 
@@ -79,7 +79,22 @@ async function crearPublicacion(req, res) {
       }
     }
 
-    const ahoraTimestamp = Math.floor(Date.now() / 1000);
+    // 🔥 OBTENER DATOS COMPLETOS INCLUYENDO TIMESTAMP
+    const [publicacionCreada] = await db.query(`
+      SELECT 
+        ID_publicacion,
+        titulo,
+        contenido,
+        fecha_creacion,
+        UNIX_TIMESTAMP(fecha_creacion) as fecha_creacion_timestamp
+      FROM publicacion
+      WHERE ID_publicacion = ?
+    `, [ID_publicacion]);
+
+    const pubData = publicacionCreada[0];
+    
+    console.log('📅 Fecha creación MySQL:', pubData.fecha_creacion);
+    console.log('🕐 Timestamp creación:', pubData.fecha_creacion_timestamp);
 
     res.status(201).json({
       success: true,
@@ -89,8 +104,8 @@ async function crearPublicacion(req, res) {
         titulo,
         contenido,
         rol: usuario.rol_nombre,
-        fecha_creacion: new Date().toISOString(),
-        fecha_creacion_timestamp: ahoraTimestamp
+        fecha_creacion: pubData.fecha_creacion,
+        fecha_creacion_timestamp: pubData.fecha_creacion_timestamp
       }
     });
 
@@ -137,8 +152,12 @@ async function obtenerPublicaciones(req, res) {
 
     console.log(`✅ Se encontraron ${publicaciones.length} publicaciones`);
 
-    const ahoraTimestamp = Math.floor(Date.now() / 1000);
+    // 🔥 OBTENER TIMESTAMP ACTUAL DEL SERVIDOR MYSQL
+    const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+    const ahoraTimestamp = tiempoServidor[0].ahora;
     
+    console.log('🕐 Timestamp servidor MySQL:', ahoraTimestamp);
+
     for (let pub of publicaciones) {
       try {
         // Obtener etiquetas
@@ -151,7 +170,7 @@ async function obtenerPublicaciones(req, res) {
         
         pub.etiquetas = etiquetas;
 
-        // Calcular tiempo usando timestamps de MySQL
+        // 🔥 CALCULAR TIEMPO USANDO TIMESTAMPS DEL SERVIDOR MYSQL
         const diferenciaSegundos = ahoraTimestamp - pub.fecha_creacion_timestamp;
         const diferenciaMinutos = diferenciaSegundos / 60;
         const minutosRestantes = Math.max(0, Math.floor(15 - diferenciaMinutos));
@@ -162,7 +181,7 @@ async function obtenerPublicaciones(req, res) {
         // 🔥 Agregar información del rol
         pub.rol = pub.rol_nombre || 'usuario';
 
-        console.log(`📝 Publicación ${pub.ID_publicacion}: ${diferenciaMinutos.toFixed(2)} min transcurridos, rol: ${pub.rol}`);
+        console.log(`📄 Publicación ${pub.ID_publicacion}: ${diferenciaMinutos.toFixed(2)} min transcurridos, puede editar: ${pub.puedeEditar}, rol: ${pub.rol}`);
         
       } catch (etiquetaError) {
         console.warn(`⚠️ Error al obtener etiquetas para publicación ${pub.ID_publicacion}:`, etiquetaError.message);
@@ -239,13 +258,18 @@ async function obtenerPublicacionPorId(req, res) {
 
       publicacion.etiquetas = etiquetas;
 
-      const ahoraTimestamp = Math.floor(Date.now() / 1000);
+      // 🔥 OBTENER TIMESTAMP ACTUAL DEL SERVIDOR MYSQL
+      const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+      const ahoraTimestamp = tiempoServidor[0].ahora;
+      
       const diferenciaSegundos = ahoraTimestamp - publicacion.fecha_creacion_timestamp;
       const diferenciaMinutos = diferenciaSegundos / 60;
       
       publicacion.puedeEditar = diferenciaMinutos <= 15;
       publicacion.minutosRestantes = Math.max(0, Math.floor(15 - diferenciaMinutos));
-      publicacion.rol = publicacion.rol_nombre || 'usuario'; // 🔥 Agregar rol
+      publicacion.rol = publicacion.rol_nombre || 'usuario';
+
+      console.log(`⏱️ Tiempo transcurrido: ${diferenciaMinutos.toFixed(2)} minutos, puede editar: ${publicacion.puedeEditar}`);
 
     } catch (etiquetaError) {
       console.warn(`⚠️ Error al obtener etiquetas:`, etiquetaError.message);
@@ -293,9 +317,11 @@ async function editarPublicacion(req, res) {
       });
     }
 
-    // Verificar límite de tiempo
+    // 🔥 VERIFICAR LÍMITE DE TIEMPO USANDO MYSQL
     const publicacion = publicaciones[0];
-    const ahoraTimestamp = Math.floor(Date.now() / 1000);
+    const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+    const ahoraTimestamp = tiempoServidor[0].ahora;
+    
     const diferenciaSegundos = ahoraTimestamp - publicacion.fecha_creacion_timestamp;
     const diferenciaMinutos = diferenciaSegundos / 60;
 

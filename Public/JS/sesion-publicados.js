@@ -258,6 +258,27 @@ async function cargarPublicaciones() {
         const puedeEditarPublicacion = esAutor && pub.puedeEditar;
         const tiempoRestante = pub.minutosRestantes || 0;
         
+        // 🔥 CORRECCIÓN: Obtener el rol correcto
+        let rolMostrar = 'Usuario'; // Valor por defecto
+        
+        if (pub.rol_nombre) {
+          // Si viene rol_nombre desde el backend, usarlo
+          rolMostrar = pub.rol_nombre.charAt(0).toUpperCase() + pub.rol_nombre.slice(1).toLowerCase();
+        } else if (pub.rol) {
+          // Si viene solo 'rol', usarlo
+          rolMostrar = pub.rol.charAt(0).toUpperCase() + pub.rol.slice(1).toLowerCase();
+        } else if (pub.ID_rol) {
+          // Si solo viene ID_rol, mapear manualmente
+          const rolesMap = {
+            1: 'Admin',
+            2: 'Aprendiz',
+            3: 'Egresado'
+          };
+          rolMostrar = rolesMap[pub.ID_rol] || 'Usuario';
+        }
+        
+        console.log(`📋 Publicación ${pub.ID_publicacion}: Rol = ${rolMostrar}, ID_rol = ${pub.ID_rol}, rol_nombre = ${pub.rol_nombre}`);
+        
         // Indicador de tiempo
         let indicadorTiempo = '';
         if (esAutor && tiempoRestante > 0) {
@@ -289,7 +310,7 @@ async function cargarPublicaciones() {
             </div>
             <div class="proyecto-autor">
               ${escapeHtml(pub.nombre)} ${escapeHtml(pub.apellido)}
-              <span class="proyecto-etiqueta egresado">Usuario</span>
+              <span class="proyecto-etiqueta egresado">${rolMostrar}</span>
             </div>
             <div class="proyecto-carrera">${escapeHtml(pub.programa || 'Sin programa')}</div>
             <div class="proyecto-desc">
@@ -307,7 +328,7 @@ async function cargarPublicaciones() {
       console.log('✅ Publicaciones cargadas:', data.publicaciones.length);
       aplicarEventListenersFavoritos();
     } else {
-      console.log('📭 No hay publicaciones');
+      console.log('🔭 No hay publicaciones');
       listaPublicaciones.innerHTML = '<div style="text-align:center; padding:40px; color:#666;"><i class="fa fa-inbox" style="font-size:48px; opacity:0.3;"></i><br><br>No hay publicaciones aún.<br>¡Sé el primero en publicar!</div>';
     }
   } catch (error) {
