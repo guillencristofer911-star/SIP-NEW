@@ -337,58 +337,115 @@ body, html {
   text-align: center;
 }
 .historial-card {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 2px 12px #0001;
-  padding: 24px 30px 20px 30px;
-  margin-bottom: 28px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  border: 2px solid #b2dfdb;
-  border-left: 6px solid #10b981; /* Borde verde a la izquierda */
-  width: 620px;
-  max-width: 95vw;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 4px solid #3ec9a7;
 }
 
-.historial-card:last-child {
-  margin-bottom: 0;
+.historial-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
+
 .historial-titulo {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.3em;
+  font-weight: 600;
   color: #184C3A;
-  margin-bottom: 2px;
+  margin-bottom: 10px;
 }
+
 .historial-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.98rem;
-  margin-bottom: 2px;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 0.9em;
+  flex-wrap: wrap;
 }
+
 .historial-fecha {
-  color: #888;
-  font-size: 0.95rem;
+  margin-left: auto;
+  color: #999;
+  font-size: 0.85em;
 }
+
 .historial-carrera {
-  color: #184C3A;
-  font-size: 0.97rem;
-  margin-left: 0;
+  color: #3ec9a7;
+  font-weight: 500;
+  margin-bottom: 12px;
+  font-size: 0.95em;
 }
+
 .historial-desc {
   color: #444;
-  font-size: 1.04rem;
-  margin-bottom: 8px;
+  line-height: 1.6;
+  margin-bottom: 12px;
 }
-.historial-respuestas {
-  font-size: 1.01rem;
-  font-weight: 600;
-  color: #10b981;
-  margin-bottom: 8px;
+
+.historial-acciones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+}
+
+/* Botones de acción */
+.btn-abrir,
+.btn-editar-item,
+.btn-papelera {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
+
+.btn-abrir {
+  background-color: #3ec9a7;
+  color: white;
+}
+
+.btn-abrir:hover {
+  background-color: #35b396;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(62, 201, 167, 0.3);
+}
+
+.btn-editar-item {
+  background-color: #f0f9f7;
+  color: #3ec9a7;
+  border: 1px solid #3ec9a7;
+}
+
+.btn-editar-item:hover {
+  background-color: #3ec9a7;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.btn-papelera {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #e53e3e;
+}
+
+.btn-papelera:hover {
+  background-color: #e53e3e;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(229, 62, 62, 0.3);
+}
+
 .btn-abrir, .btn-responder {
   background: #10b981;
   color: #fff;
@@ -428,25 +485,7 @@ body, html {
 .proyecto-fav i.fa-regular {
   color: #d9d9d9 !important;
 }
-/* ...existing code... */
-.btn-papelera {
-  position: absolute;
-  left: 18px;
-  bottom: 18px;
-  background: none;
-  border: none;
-  color: #bdbdbd;
-  font-size: 1.1rem;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  transition: background 0.18s, color 0.18s;
-}
-.btn-papelera:hover {
-  background: #ffeaea;
-  color: #f44336;
-}
-/* ...existing code... */
+
 /* ===========================
    Modal Eliminar cuenta
    =========================== */

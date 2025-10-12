@@ -68,24 +68,55 @@ function configurarEventListeners() {
     
     if (perfilBtn && popoverMenu) {
         perfilBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            const isVisible = popoverMenu.style.display === 'block';
-            popoverMenu.style.display = isVisible ? 'none' : 'block';
             
-            if (!isVisible) {
+            if (popoverMenu.style.display === 'block') {
+                popoverMenu.style.display = 'none';
+            } else {
                 const rect = perfilBtn.getBoundingClientRect();
-                popoverMenu.style.top = (rect.bottom + 10) + 'px';
-                popoverMenu.style.right = '20px';
+                popoverMenu.style.display = 'block';
+                popoverMenu.style.position = 'absolute';
+                popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+                popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
             }
         });
+
+        document.addEventListener('click', function(e) {
+            if (!popoverMenu.contains(e.target) && !perfilBtn.contains(e.target)) {
+                popoverMenu.style.display = 'none';
+            }
+        });
+
+        const menuItems = popoverMenu.querySelectorAll('.popover-list li');
+        menuItems.forEach((item, index) => {
+            item.style.cursor = 'pointer';
+            
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                switch(index) {
+                    case 0:
+                        window.location.href = '/Sesion_De_Perfil';
+                        break;
+                    case 1:
+                        alert('Configuración - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                    case 2:
+                        alert('Favoritos - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                    case 3:
+                        alert('Ayuda - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                }
+            });
+        });
+
+        console.log('✅ Menú popover configurado');
     }
-    
-    // Cerrar popover al hacer clic fuera
-    document.addEventListener('click', function(e) {
-        if (popoverMenu && !popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-            popoverMenu.style.display = 'none';
-        }
-    });
     
     // Logout
     const logoutBtn = document.getElementById('logoutBtn');
@@ -680,3 +711,18 @@ document.addEventListener('click', function(e) {
         menuAbierto = null;
     }
 });
+
+    // Botón de cerrar sesión
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (confirm('¿Estás seguro de cerrar sesión?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userData');
+                alert('Sesión cerrada exitosamente');
+                window.location.href = '/login';
+            }
+        });
+    };

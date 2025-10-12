@@ -58,28 +58,74 @@ function actualizarHeaderUsuario() {
 function configurarEventListeners() {
   // Menú de perfil
   const perfilBtn = document.getElementById('perfil-btn');
-  const popoverMenu = document.getElementById('popover-menu');
-  
-  if (perfilBtn && popoverMenu) {
-    perfilBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const isVisible = popoverMenu.style.display === 'block';
-      popoverMenu.style.display = isVisible ? 'none' : 'block';
-      
-      if (!isVisible) {
-        const rect = perfilBtn.getBoundingClientRect();
-        popoverMenu.style.top = (rect.bottom + 10) + 'px';
-        popoverMenu.style.right = '20px';
-      }
+    const popoverMenu = document.getElementById('popover-menu');
+    
+    console.log('Elementos encontrados:', {
+        perfilBtn: !!perfilBtn,
+        popoverMenu: !!popoverMenu
     });
-  }
-  
-  // Cerrar popover al hacer clic fuera
-  document.addEventListener('click', function(e) {
-    if (popoverMenu && !popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-      popoverMenu.style.display = 'none';
-    }
-  });
+
+    if (perfilBtn && popoverMenu) {
+        // Evento de clic en el botón de perfil
+        perfilBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('👆 Click en botón de perfil');
+            
+            if (popoverMenu.style.display === 'block') {
+                popoverMenu.style.display = 'none';
+                console.log(' Cerrando popover');
+            } else {
+                // Calcular posición
+                const rect = perfilBtn.getBoundingClientRect();
+                popoverMenu.style.display = 'block';
+                popoverMenu.style.position = 'absolute';
+                popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+                popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
+                console.log('Abriendo popover');
+            }
+        });
+
+        // Cerrar popover al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!popoverMenu.contains(e.target) && !perfilBtn.contains(e.target)) {
+                popoverMenu.style.display = 'none';
+            }
+        });
+
+        // ===== OPCIONES DEL MENÚ =====
+        const menuItems = popoverMenu.querySelectorAll('.popover-list li');
+        console.log('📋 Items del menú encontrados:', menuItems.length);
+
+        menuItems.forEach((item, index) => {
+            item.style.cursor = 'pointer'; // Asegurar que se vea clickeable
+            
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log(` Click en opción ${index}`);
+                
+                switch(index) {
+                    case 0: // Perfil
+                        console.log(' Navegando a perfil...');
+                        window.location.href = '/Sesion_De_Perfil';
+                        break;
+                    case 1: // Configuración
+                        alert('Configuración - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                    case 2: // Favoritos
+                        alert('Favoritos - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                    case 3: // Ayuda
+                        alert('Ayuda - Próximamente');
+                        popoverMenu.style.display = 'none';
+                        break;
+                }
+            });
+        })
+      };
   
   // Logout
   const logoutBtn = document.getElementById('logoutBtn');
