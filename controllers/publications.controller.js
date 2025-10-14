@@ -5,16 +5,14 @@ dotenv.config();
 
 /**
  * Controlador para crear una nueva publicación.
- * Valida los datos y almacena la publicación en la base de datos.
  */
 async function crearPublicacion(req, res) {
   try {
     const { titulo, contenido, etiquetas } = req.body;
     const ID_usuario = req.usuario.id;
 
-    console.log(' Intentando crear publicación:', { titulo, contenido, ID_usuario });
+    console.log('📝 Intentando crear publicación:', { titulo, contenido, ID_usuario });
 
-    // Validar campos obligatorios
     if (!titulo || !contenido) {
       return res.status(400).json({
         success: false,
@@ -22,7 +20,6 @@ async function crearPublicacion(req, res) {
       });
     }
 
-    // Validar longitud del título
     if (titulo.length < 5 || titulo.length > 100) {
       return res.status(400).json({
         success: false,
@@ -30,7 +27,6 @@ async function crearPublicacion(req, res) {
       });
     }
 
-    // Validar longitud del contenido
     if (contenido.length < 10) {
       return res.status(400).json({
         success: false,
@@ -38,25 +34,37 @@ async function crearPublicacion(req, res) {
       });
     }
 
-    //  GUARDAR FECHA COMPLETA CON HORA (DATETIME)
-    const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const ID_estado_publicacion = 1;
+    // 🔥 OBTENER ROL DEL USUARIO
+    const [usuarios] = await db.query(`
+      SELECT u.ID_rol, r.nombre as rol_nombre
+      FROM usuario u
+      LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+      WHERE u.ID_usuario = ?
+    `, [ID_usuario]);
 
-    console.log(' Fecha de creación:', fechaActual);
+    if (usuarios.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Usuario no encontrado"
+      });
+    }
 
+    const usuario = usuarios[0];
+    const ID_estado_publicacion = 1; // Estado activo
 
-    // INSERTAR USANDO NOW() DE MYSQL PARA HORA EXACTA
+    console.log('💾 Guardando publicación con rol:', usuario.rol_nombre);
+
+    // 🔥 INSERT MEJORADO: NO especifica fecha_creacion para que use DEFAULT
     const [resultado] = await db.query(
-      'INSERT INTO publicacion (ID_usuario, titulo, contenido, fecha_creacion, fecha_ultima_edicion, ID_estado_publicacion) VALUES (?, ?, ?, NOW(), NOW(), ?)',
-      [ID_usuario, titulo, contenido, ID_estado_publicacion]
+      `INSERT INTO publicacion 
+       (ID_usuario, titulo, contenido, ID_rol_autor, ID_estado_publicacion) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [ID_usuario, titulo, contenido, usuario.ID_rol, ID_estado_publicacion]
     );
 
-    console.log('Publicación creada con timestamp actual de MySQL');
-
     const ID_publicacion = resultado.insertId;
-    console.log(' Publicación creada con ID:', ID_publicacion);
+    console.log('✅ Publicación creada con ID:', ID_publicacion);
 
-    // Si hay etiquetas, asociarlas a la publicación
     if (etiquetas && Array.isArray(etiquetas) && etiquetas.length > 0) {
       try {
         for (const ID_etiqueta of etiquetas) {
@@ -65,11 +73,28 @@ async function crearPublicacion(req, res) {
             [ID_publicacion, ID_etiqueta]
           );
         }
-        console.log(' Etiquetas asociadas correctamente');
+        console.log('🏷️ Etiquetas asociadas correctamente');
       } catch (etiquetaError) {
-        console.warn(" Error al insertar etiquetas (no crítico):", etiquetaError.message);
+        console.warn("⚠️ Error al insertar etiquetas (no crítico):", etiquetaError.message);
       }
     }
+
+    // 🔥 OBTENER DATOS COMPLETOS INCLUYENDO TIMESTAMP
+    const [publicacionCreada] = await db.query(`
+      SELECT 
+        ID_publicacion,
+        titulo,
+        contenido,
+        fecha_creacion,
+        UNIX_TIMESTAMP(fecha_creacion) as fecha_creacion_timestamp
+      FROM publicacion
+      WHERE ID_publicacion = ?
+    `, [ID_publicacion]);
+
+    const pubData = publicacionCreada[0];
+    
+    console.log('📅 Fecha creación MySQL:', pubData.fecha_creacion);
+    console.log('🕐 Timestamp creación:', pubData.fecha_creacion_timestamp);
 
     res.status(201).json({
       success: true,
@@ -78,13 +103,14 @@ async function crearPublicacion(req, res) {
         id: ID_publicacion,
         titulo,
         contenido,
-        fecha_creacion: fechaActual,
-        etiquetas
+        rol: usuario.rol_nombre,
+        fecha_creacion: pubData.fecha_creacion,
+        fecha_creacion_timestamp: pubData.fecha_creacion_timestamp
       }
     });
 
   } catch (error) {
-    console.error(" Error al crear publicación:", error);
+    console.error("❌ Error al crear publicación:", error);
     console.error("Stack trace:", error.stack);
     res.status(500).json({
       success: false,
@@ -99,32 +125,39 @@ async function crearPublicacion(req, res) {
  */
 async function obtenerPublicaciones(req, res) {
   try {
-    console.log('Obteniendo todas las publicaciones...');
+    console.log('📖 Obteniendo todas las publicaciones...');
 
+    // 🔥 CONSULTA MEJORADA: Incluye el rol del usuario
     const [publicaciones] = await db.query(`
       SELECT 
         p.ID_publicacion,
         p.titulo,
         p.contenido,
+        UNIX_TIMESTAMP(p.fecha_creacion) as fecha_creacion_timestamp,
         p.fecha_creacion,
         p.fecha_ultima_edicion,
         p.ID_usuario,
+        p.ID_estado_publicacion,
         u.nombre,
         u.apellido,
         u.programa,
-        ep.estado
+        u.ID_rol,
+        r.nombre as rol_nombre
       FROM publicacion p
       INNER JOIN usuario u ON p.ID_usuario = u.ID_usuario
-      LEFT JOIN estado_publicacion ep ON p.ID_estado_publicacion = ep.ID_estado_publicacion
-      WHERE ep.estado = 'activo' OR ep.estado = 'Activo' OR ep.estado IS NULL
+      LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+      WHERE p.ID_estado_publicacion = 1
       ORDER BY p.fecha_creacion DESC
     `);
 
-    console.log(` Se encontraron ${publicaciones.length} publicaciones`);
+    console.log(`✅ Se encontraron ${publicaciones.length} publicaciones`);
 
-    // Calcular tiempo de edición para cada publicación
-    const ahora = new Date();
+    // 🔥 OBTENER TIMESTAMP ACTUAL DEL SERVIDOR MYSQL
+    const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+    const ahoraTimestamp = tiempoServidor[0].ahora;
     
+    console.log('🕐 Timestamp servidor MySQL:', ahoraTimestamp);
+
     for (let pub of publicaciones) {
       try {
         // Obtener etiquetas
@@ -137,22 +170,25 @@ async function obtenerPublicaciones(req, res) {
         
         pub.etiquetas = etiquetas;
 
-        // Calcular tiempo restante para edición
-        const fechaCreacion = new Date(pub.fecha_creacion);
-        const diferenciaMs = ahora.getTime() - fechaCreacion.getTime();
-        const diferenciaMinutos = diferenciaMs / (1000 * 60);
+        // 🔥 CALCULAR TIEMPO USANDO TIMESTAMPS DEL SERVIDOR MYSQL
+        const diferenciaSegundos = ahoraTimestamp - pub.fecha_creacion_timestamp;
+        const diferenciaMinutos = diferenciaSegundos / 60;
         const minutosRestantes = Math.max(0, Math.floor(15 - diferenciaMinutos));
         
         pub.puedeEditar = diferenciaMinutos <= 15;
         pub.minutosRestantes = minutosRestantes;
 
-        console.log(` Publicación ${pub.ID_publicacion}: ${minutosRestantes} min restantes (puede editar: ${pub.puedeEditar})`);
+        // 🔥 Agregar información del rol
+        pub.rol = pub.rol_nombre || 'usuario';
+
+        console.log(`📄 Publicación ${pub.ID_publicacion}: ${diferenciaMinutos.toFixed(2)} min transcurridos, puede editar: ${pub.puedeEditar}, rol: ${pub.rol}`);
         
       } catch (etiquetaError) {
-        console.warn(` Error al obtener etiquetas para publicación ${pub.ID_publicacion}:`, etiquetaError.message);
+        console.warn(`⚠️ Error al obtener etiquetas para publicación ${pub.ID_publicacion}:`, etiquetaError.message);
         pub.etiquetas = [];
         pub.puedeEditar = false;
         pub.minutosRestantes = 0;
+        pub.rol = 'usuario';
       }
     }
 
@@ -162,7 +198,7 @@ async function obtenerPublicaciones(req, res) {
     });
 
   } catch (error) {
-    console.error(" Error al obtener publicaciones:", error);
+    console.error("❌ Error al obtener publicaciones:", error);
     console.error("Stack trace:", error.stack);
     res.status(500).json({
       success: false,
@@ -178,23 +214,27 @@ async function obtenerPublicaciones(req, res) {
 async function obtenerPublicacionPorId(req, res) {
   try {
     const { id } = req.params;
-    console.log(` Obteniendo publicación con ID: ${id}`);
+    console.log(`📖 Obteniendo publicación con ID: ${id}`);
 
+    // 🔥 CONSULTA MEJORADA con rol
     const [publicaciones] = await db.query(`
       SELECT 
         p.ID_publicacion,
         p.titulo,
         p.contenido,
+        UNIX_TIMESTAMP(p.fecha_creacion) as fecha_creacion_timestamp,
         p.fecha_creacion,
         p.fecha_ultima_edicion,
         p.ID_usuario,
+        p.ID_estado_publicacion,
         u.nombre,
         u.apellido,
         u.programa,
-        ep.estado
+        u.ID_rol,
+        r.nombre as rol_nombre
       FROM publicacion p
       INNER JOIN usuario u ON p.ID_usuario = u.ID_usuario
-      LEFT JOIN estado_publicacion ep ON p.ID_estado_publicacion = ep.ID_estado_publicacion
+      LEFT JOIN rol r ON u.ID_rol = r.ID_rol
       WHERE p.ID_publicacion = ?
     `, [id]);
 
@@ -206,9 +246,8 @@ async function obtenerPublicacionPorId(req, res) {
     }
 
     const publicacion = publicaciones[0];
-    console.log(` Publicación encontrada: ${publicacion.titulo}`);
+    console.log(`✅ Publicación encontrada: ${publicacion.titulo}`);
 
-    // Obtener etiquetas
     try {
       const [etiquetas] = await db.query(`
         SELECT e.ID_etiqueta, e.nombre
@@ -219,20 +258,25 @@ async function obtenerPublicacionPorId(req, res) {
 
       publicacion.etiquetas = etiquetas;
 
-      // Calcular tiempo restante
-      const ahora = new Date();
-      const fechaCreacion = new Date(publicacion.fecha_creacion);
-      const diferenciaMs = ahora.getTime() - fechaCreacion.getTime();
-      const diferenciaMinutos = diferenciaMs / (1000 * 60);
+      // 🔥 OBTENER TIMESTAMP ACTUAL DEL SERVIDOR MYSQL
+      const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+      const ahoraTimestamp = tiempoServidor[0].ahora;
+      
+      const diferenciaSegundos = ahoraTimestamp - publicacion.fecha_creacion_timestamp;
+      const diferenciaMinutos = diferenciaSegundos / 60;
       
       publicacion.puedeEditar = diferenciaMinutos <= 15;
       publicacion.minutosRestantes = Math.max(0, Math.floor(15 - diferenciaMinutos));
+      publicacion.rol = publicacion.rol_nombre || 'usuario';
+
+      console.log(`⏱️ Tiempo transcurrido: ${diferenciaMinutos.toFixed(2)} minutos, puede editar: ${publicacion.puedeEditar}`);
 
     } catch (etiquetaError) {
-      console.warn(` Error al obtener etiquetas:`, etiquetaError.message);
+      console.warn(`⚠️ Error al obtener etiquetas:`, etiquetaError.message);
       publicacion.etiquetas = [];
       publicacion.puedeEditar = false;
       publicacion.minutosRestantes = 0;
+      publicacion.rol = 'usuario';
     }
 
     res.json({
@@ -241,7 +285,7 @@ async function obtenerPublicacionPorId(req, res) {
     });
 
   } catch (error) {
-    console.error(" Error al obtener publicación:", error);
+    console.error("❌ Error al obtener publicación:", error);
     res.status(500).json({
       success: false,
       message: "Error en el servidor al obtener la publicación",
@@ -252,7 +296,6 @@ async function obtenerPublicacionPorId(req, res) {
 
 /**
  * Controlador para editar una publicación existente.
- * RESTRICCIÓN: Solo se puede editar dentro de los primeros 15 minutos después de creada.
  */
 async function editarPublicacion(req, res) {
   try {
@@ -260,11 +303,10 @@ async function editarPublicacion(req, res) {
     const { titulo, contenido, etiquetas } = req.body;
     const ID_usuario = req.usuario.id;
 
-    console.log(`Editando publicación ${id} por usuario ${ID_usuario}`);
+    console.log(`✏️ Editando publicación ${id} por usuario ${ID_usuario}`);
 
-    // Verificar que la publicación existe y pertenece al usuario
     const [publicaciones] = await db.query(
-      'SELECT * FROM publicacion WHERE ID_publicacion = ? AND ID_usuario = ?',
+      'SELECT *, UNIX_TIMESTAMP(fecha_creacion) as fecha_creacion_timestamp FROM publicacion WHERE ID_publicacion = ? AND ID_usuario = ?',
       [id, ID_usuario]
     );
 
@@ -275,16 +317,15 @@ async function editarPublicacion(req, res) {
       });
     }
 
-    //  VERIFICAR LÍMITE DE TIEMPO (15 minutos)
+    // 🔥 VERIFICAR LÍMITE DE TIEMPO USANDO MYSQL
     const publicacion = publicaciones[0];
-    const fechaCreacion = new Date(publicacion.fecha_creacion);
-    const ahora = new Date();
-    const diferenciaMs = ahora.getTime() - fechaCreacion.getTime();
-    const diferenciaMinutos = diferenciaMs / (1000 * 60);
+    const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+    const ahoraTimestamp = tiempoServidor[0].ahora;
+    
+    const diferenciaSegundos = ahoraTimestamp - publicacion.fecha_creacion_timestamp;
+    const diferenciaMinutos = diferenciaSegundos / 60;
 
-    console.log(` Tiempo transcurrido: ${diferenciaMinutos.toFixed(2)} minutos`);
-    console.log(` Fecha creación: ${fechaCreacion.toISOString()}`);
-    console.log(` Fecha actual: ${ahora.toISOString()}`);
+    console.log(`⏱️ Tiempo transcurrido: ${diferenciaMinutos.toFixed(2)} minutos`);
 
     if (diferenciaMinutos > 15) {
       return res.status(403).json({
@@ -294,7 +335,6 @@ async function editarPublicacion(req, res) {
       });
     }
 
-    // Validar campos si se proporcionan
     if (titulo && (titulo.length < 5 || titulo.length > 100)) {
       return res.status(400).json({
         success: false,
@@ -309,18 +349,13 @@ async function editarPublicacion(req, res) {
       });
     }
 
-    //  USAR FECHA COMPLETA CON HORA
-    const fechaActual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    // Actualizar publicación
     await db.query(
-      'UPDATE publicacion SET titulo = ?, contenido = ?, fecha_ultima_edicion = ? WHERE ID_publicacion = ?',
-      [titulo || publicaciones[0].titulo, contenido || publicaciones[0].contenido, fechaActual, id]
+      'UPDATE publicacion SET titulo = ?, contenido = ?, fecha_ultima_edicion = NOW() WHERE ID_publicacion = ?',
+      [titulo || publicaciones[0].titulo, contenido || publicaciones[0].contenido, id]
     );
 
-    console.log(`Publicación ${id} actualizada`);
+    console.log(`✅ Publicación ${id} actualizada`);
 
-    // Si hay etiquetas, actualizar
     if (etiquetas && Array.isArray(etiquetas)) {
       try {
         await db.query('DELETE FROM publicacion_etiqueta WHERE ID_publicacion = ?', [id]);
@@ -331,9 +366,9 @@ async function editarPublicacion(req, res) {
             [id, ID_etiqueta]
           );
         }
-        console.log(` Etiquetas actualizadas para publicación ${id}`);
+        console.log(`🏷️ Etiquetas actualizadas para publicación ${id}`);
       } catch (etiquetaError) {
-        console.warn(" Error al actualizar etiquetas:", etiquetaError.message);
+        console.warn("⚠️ Error al actualizar etiquetas:", etiquetaError.message);
       }
     }
 
@@ -343,7 +378,7 @@ async function editarPublicacion(req, res) {
     });
 
   } catch (error) {
-    console.error(" Error al editar publicación:", error);
+    console.error("❌ Error al editar publicación:", error);
     res.status(500).json({
       success: false,
       message: "Error en el servidor al editar la publicación",
@@ -363,7 +398,6 @@ async function eliminarPublicacion(req, res) {
 
     console.log(`🗑️ Eliminando publicación ${id} por usuario ${ID_usuario}`);
 
-    // Verificar que la publicación existe
     const [publicaciones] = await db.query(
       'SELECT * FROM publicacion WHERE ID_publicacion = ?',
       [id]
@@ -376,7 +410,6 @@ async function eliminarPublicacion(req, res) {
       });
     }
 
-    // Verificar permisos: solo el autor o un admin pueden eliminar
     if (publicaciones[0].ID_usuario !== ID_usuario && !esAdmin) {
       return res.status(403).json({
         success: false,
@@ -384,13 +417,11 @@ async function eliminarPublicacion(req, res) {
       });
     }
 
-    // Eliminar etiquetas asociadas
     await db.query('DELETE FROM publicacion_etiqueta WHERE ID_publicacion = ?', [id]);
-    console.log(` Etiquetas eliminadas para publicación ${id}`);
+    console.log(`🏷️ Etiquetas eliminadas para publicación ${id}`);
 
-    // Eliminar publicación
     await db.query('DELETE FROM publicacion WHERE ID_publicacion = ?', [id]);
-    console.log(` Publicación ${id} eliminada correctamente`);
+    console.log(`✅ Publicación ${id} eliminada correctamente`);
 
     res.json({
       success: true,
@@ -398,7 +429,7 @@ async function eliminarPublicacion(req, res) {
     });
 
   } catch (error) {
-    console.error(" Error al eliminar publicación:", error);
+    console.error("❌ Error al eliminar publicación:", error);
     res.status(500).json({
       success: false,
       message: "Error en el servidor al eliminar la publicación",
@@ -407,7 +438,6 @@ async function eliminarPublicacion(req, res) {
   }
 }
 
-// Exportar los métodos del controlador
 export const methods = {
   crearPublicacion,
   obtenerPublicaciones,
