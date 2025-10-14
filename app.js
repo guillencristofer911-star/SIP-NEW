@@ -2,11 +2,14 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import { methods as respuestasController } from "./controllers/respuestas.controller.js";
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
+
+
 
 dotenv.config();
 
@@ -51,6 +54,7 @@ app.get("/feed-proyectos", (req, res) => {
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
+
 
 // ==================== API PÚBLICA ====================
 
@@ -115,6 +119,23 @@ app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId)
 app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
+
+// ==================== RUTAS DE RESPUESTAS ====================
+
+// Obtener todas las respuestas de una publicación (público)
+app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+
+// Obtener el conteo de respuestas (público)
+app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+
+// Crear una respuesta (requiere autenticación)
+app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+
+// Editar una respuesta (requiere autenticación)
+app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+
+// Eliminar una respuesta (requiere autenticación)
+app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
 // ==================== MANEJO DE ERRORES ====================
 
