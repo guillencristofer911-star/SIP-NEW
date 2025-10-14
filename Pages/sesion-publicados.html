@@ -1367,52 +1367,91 @@ document.addEventListener('DOMContentLoaded', async function() {
   }
 });
 
-
+// ----------------------------------
+// FILTRADO FINAL - Convierte UTC a local y compara correctamente
+// ----------------------------------
 function filtrarPublicaciones() {
-  const texto = document.getElementById('input-busqueda').value.toLowerCase();
-  const fechaInput = document.getElementById('input-fecha').value; // formato: "2025-08-14"
+  const texto = (document.getElementById('input-busqueda').value || '').toLowerCase().trim();
+  let fechaInput = (document.getElementById('input-fecha').value || '').trim();
 
-  document.querySelectorAll('#proyectos-lista .proyecto-card').forEach(function(card) {
-    const titulo = card.querySelector('.proyecto-titulo')?.innerText.toLowerCase() || "";
-    const carrera = card.querySelector('.proyecto-carrera')?.innerText.toLowerCase() || "";
-    const descripcion = card.querySelector('.proyecto-desc')?.innerText.toLowerCase() || "";
-    const fechaCard = card.querySelector('.proyecto-fecha')?.innerText || "";
+  // Convertir "07 10 2025" o "07/10/2025" -> "2025-10-07"
+  if (fechaInput.match(/^(\d{1,2})[\/\s-](\d{1,2})[\/\s-](\d{4})$/)) {
+    const m = fechaInput.match(/^(\d{1,2})[\/\s-](\d{1,2})[\/\s-](\d{4})$/);
+    const dia = m[1].padStart(2, "0");
+    const mes = m[2].padStart(2, "0");
+    const anio = m[3];
+    fechaInput = `${anio}-${mes}-${dia}`;
+  }
 
-    // Normaliza la fecha de la card a formato YYYY-MM-DD
-    let fechaCardValue = "";
-    if (fechaCard) {
-      const partes = fechaCard.split(',')[0].trim(); // Ej: "14 agosto 2025"
-      const meses = {
-        enero: "01", febrero: "02", marzo: "03", abril: "04", mayo: "05", junio: "06",
-        julio: "07", agosto: "08", septiembre: "09", octubre: "10", noviembre: "11", diciembre: "12"
-      };
-      const match = partes.match(/^(\d{1,2}) (\w+) (\d{4})$/);
-      if (match) {
-        const dia = match[1].padStart(2, '0');
-        const mes = meses[match[2].toLowerCase()];
-        const anio = match[3];
-        if (mes) fechaCardValue = `${anio}-${mes}-${dia}`;
+  document.querySelectorAll(".proyecto-card").forEach(card => {
+    const titulo = card.querySelector(".proyecto-titulo")?.innerText.toLowerCase() || "";
+    const carrera = card.querySelector(".proyecto-carrera")?.innerText.toLowerCase() || "";
+    const descripcion = card.querySelector(".proyecto-desc")?.innerText.toLowerCase() || "";
+
+    // === FECHA DEL CARD ===
+    let fechaCardYYYYMMDD = "";
+    const dataFecha = card.getAttribute("data-fecha");
+
+    if (dataFecha) {
+      // ✅ Convertir UTC a local antes de comparar
+      const dateObj = new Date(dataFecha);
+      if (!isNaN(dateObj)) {
+        const localY = dateObj.getFullYear();
+        const localM = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const localD = String(dateObj.getDate()).padStart(2, "0");
+        fechaCardYYYYMMDD = `${localY}-${localM}-${localD}`;
       }
+    } else {
+      // Si no hay data-fecha, intentar desde el texto visible
+      const visible = card.querySelector(".proyecto-fecha")?.innerText || "";
+      const match = visible.match(/(\d{1,2})[\/\s-](\d{1,2})[\/\s-](\d{4})/);
+      if (match) fechaCardYYYYMMDD = `${match[3]}-${match[2].padStart(2,"0")}-${match[1].padStart(2,"0")}`;
     }
 
-    const coincideTexto = (
+    // === APLICAR FILTROS ===
+    const coincideTexto =
+      texto === "" ||
       titulo.includes(texto) ||
       carrera.includes(texto) ||
-      descripcion.includes(texto)
-    );
-    const coincideFecha = !fechaInput || fechaInput === fechaCardValue;
+      descripcion.includes(texto);
 
-    if ((texto === "" || coincideTexto) && coincideFecha) {
-      card.style.display = '';
+    // Coincidencia de fecha (día exacto, mes o año)
+    let coincideFecha = false;
+    if (!fechaInput) {
+      coincideFecha = true;
     } else {
-      card.style.display = 'none';
+      const [fY, fM, fD] = fechaInput.split("-");
+      const [cY, cM, cD] = fechaCardYYYYMMDD.split("-");
+      coincideFecha =
+        (!fY || fY === cY) &&
+        (!fM || fM === cM) &&
+        (!fD || fD === cD);
     }
+
+    card.style.display = (coincideTexto && coincideFecha) ? "" : "none";
   });
 }
 
-document.getElementById('input-busqueda').addEventListener('input', filtrarPublicaciones);
-document.getElementById('input-fecha').addEventListener('input', filtrarPublicaciones);
+// === EVENTOS ===
+const inputTexto = document.getElementById("input-busqueda");
+const inputFecha = document.getElementById("input-fecha");
 
+if (inputTexto) inputTexto.addEventListener("input", filtrarPublicaciones);
+if (inputFecha) {
+  inputFecha.addEventListener("change", filtrarPublicaciones);
+  inputFecha.addEventListener("input", filtrarPublicaciones);
+}
+
+// === BOTÓN LIMPIAR ===
+const btnLimpiar = document.querySelector(".btn-limpiar");
+if (btnLimpiar) {
+  btnLimpiar.addEventListener("click", e => {
+    e.preventDefault();
+    if (inputTexto) inputTexto.value = "";
+    if (inputFecha) inputFecha.value = "";
+    filtrarPublicaciones();
+  });
+}
 
   </script>
 </body>
