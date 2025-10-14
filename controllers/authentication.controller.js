@@ -14,7 +14,6 @@ async function login(req, res) {
       });
     }
 
-    // 🔹 Buscar por documento
     const [rows] = await pool.query(
       "SELECT * FROM usuario WHERE documento = ?",
       [documento]
@@ -29,9 +28,7 @@ async function login(req, res) {
 
     const usuario = rows[0];
 
-    // 🔹 Validar contraseña
     const passwordValida = await bcrypt.compare(password, usuario.contresena);
-
     if (!passwordValida) {
       return res.status(401).json({
         success: false,
@@ -39,7 +36,6 @@ async function login(req, res) {
       });
     }
 
-    // 🔹 Crear token JWT
     const token = jwt.sign(
       {
         ID_usuario: usuario.ID_usuario,

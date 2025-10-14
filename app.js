@@ -3,36 +3,25 @@ import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { methods as authController } from "./controllers/authentication.controller.js";
-import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
-import { upload } from './middlewares/upload.js';
-
-dotenv.config();
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// Server
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
+import { upload } from "./middlewares/upload.js";
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// ==================== CONFIGURACIÓN DEL SERVIDOR ====================
 
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-// ✅ Middleware para procesar JSON y formularios HTML
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // <--- ✅ IMPORTANTE para leer datos enviados desde forms
+app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos SOLO desde la carpeta Public (CSS, JS, imágenes)
+// Archivos estáticos
 app.use(express.static(path.join(__dirname, "Public")));
 
 // ==================== RUTAS PÚBLICAS ====================
-
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
@@ -45,64 +34,45 @@ app.get("/registro", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
 
-app.get("/publicaciones", (req, res) => {
-  // Página de publicaciones públicas
-  res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
-});
-
-app.get("/crear-publicacion", (req, res) => {
-  // Página para crear publicación
-  res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
+app.get("/configuracion", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "Configuracion.html"));
 });
 
 // ==================== API DE AUTENTICACIÓN ====================
-
-// ✅ Registro e inicio de sesión
 app.post("/api/register", authController.register);
 app.post("/api/login", authController.login);
 
-// ==================== RUTAS PROTEGIDAS ====================
+// ✅ Nueva ruta para cambiar contraseña
+app.put("/api/change-password", verificarToken, authController.changePassword);
 
-// Perfil del usuario autenticado
+// ==================== RUTAS PROTEGIDAS ====================
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
     message: "Perfil de usuario",
-    usuario: req.usuario
+    usuario: req.usuario,
   });
 });
 
-// Solo para administradores
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
   res.json({
     success: true,
-    message: "Lista de usuarios (solo admin)"
+    message: "Lista de usuarios (solo admin)",
   });
 });
 
-// Verificar validez del token
-app.get("/api/verificar-token", verificarToken, (req, res) => {
-  res.json({
-    success: true,
-    valido: true,
-    usuario: req.usuario
-  });
-});
-
-// Ruta para cerrar sesión (la invalidación real del token es del lado del cliente)
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
-    message: "Sesión cerrada exitosamente"
+    message: "Sesión cerrada exitosamente",
   });
 });
 
-// ==================== MANEJO DE ERRORES ====================
-
+// ==================== ERRORES ====================
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Ruta no encontrada"
+    message: "Ruta no encontrada",
   });
 });
 
@@ -110,13 +80,11 @@ app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
     success: false,
-    message: "Error interno del servidor"
+    message: "Error interno del servidor",
   });
 });
 
-// ==================== INICIAR SERVIDOR ====================
-
+// ==================== SERVIDOR ====================
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
-});
 });
