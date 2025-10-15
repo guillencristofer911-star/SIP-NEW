@@ -165,12 +165,48 @@
           <input type="text" name="titulo" placeholder="Título..." required />
           <textarea name="descripcion" placeholder="Ingrese la descripción..." required></textarea>
           
-          <!-- SELECT DE PROGRAMA -->
-          <select name="programa" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
-            <option value="">Selecciona tu programa</option>
-            <option value="Desarrollo de Software">Tecnología en Desarrollo de Software</option>
-            <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
-          </select>
+        <!-- SELECT DE PROGRAMA -->
+        <div class="custom-select">
+          <div class="select-selected">Selecciona tu programa</div>
+          <div class="select-items select-hide">
+            <div>Tecnólogo en Análisis y Desarrollo de Software</div>
+            <div>Tecnólogo en Animación Digital</div>
+            <div>Tecnólogo en Automatización de Sistemas Mecatrónicos</div>
+            <div>Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</div>
+            <div>Tecnólogo en Desarrollo Multimedia y Web</div>
+            <div>Tecnólogo en Electricidad Industrial</div>
+            <div>Tecnólogo en Gestión de la Producción Industrial</div>
+            <div>Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</div>
+            <div>Tecnólogo en Gestión de Redes de Datos</div>
+            <div>Tecnólogo en Gestión eficiente de la energía</div>
+            <div>Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</div>
+            <div>Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</div>
+            <div>Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</div>
+            <div>Técnico en Instalación de Redes Internas de Telecomunicaciones</div>
+            <div>Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</div>
+            <div>Técnico en Instrumentación Industrial</div>
+            <div>Técnico en Integración de Contenidos Digitales</div>
+            <div>Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</div>
+            <div>Técnico en Asistencia Administrativa</div>
+            <div>Técnico en Atención Integral al Cliente</div>
+            <div>Técnico en Control de la Seguridad Digital</div>
+            <div>Técnico en Dibujo Mecánico</div>
+            <div>Técnico en Electricista Industrial</div>
+            <div>Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</div>
+            <div>Técnico en Modelado 3D para la Industria</div>
+            <div>Técnico en Monitoreo Ambiental</div>
+            <div>Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</div>
+            <div>Técnico en Procesos de Manufactura</div>
+            <div>Técnico en Servicios y Operaciones Microfinancieras</div>
+            <div>Técnico en Sistemas teleinformáticos</div>
+            <div>Técnico en Programación de Aplicaciones para Dispositivos Móviles</div>
+            <div>Técnico en Programación de Software</div>
+            <div>Técnico en Programación para Aplicaciones</div>
+          </div>
+          
+        </div>
+        
+
           
           <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega maximo 5 imagenes...</div>
           <input type="file" name="imagenes" accept="image/*" multiple style="margin-bottom:10px;">
@@ -869,7 +905,28 @@
         cargarProyectos();
     });
 
-    
+     
+    const selected = document.querySelector('.select-selected');
+    const items = document.querySelector('.select-items');
+
+    selected.addEventListener('click', () => {
+      items.classList.toggle('select-hide');
+    });
+
+    items.querySelectorAll('div').forEach(option => {
+      option.addEventListener('click', () => {
+        selected.textContent = option.textContent;
+        items.classList.add('select-hide');
+      });
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.custom-select')) {
+        items.classList.add('select-hide');
+      }
+    });
+
+
   </script>
 </body>
 </html>
