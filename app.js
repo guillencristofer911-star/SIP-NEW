@@ -7,6 +7,7 @@ import { methods as proyectosController } from "./controllers/proyectos.controll
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
+import favoritosRoutes from "./routes/favoritos.routes.js";
 
 dotenv.config();
 
@@ -27,7 +28,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
 
 // ==================== RUTAS PÚBLICAS ====================
 
-// Páginas HTML públicas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
@@ -58,7 +58,7 @@ app.get("/crear-publicacion", (req, res) => {
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-// Proyectos (temporalmente públicas)
+// Proyectos
 app.post("/api/proyectos/crear", upload.fields([
   { name: 'imagenes', maxCount: 5 },
   { name: 'documento_pdf', maxCount: 1 }
@@ -74,7 +74,6 @@ app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
 // ==================== RUTAS PROTEGIDAS ====================
 
-// Perfil (requiere token)
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -83,7 +82,6 @@ app.get("/api/perfil", verificarToken, (req, res) => {
   });
 });
 
-// Solo administradores
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
   res.json({
     success: true,
@@ -91,7 +89,6 @@ app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) 
   });
 });
 
-// Verificar token (útil para frontend)
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -100,7 +97,6 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
-// Logout (no invalida token en servidor, solo responde OK)
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -116,57 +112,18 @@ app.post("/api/publicaciones", verificarToken, publicacionController.crearPublic
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
-// ==================== MANEJO DE ERRORES ====================
-
-// Ruta no encontrada
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Ruta no encontrada"
-  });
-});
-
-// Manejo de errores global
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(500).json({
-    success: false,
-    message: "Error interno del servidor"
-  });
-});
-
-// ==================== RUTAS DE PUBLICACIONES ====================
-
-// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
-app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
-
-// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
-app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
-
-// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
-app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
-
-// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
-app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
-
-// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
-app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
-
-// ==================== MANEJO DE ERRORES ====================
-
-// Ruta para manejar solicitudes a rutas no existentes
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Ruta no encontrada"
-  });
-});
-
-//Favoritos
-import favoritosRoutes from "./routes/favoritos.routes.js";
+// ==================== FAVORITOS ====================
 app.use("/api/favoritos", favoritosRoutes);
 
-// Middleware global para manejo de errores del servidor
+// ==================== MANEJO DE ERRORES ====================
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
+});
+
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
@@ -177,5 +134,4 @@ app.use((err, req, res, next) => {
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(app.get("port"), () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
-});
+  console.log(`✅ Servidor corriendo en http://lo
