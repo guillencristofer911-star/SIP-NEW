@@ -135,8 +135,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-<<<<<<< Updated upstream
-=======
 // ==================== RUTAS DE PUBLICACIONES ====================
 
 // ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
@@ -168,7 +166,6 @@ app.use((req, res) => {
 import favoritosRoutes from "./routes/favoritos.routes.js";
 app.use("/api/favoritos", favoritosRoutes);
 
-
 // Middleware global para manejo de errores del servidor
 app.use((err, req, res, next) => {
   console.error("Error:", err);
@@ -178,9 +175,7 @@ app.use((err, req, res, next) => {
   });
 });
 
->>>>>>> Stashed changes
 // ==================== INICIAR SERVIDOR ====================
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
-// ...existing code...
