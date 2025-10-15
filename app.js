@@ -7,7 +7,6 @@ import { methods as proyectosController } from "./controllers/proyectos.controll
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
-import favoritosRoutes from "./routes/favoritos.routes.js";
 
 dotenv.config();
 
@@ -28,6 +27,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
 
 // ==================== RUTAS PÚBLICAS ====================
 
+// Páginas HTML públicas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
@@ -58,7 +58,7 @@ app.get("/crear-publicacion", (req, res) => {
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-// Proyectos
+// Proyectos (temporalmente públicas)
 app.post("/api/proyectos/crear", upload.fields([
   { name: 'imagenes', maxCount: 5 },
   { name: 'documento_pdf', maxCount: 1 }
@@ -74,6 +74,7 @@ app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
 // ==================== RUTAS PROTEGIDAS ====================
 
+// Perfil (requiere token)
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -82,6 +83,7 @@ app.get("/api/perfil", verificarToken, (req, res) => {
   });
 });
 
+// Solo administradores
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
   res.json({
     success: true,
@@ -89,6 +91,7 @@ app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) 
   });
 });
 
+// Verificar token (útil para frontend)
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -97,6 +100,7 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
+// Logout (no invalida token en servidor, solo responde OK)
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -112,11 +116,9 @@ app.post("/api/publicaciones", verificarToken, publicacionController.crearPublic
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
-// ==================== FAVORITOS ====================
-app.use("/api/favoritos", favoritosRoutes);
-
 // ==================== MANEJO DE ERRORES ====================
 
+// Ruta no encontrada
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -124,6 +126,7 @@ app.use((req, res) => {
   });
 });
 
+// Manejo de errores global
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
@@ -134,4 +137,6 @@ app.use((err, req, res, next) => {
 
 // ==================== INICIAR SERVIDOR ====================
 app.listen(app.get("port"), () => {
-  console.log(`✅ Servidor corriendo en http://lo
+  console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
+});
+// ...existing code...
