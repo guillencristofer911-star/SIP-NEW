@@ -7,6 +7,8 @@ import { methods as proyectosController } from "./controllers/proyectos.controll
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
+import notificacionesRoutes from "./routes/notificaciones.routes.js";
+import notificacionesRoutes from "./routes/notificaciones.routes.js";
 
 dotenv.config();
 
