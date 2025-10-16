@@ -179,3 +179,8 @@ app.use((err, req, res, next) => {
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
+
+//Notificaciones
+app.use("/api/notificaciones", notificacionesRoutes);
+
+app.use("/api/notificaciones", notificacionesRoutes);

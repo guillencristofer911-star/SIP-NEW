@@ -1,5 +1,6 @@
 import db from '../database/db.js';
 import dotenv from 'dotenv';
+import { crearNotificacion } from "./notificaciones.controller.js";
 
 dotenv.config();
 
