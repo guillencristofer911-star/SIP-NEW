@@ -1,33 +1,41 @@
+// ==================== IMPORTACIONES ====================
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import cors from "cors";
+
+// Controladores
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
+
+// Middlewares
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
-import { upload } from './middlewares/upload.js';
+import { upload } from "./middlewares/upload.js";
 
+// Rutas
+import notificacionesRoutes from "./routes/notificaciones.routes.js";
+
+// ==================== CONFIGURACIÓN ====================
 dotenv.config();
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Inicializa la aplicación Express y configura el puerto
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-// Middleware para parsear JSON en las solicitudes
+// ==================== MIDDLEWARES ====================
+app.use(cors());
 app.use(express.json());
 
-// Servir archivos estáticos (CSS, JS, imágenes)
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname, "Public")));
+app.use("/uploads", express.static(path.join(__dirname, "Public", "uploads")));
 
-// Servir archivos subidos
-app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
+// ==================== RUTAS DE NOTIFICACIONES ====================
+app.use("/api/notificaciones", notificacionesRoutes);
 
-// ==================== RUTAS PÚBLICAS ====================
-
-// Páginas HTML públicas
+// ==================== PÁGINAS PÚBLICAS ====================
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
@@ -52,64 +60,66 @@ app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
 
-// ==================== API PÚBLICA ====================
-
-// Autenticación
+// ==================== API: AUTENTICACIÓN ====================
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-// Proyectos (temporalmente públicas)
-app.post("/api/proyectos/crear", upload.fields([
-  { name: 'imagenes', maxCount: 5 },
-  { name: 'documento_pdf', maxCount: 1 }
-]), proyectosController.crearProyecto);
+// ==================== API: PROYECTOS ====================
+app.post(
+  "/api/proyectos/crear",
+  upload.fields([
+    { name: "imagenes", maxCount: 5 },
+    { name: "documento_pdf", maxCount: 1 },
+  ]),
+  proyectosController.crearProyecto
+);
 
 app.get("/api/proyectos", proyectosController.obtenerProyectos);
 app.get("/api/proyectos/:id", proyectosController.obtenerProyectoPorId);
-app.put("/api/proyectos/:id/editar", upload.fields([
-  { name: 'imagenes', maxCount: 5 },
-  { name: 'documento_pdf', maxCount: 1 }
-]), proyectosController.editarProyecto);
+
+app.put(
+  "/api/proyectos/:id/editar",
+  upload.fields([
+    { name: "imagenes", maxCount: 5 },
+    { name: "documento_pdf", maxCount: 1 },
+  ]),
+  proyectosController.editarProyecto
+);
+
 app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
 // ==================== RUTAS PROTEGIDAS ====================
-
-// Perfil (requiere token)
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
     message: "Perfil de usuario",
-    usuario: req.usuario
+    usuario: req.usuario,
   });
 });
 
-// Solo administradores
-app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
+app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
   res.json({
     success: true,
-    message: "Lista de usuarios (solo admin)"
+    message: "Lista de usuarios (solo admin)",
   });
 });
 
-// Verificar token (útil para frontend)
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
     valido: true,
-    usuario: req.usuario
+    usuario: req.usuario,
   });
 });
 
-// Logout (no invalida token en servidor, solo responde OK)
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
-    message: "Sesión cerrada exitosamente"
+    message: "Sesión cerrada exitosamente",
   });
 });
 
-// ==================== RUTAS DE PUBLICACIONES ====================
-
+// ==================== API: PUBLICACIONES ====================
 app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
 app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
 app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
@@ -117,21 +127,18 @@ app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPu
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
 // ==================== MANEJO DE ERRORES ====================
-
-// Ruta no encontrada
 app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: "Ruta no encontrada"
+    message: "Ruta no encontrada",
   });
 });
 
-// Manejo de errores global
 app.use((err, req, res, next) => {
   console.error("Error:", err);
   res.status(500).json({
     success: false,
-    message: "Error interno del servidor"
+    message: "Error interno del servidor",
   });
 });
 
@@ -139,4 +146,3 @@ app.use((err, req, res, next) => {
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
-// ...existing code...
