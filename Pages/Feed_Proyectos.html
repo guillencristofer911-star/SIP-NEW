@@ -160,7 +160,7 @@
       <div class="modal-content">
         <h2>Subir Proyecto</h2>
         <form id="form-subir-proyecto" enctype="multipart/form-data">
-          <input type="hidden" name="user_id" id="user_id" value="16">
+          <input type="hidden" name="user_id" id="user_id">
           
           <input type="text" name="titulo" placeholder="Título..." required />
           <textarea name="descripcion" placeholder="Ingrese la descripción..." required></textarea>
@@ -235,7 +235,7 @@
       <div class="modal-content">
         <h2>Editar Proyecto</h2>
         <form id="form-editar-proyecto" enctype="multipart/form-data">
-          <input type="hidden" name="user_id" id="edit_user_id" value="16">
+          <input type="hidden" name="user_id" id="edit_user_id">
           <input type="hidden" name="proyecto_id" id="edit_proyecto_id">
           
           <input type="text" name="titulo" id="edit_titulo" placeholder="Título..." required />
@@ -303,7 +303,7 @@
           </li>
         </ul>
         <form action="/api/logout" method="POST" id="logoutForm">
-          <input type="hidden" name="user_id" value="16">
+          <input type="hidden" name="user_id" id="user_id">>
           <button type="submit" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
         </form>
       </div>

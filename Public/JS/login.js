@@ -1,14 +1,26 @@
-// Modal recuperar contraseña
+// ==================== MANEJO DEL MODAL DE RECUPERAR CONTRASEÑA ====================
+
+/**
+ * Muestra el modal de recuperación de contraseña al hacer clic en el enlace.
+ */
 document.getElementById('enlace-olvido').onclick = function(e) {
   e.preventDefault();
   document.getElementById('modal-recuperar').classList.add('activo');
 };
 
+/**
+ * Cierra el modal de recuperación de contraseña al hacer clic en el botón de cerrar.
+ */
 document.getElementById('cerrar-modal').onclick = function() {
   document.getElementById('modal-recuperar').classList.remove('activo');
 };
 
-// Manejo del formulario de login
+// ==================== MANEJO DEL FORMULARIO DE LOGIN ====================
+
+/**
+ * Obtiene el formulario de login y agrega el listener para el evento submit.
+ * Realiza validaciones, envía la solicitud al backend y maneja la respuesta.
+ */
 const loginForm = document.getElementById("login-form");
 
 if (loginForm) {
