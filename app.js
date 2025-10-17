@@ -7,6 +7,7 @@ import { methods as proyectosController } from "./controllers/proyectos.controll
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
+import { cambiarCorreo } from "./controllers/usuario.controller.js";
 
 dotenv.config();
 
@@ -50,6 +51,10 @@ app.get("/feed-proyectos", (req, res) => {
 
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
+});
+
+app.get("/cambiar-correo", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "cambiar-correo.html"));
 });
 
 // ==================== API PÚBLICA ====================
@@ -107,6 +112,9 @@ app.post("/api/logout", verificarToken, (req, res) => {
     message: "Sesión cerrada exitosamente"
   });
 });
+
+// Verificar token para cambiar correo
+app.put("/api/cambiar-correo", verificarToken, cambiarCorreo);
 
 // ==================== RUTAS DE PUBLICACIONES ====================
 
