@@ -116,6 +116,71 @@ app.post("/api/publicaciones", verificarToken, publicacionController.crearPublic
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
+// ==================== RUTAS DE PERFIL ====================
+
+// Actualizar correo del usuario
+app.put("/api/perfil/correo", verificarToken, async (req, res) => {
+  try {
+    const { nuevoCorreo } = req.body;
+    const usuarioId = req.usuario.id;
+
+    // Validar que el correo no esté vacío
+    if (!nuevoCorreo || nuevoCorreo.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "El correo no puede estar vacío"
+      });
+    }
+
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(nuevoCorreo)) {
+      return res.status(400).json({
+        success: false,
+        message: "El formato del correo no es válido"
+      });
+    }
+
+    // Verificar si el correo ya existe en otro usuario
+    const connection = await pool.getConnection();
+    try {
+      const [existingUsers] = await connection.execute(
+        'SELECT ID_usuario FROM usuario WHERE correo = ? AND ID_usuario != ?',
+        [nuevoCorreo, usuarioId]
+      );
+
+      if (existingUsers.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Este correo ya está en uso por otro usuario"
+        });
+      }
+
+      // Actualizar el correo
+      await connection.execute(
+        'UPDATE usuario SET correo = ? WHERE ID_usuario = ?',
+        [nuevoCorreo, usuarioId]
+      );
+
+      res.json({
+        success: true,
+        message: "Correo actualizado exitosamente",
+        nuevoCorreo: nuevoCorreo
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (error) {
+    console.error("Error al actualizar correo:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al actualizar el correo"
+    });
+  }
+});
+
 // ==================== MANEJO DE ERRORES ====================
 
 // Ruta no encontrada
