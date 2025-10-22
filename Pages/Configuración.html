@@ -223,25 +223,17 @@
     });
 
     // Opciones del menú (puedes personalizar acciones)
-	document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-	  li.addEventListener('click', () => {
-		switch(idx) {
-		  case 0: 
-			window.location.href = '/perfil'; 
-			break;
-		  case 1: 
-			window.location.href = '/configuracion'; 
-			break;
-		  case 2: 
-			window.location.href = '/favoritos';
-			break;
-		  case 3: 
-			window.location.href = '/ayuda';
-			break;
-		}
-		popoverMenu.style.display = 'none';
-	  });
-	});
+    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+      li.addEventListener('click', () => {
+        switch(idx) {
+          case 0: alert('Ir al Perfil'); break;
+          case 1: alert('Ir a Configuración'); break;
+          case 2: alert('Ir a Favoritos'); break;
+          case 3: alert('Ir a Ayuda'); break;
+        }
+        popoverMenu.style.display = 'none';
+      });
+    });
 
     // Modal eliminar cuenta
     const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');

@@ -442,10 +442,6 @@ body, html {
 .proyecto-comentarios {
   color: #888;
   font-size: 0.97em;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 120px;
 }
 .btn-abrir {
   background: #10b981;
