@@ -10,6 +10,9 @@ import { upload } from './middlewares/upload.js';
 <<<<<<< HEAD
 =======
 import favoritosRoutes from "./routes/favoritos.routes.js";
+<<<<<<< HEAD
+>>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
+=======
 >>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 
 dotenv.config();
@@ -121,6 +124,7 @@ app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPu
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 // ==================== RUTAS DE PERFIL ====================
 
 // Actualizar correo del usuario
@@ -187,6 +191,8 @@ app.put("/api/perfil/correo", verificarToken, async (req, res) => {
 });
 
 =======
+=======
+>>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 // ==================== RUTAS DE RESPUESTAS ====================
 app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
 app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
