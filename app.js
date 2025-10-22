@@ -7,6 +7,10 @@ import { methods as proyectosController } from "./controllers/proyectos.controll
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
+<<<<<<< HEAD
+=======
+import favoritosRoutes from "./routes/favoritos.routes.js";
+>>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 
 dotenv.config();
 
@@ -116,6 +120,7 @@ app.post("/api/publicaciones", verificarToken, publicacionController.crearPublic
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
+<<<<<<< HEAD
 // ==================== RUTAS DE PERFIL ====================
 
 // Actualizar correo del usuario
@@ -181,6 +186,32 @@ app.put("/api/perfil/correo", verificarToken, async (req, res) => {
   }
 });
 
+=======
+// ==================== RUTAS DE RESPUESTAS ====================
+app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
+
+// ==================== RUTAS PROTEGIDAS ====================
+app.get("/api/perfil", verificarToken, (req, res) => {
+  res.json({ success: true, message: "Perfil de usuario", usuario: req.usuario });
+});
+app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
+  res.json({ success: true, message: "Lista de usuarios (solo admin)" });
+});
+app.get("/api/verificar-token", verificarToken, (req, res) => {
+  res.json({ success: true, valido: true, usuario: req.usuario });
+});
+app.post("/api/logout", verificarToken, (req, res) => {
+  res.json({ success: true, message: "Sesión cerrada exitosamente" });
+});
+
+// Favoritos (router separado)
+app.use("/api/favoritos", favoritosRoutes);
+
+>>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 // ==================== MANEJO DE ERRORES ====================
 
 // Ruta no encontrada
