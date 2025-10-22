@@ -2,56 +2,55 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+
+import { methods as respuestasController } from "./controllers/respuestas.controller.js";
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
-import { verificarToken, verificarAdmin } from "./middlewares/authMiddleware.js";
+
+import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from "./middlewares/upload.js";
+
 import favoritosRoutes from "./routes/favoritos.routes.js";
 import notificacionesRoutes from "./routes/notificaciones.routes.js";
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-// Middleware
+// ==================== MIDDLEWARES ====================
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "Public")));
 app.use("/uploads", express.static(path.join(__dirname, "Public", "uploads")));
 
 // ==================== RUTAS PÚBLICAS ====================
-
-// Páginas HTML
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
-
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Login.html"));
 });
-
 app.get("/registro", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
-
 app.get("/publicaciones", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
-
 app.get("/feed-proyectos", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Feed_Proyectos.html"));
 });
+app.get("/crear-publicacion", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
+});
 
-// ==================== API ====================
-
-// Autenticación
+// ==================== AUTENTICACIÓN ====================
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-// Proyectos
+// ==================== PROYECTOS ====================
 app.post(
   "/api/proyectos/crear",
   upload.fields([
@@ -72,16 +71,21 @@ app.put(
 );
 app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
-// Publicaciones
+// ==================== PUBLICACIONES ====================
 app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
 app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
 app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
-// ==================== RUTAS PROTEGIDAS ====================
+// ==================== RESPUESTAS ====================
+app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
-// Perfil
+// ==================== RUTAS PROTEGIDAS ====================
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -90,7 +94,6 @@ app.get("/api/perfil", verificarToken, (req, res) => {
   });
 });
 
-// Solo administradores
 app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
   res.json({
     success: true,
@@ -98,7 +101,6 @@ app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
   });
 });
 
-// Verificar token
 app.get("/api/verificar-token", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -107,7 +109,6 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
-// Logout
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -116,15 +117,10 @@ app.post("/api/logout", verificarToken, (req, res) => {
 });
 
 // ==================== RUTAS ADICIONALES ====================
-
-// Favoritos
 app.use("/api/favoritos", favoritosRoutes);
-
-// Notificaciones
 app.use("/api/notificaciones", notificacionesRoutes);
 
 // ==================== MANEJO DE ERRORES ====================
-
 app.use((req, res) => {
   res.status(404).json({
     success: false,
