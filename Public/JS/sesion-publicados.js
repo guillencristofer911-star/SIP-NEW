@@ -317,6 +317,9 @@ async function cargarPublicaciones() {
               <span class="proyecto-titulo">${escapeHtml(pub.titulo)}</span>
               <span class="proyecto-fecha">${formatearFecha(pub.fecha_creacion)}${indicadorTiempo}</span>
               <button class="proyecto-fav" type="button"><i class="fa-regular fa-star"></i></button>
+                  ${!esAutor ? `
+                    <button class="publicacion-reportar-btn" onclick="mostrarModalReportarPublicacion(${pub.ID_publicacion})" title="Reportar publicación">⋮</button>
+                  ` : ''}
               ${esAutor ? `
                 <button class="publicacion-menu-btn" onclick="togglePublicacionMenu(this)">...</button>
                 <div class="publicacion-menu" style="display:none;">
@@ -1168,3 +1171,98 @@ async function publicarRespuesta() {
     alert('Error de conexión con el servidor');
   }
 }
+
+
+// ============================================
+// SISTEMA DE REPORTES DE PUBLICACIONES
+// ============================================
+
+let publicacionReportandoId = null;
+
+/**
+ * Mostrar modal para reportar publicación
+ */
+window.mostrarModalReportarPublicacion = function(idPublicacion) {
+  console.log('🚨 Abriendo modal de reporte para publicación:', idPublicacion);
+  
+  publicacionReportandoId = idPublicacion;
+  
+  // Limpiar formulario
+  document.getElementById('motivo-reporte-publicacion').value = '';
+  document.getElementById('descripcion-reporte-publicacion').value = '';
+  
+  // Mostrar modal
+  document.getElementById('modal-reportar-publicacion').style.display = 'flex';
+};
+
+/**
+ * Cerrar modal de reporte
+ */
+function cerrarModalReportarPublicacion() {
+  document.getElementById('modal-reportar-publicacion').style.display = 'none';
+  publicacionReportandoId = null;
+}
+
+/**
+ * Enviar reporte de publicación
+ */
+async function enviarReportePublicacion() {
+  if (!publicacionReportandoId) return;
+  
+  const motivo = document.getElementById('motivo-reporte-publicacion').value;
+  const descripcion = document.getElementById('descripcion-reporte-publicacion').value.trim();
+  
+  if (!motivo) {
+    alert('Por favor seleccione un motivo para el reporte');
+    return;
+  }
+  
+  try {
+    const response = await fetch(`/api/publicaciones/${publicacionReportandoId}/reportar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        motivo: motivo,
+        descripcion: descripcion || null
+      })
+    });
+    
+    const data = await response.json();
+    
+    if (data.success) {
+      alert('✅ ' + data.message);
+      cerrarModalReportarPublicacion();
+    } else {
+      alert(data.message || 'Error al enviar el reporte');
+    }
+  } catch (error) {
+    console.error('❌ Error:', error);
+    alert('Error de conexión con el servidor');
+  }
+}
+
+// Configurar eventos del modal de reporte
+document.addEventListener('DOMContentLoaded', function() {
+  const btnEnviarReporte = document.getElementById('btn-enviar-reporte-publicacion');
+  const btnCancelarReporte = document.getElementById('btn-cancelar-reporte-publicacion');
+  const modalReportar = document.getElementById('modal-reportar-publicacion');
+  
+  if (btnEnviarReporte) {
+    btnEnviarReporte.addEventListener('click', enviarReportePublicacion);
+  }
+  
+  if (btnCancelarReporte) {
+    btnCancelarReporte.addEventListener('click', cerrarModalReportarPublicacion);
+  }
+  
+  if (modalReportar) {
+    modalReportar.addEventListener('click', function(e) {
+      if (e.target === this) {
+        cerrarModalReportarPublicacion();
+      }
+    });
+  }
+});

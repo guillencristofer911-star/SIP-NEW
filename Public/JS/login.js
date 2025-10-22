@@ -1,5 +1,4 @@
 // ==================== MANEJO DEL MODAL DE RECUPERAR CONTRASEÑA ====================
-
 /**
  * Muestra el modal de recuperación de contraseña al hacer clic en el enlace.
  */
@@ -16,13 +15,11 @@ document.getElementById('cerrar-modal').onclick = function() {
 };
 
 // ==================== MANEJO DEL FORMULARIO DE LOGIN ====================
-
 /**
  * Obtiene el formulario de login y agrega el listener para el evento submit.
  * Realiza validaciones, envía la solicitud al backend y maneja la respuesta.
  */
 const loginForm = document.getElementById("login-form");
-
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -39,7 +36,6 @@ if (loginForm) {
       alert("Por favor completa todos los campos");
       return;
     }
-
     if (!/^\d+$/.test(data.documento)) {
       alert("El documento debe contener solo números");
       return;
@@ -58,17 +54,26 @@ if (loginForm) {
         },
         body: JSON.stringify(data)
       });
-
       const responseData = await res.json();
-
+      
       if (res.ok) {
         localStorage.setItem("token", responseData.token);
         localStorage.setItem("usuario", JSON.stringify(responseData.usuario));
         
-        alert("Login exitoso. Bienvenido " + responseData.usuario.nombre);
+        // 🔥 REDIRIGIR SEGÚN EL ROL
+        const usuario = responseData.usuario;
         
-        // Redirigir a Sesión_publicados.html
-        window.location.href = "/publicaciones";
+        if (usuario.rol === 1) {
+          // ADMIN → Panel de administración
+          console.log('✅ Login como ADMIN:', usuario.nombre);
+          alert("Bienvenido Administrador " + usuario.nombre);
+          window.location.href = "/admin/panel";
+        } else {
+          // USUARIO NORMAL → Feed de publicaciones
+          console.log('✅ Login como USUARIO:', usuario.nombre);
+          alert("Login exitoso. Bienvenido " + usuario.nombre);
+          window.location.href = "/publicaciones";
+        }
         
       } else {
         alert(responseData.message || "Error en el login");

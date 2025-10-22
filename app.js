@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import { methods as respuestasController } from "./controllers/respuestas.controller.js";
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
+import { methods as reportesController } from "./controllers/reportes.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
@@ -14,9 +15,11 @@ import favoritosRoutes from "./routes/favoritos.routes.js";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 const app = express();
 app.set("port", process.env.PORT || 4000);
+
+app.use(express.static('public'));
+
 
 // Middlewares
 app.use(express.json());
@@ -79,6 +82,11 @@ app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasControll
 app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
 app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
+// ==================== RUTAS DE REPORTES ====================
+app.post("/api/publicaciones/:id/reportar", verificarToken, reportesController.reportarPublicacion);
+app.get("/api/reportes", verificarToken, verificarAdmin, reportesController.obtenerReportes);
+
+
 // ==================== RUTAS PROTEGIDAS ====================
 app.get("/api/perfil", verificarToken, (req, res) => {
   res.json({ success: true, message: "Perfil de usuario", usuario: req.usuario });
@@ -91,6 +99,12 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
 });
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({ success: true, message: "Sesión cerrada exitosamente" });
+});
+
+// ==================== PANEL DE ADMINISTRACIÓN ====================
+
+app.get("/admin/panel", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "Admin_Panel.html"));
 });
 
 // Favoritos (router separado)
