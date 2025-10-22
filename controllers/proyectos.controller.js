@@ -23,11 +23,13 @@ export const methods = {
                 });
             }
 
-            // OBTENER DATOS DEL USUARIO PARA EL AUTOR
-            const [usuarios] = await pool.execute(
-                'SELECT nombre, apellido FROM usuario WHERE ID_usuario = ?',
-                [user_id]
-            );
+            // 🔥 OBTENER DATOS DEL USUARIO CON SU ROL
+            const [usuarios] = await pool.execute(`
+                SELECT u.nombre, u.apellido, u.ID_rol, r.nombre as rol_nombre
+                FROM usuario u
+                LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+                WHERE u.ID_usuario = ?
+            `, [user_id]);
 
             if (usuarios.length === 0) {
                 return res.status(404).json({
@@ -38,42 +40,43 @@ export const methods = {
 
             const usuario = usuarios[0];
             const nombreAutor = `${usuario.nombre} ${usuario.apellido}`;
+            const rolAutor = usuario.rol_nombre;
+
+            console.log(`👤 Autor: ${nombreAutor}, Rol: ${rolAutor}`);
 
             // Procesar archivos subidos
             let imagenesPaths = [];
             let pdfPath = null;
 
             if (req.files) {
-                // Procesar imágenes
                 if (req.files.imagenes) {
                     imagenesPaths = req.files.imagenes.map(file => `/uploads/${file.filename}`);
-                    console.log('Imágenes guardadas:', imagenesPaths);
+                    console.log('📷 Imágenes guardadas:', imagenesPaths);
                 }
                 
-                // Procesar PDF
                 if (req.files.documento_pdf) {
                     pdfPath = `/uploads/${req.files.documento_pdf[0].filename}`;
-                    console.log('PDF guardado:', pdfPath);
+                    console.log('📄 PDF guardado:', pdfPath);
                 }
             }
 
-            // INSERT CORREGIDO - USANDO 'titulo' PARA EL NOMBRE DEL PROYECTO
+            // 🔥 INSERT con timestamp
             const [result] = await pool.execute(
                 `INSERT INTO proyecto 
                 (ID_usuario, nombre, descripcion, github_url, documento_pdf, imagenes, 
-                 fecha_creacion, fecha_ultima_edicion, programa_autor, rol_autor, estado,
+                 fecha_creacion, fecha_ultima_edicion, programa_autor, rol_autor, ID_rol_autor, estado,
                  ID_estado_proyecto, ID_categoria) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, 'egresado', 'activo', ?, ?)`,
+                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW(), ?, ?, ?, 'activo', 1, 1)`,
                 [
                     user_id, 
-                    titulo,  // ← Este es el TÍTULO del proyecto
+                    titulo,
                     descripcion, 
                     github_url || null, 
                     pdfPath, 
                     JSON.stringify(imagenesPaths),
                     programa,
-                    1,  // ID_estado_proyecto = activo
-                    1   // ID_categoria = Desarrollo de Software
+                    rolAutor,
+                    usuario.ID_rol
                 ]
             );
 
@@ -83,7 +86,8 @@ export const methods = {
                 success: true,
                 message: 'Proyecto creado exitosamente',
                 proyecto_id: result.insertId,
-                autor: nombreAutor // Devolver el nombre del autor
+                autor: nombreAutor,
+                rol: rolAutor
             });
 
         } catch (error) {
@@ -97,11 +101,11 @@ export const methods = {
 
     obtenerProyectos: async (req, res) => {
         try {
-            // CONSULTA MEJORADA - OBTENER DATOS COMPLETOS DEL AUTOR
+            // 🔥 CONSULTA MEJORADA: Solo proyectos activos
             const [proyectos] = await pool.execute(`
                 SELECT 
                     p.ID_proyecto,
-                    p.nombre as titulo_proyecto,  -- ← Título del proyecto
+                    p.nombre as titulo_proyecto,
                     p.descripcion,
                     p.github_url,
                     p.documento_pdf,
@@ -110,32 +114,34 @@ export const methods = {
                     p.programa_autor,
                     p.rol_autor,
                     u.ID_usuario,
-                    u.nombre as nombre_autor,      -- ← Nombre del autor
-                    u.apellido as apellido_autor   -- ← Apellido del autor
+                    u.nombre as nombre_autor,
+                    u.apellido as apellido_autor,
+                    u.ID_rol,
+                    r.nombre as rol_usuario
                 FROM proyecto p 
-                JOIN usuario u ON p.ID_usuario = u.ID_usuario 
-                WHERE p.estado = 'activo' OR p.ID_estado_proyecto = 1
+                JOIN usuario u ON p.ID_usuario = u.ID_usuario
+                LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+                WHERE p.estado = 'activo' AND p.ID_estado_proyecto = 1
                 ORDER BY p.fecha_creacion DESC
             `);
 
-            // Parsear las imágenes de JSON a array y estructurar datos
+            console.log(`📚 Se encontraron ${proyectos.length} proyectos activos`);
+
             const proyectosConImagenes = proyectos.map(proyecto => ({
                 ID_proyecto: proyecto.ID_proyecto,
-                nombre: proyecto.titulo_proyecto,  // Título del proyecto
+                ID_usuario: proyecto.ID_usuario,
+                nombre: proyecto.titulo_proyecto,
                 descripcion: proyecto.descripcion,
                 github_url: proyecto.github_url,
                 documento_pdf: proyecto.documento_pdf,
                 imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : [],
                 fecha_creacion: proyecto.fecha_creacion,
                 programa_autor: proyecto.programa_autor,
-                rol_autor: proyecto.rol_autor,
-                // Datos del autor
+                rol_autor: proyecto.rol_usuario || proyecto.rol_autor,
                 nombre_autor: proyecto.nombre_autor,
                 apellido_autor: proyecto.apellido_autor,
                 autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
             }));
-
-            console.log('Proyectos cargados:', proyectosConImagenes.length);
 
             res.json({
                 success: true,
@@ -143,7 +149,7 @@ export const methods = {
             });
 
         } catch (error) {
-            console.error('Error al obtener proyectos:', error);
+            console.error('❌ Error al obtener proyectos:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error al cargar proyectos: ' + error.message
@@ -151,7 +157,6 @@ export const methods = {
         }
     },
 
-    // OBTENER UN PROYECTO POR ID (ACTUALIZADO)
     obtenerProyectoPorId: async (req, res) => {
         try {
             const proyectoId = req.params.id;
@@ -160,10 +165,13 @@ export const methods = {
                 SELECT 
                     p.*,
                     u.nombre as nombre_autor,
-                    u.apellido as apellido_autor
+                    u.apellido as apellido_autor,
+                    u.ID_rol,
+                    r.nombre as rol_usuario
                 FROM proyecto p 
-                JOIN usuario u ON p.ID_usuario = u.ID_usuario 
-                WHERE p.ID_proyecto = ? AND (p.estado = 'activo' OR p.ID_estado_proyecto = 1)
+                JOIN usuario u ON p.ID_usuario = u.ID_usuario
+                LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+                WHERE p.ID_proyecto = ? AND p.estado = 'activo' AND p.ID_estado_proyecto = 1
             `, [proyectoId]);
 
             if (proyectos.length === 0) {
@@ -175,13 +183,12 @@ export const methods = {
 
             const proyecto = proyectos[0];
             
-            // Parsear imágenes de JSON a array
             let imagenesArray = [];
             if (proyecto.imagenes) {
                 try {
                     imagenesArray = JSON.parse(proyecto.imagenes);
                 } catch (e) {
-                    console.log('Error parseando imágenes:', e);
+                    console.log('⚠️ Error parseando imágenes:', e);
                     imagenesArray = [proyecto.imagenes];
                 }
             }
@@ -191,12 +198,13 @@ export const methods = {
                 proyecto: {
                     ...proyecto,
                     imagenes: imagenesArray,
+                    rol_autor: proyecto.rol_usuario || proyecto.rol_autor,
                     autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
                 }
             });
 
         } catch (error) {
-            console.error('Error al obtener proyecto:', error);
+            console.error('❌ Error al obtener proyecto:', error);
             res.status(500).json({
                 success: false,
                 message: 'Error al cargar proyecto'
@@ -204,14 +212,9 @@ export const methods = {
         }
     },
 
-    // ... (mantener las funciones editarProyecto y eliminarProyecto igual)
     editarProyecto: async (req, res) => {
         try {
             console.log('=== EDITANDO PROYECTO ===');
-            console.log('Body:', req.body);
-            console.log('Files:', req.files);
-            console.log('Params:', req.params);
-
             const proyectoId = req.params.id;
             const {
                 titulo,
@@ -223,7 +226,7 @@ export const methods = {
 
             // Validar que el usuario es el dueño del proyecto
             const [proyectoExistente] = await pool.execute(
-                'SELECT * FROM proyecto WHERE ID_proyecto = ? AND ID_usuario = ?',
+                'SELECT * FROM proyecto WHERE ID_proyecto = ? AND ID_usuario = ? AND estado = "activo"',
                 [proyectoId, user_id]
             );
 
@@ -234,26 +237,34 @@ export const methods = {
                 });
             }
 
+            // 🔥 VERIFICAR TIEMPO LÍMITE (15 minutos)
+            const fechaCreacion = new Date(proyectoExistente[0].fecha_creacion);
+            const ahora = new Date();
+            const diferenciaMinutos = (ahora - fechaCreacion) / 60000;
+
+            if (diferenciaMinutos > 15) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'El tiempo límite para editar este proyecto (15 minutos) ha expirado',
+                    minutosTranscurridos: Math.floor(diferenciaMinutos)
+                });
+            }
+
             // Procesar nuevos archivos si se subieron
             let nuevasImagenes = proyectoExistente[0].imagenes ? JSON.parse(proyectoExistente[0].imagenes) : [];
             let nuevoPDF = proyectoExistente[0].documento_pdf;
 
             if (req.files) {
-                // Procesar nuevas imágenes
                 if (req.files.imagenes) {
                     nuevasImagenes = req.files.imagenes.map(file => `/uploads/${file.filename}`);
-                    console.log('Nuevas imágenes:', nuevasImagenes);
                 }
-                
-                // Procesar nuevo PDF
                 if (req.files.documento_pdf) {
                     nuevoPDF = `/uploads/${req.files.documento_pdf[0].filename}`;
-                    console.log('Nuevo PDF:', nuevoPDF);
                 }
             }
 
             // Actualizar en la base de datos
-            const [result] = await pool.execute(
+            await pool.execute(
                 `UPDATE proyecto 
                  SET nombre = ?, descripcion = ?, programa_autor = ?, github_url = ?, 
                      documento_pdf = ?, imagenes = ?, fecha_ultima_edicion = NOW()
@@ -292,11 +303,11 @@ export const methods = {
             const proyectoId = req.params.id;
             const { user_id } = req.body;
 
-            console.log('=== ELIMINANDO PROYECTO ===', { proyectoId, user_id });
+            console.log('=== ELIMINANDO PROYECTO (LÓGICO) ===', { proyectoId, user_id });
 
             // Verificar que el usuario es el dueño del proyecto
             const [proyectoExistente] = await pool.execute(
-                'SELECT * FROM proyecto WHERE ID_proyecto = ? AND ID_usuario = ?',
+                'SELECT * FROM proyecto WHERE ID_proyecto = ? AND ID_usuario = ? AND estado = "activo"',
                 [proyectoId, user_id]
             );
 
@@ -307,13 +318,18 @@ export const methods = {
                 });
             }
 
-            // Borrado lógico (cambiar estado a inactivo)
-            const [result] = await pool.execute(
-                'UPDATE proyecto SET estado = "inactivo", ID_estado_proyecto = 2 WHERE ID_proyecto = ?',
-                [proyectoId]
+            // 🔥 BORRADO LÓGICO: Cambiar estado a "inactivo"
+            // El proyecto NO se elimina de la base de datos, solo se oculta
+            await pool.execute(
+                `UPDATE proyecto 
+                 SET estado = 'inactivo', 
+                     ID_estado_proyecto = 2,
+                     fecha_ultima_edicion = NOW()
+                 WHERE ID_proyecto = ? AND ID_usuario = ?`,
+                [proyectoId, user_id]
             );
 
-            console.log('✅ Proyecto eliminado (lógico):', proyectoId);
+            console.log('✅ Proyecto marcado como inactivo (eliminación lógica):', proyectoId);
 
             res.json({
                 success: true,

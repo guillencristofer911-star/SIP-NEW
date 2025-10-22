@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/Registro.css">
-
     <title>Registro SIP</title>
 </head>
 <body>
@@ -18,16 +17,69 @@
             <h1 class="title" style="margin-bottom: 0;">Bienvenido</h1>
             <p class="form-subtitle" style="margin-top: 0;">Registrarse en SIP</p>
             
-            <!-- Formulario de registro -->
-            <form id="register-form" class="form">
-                <input type="text" name="documento" placeholder="Ingrese documento" required>
-                <input type="text" name="nombre" placeholder="Ingrese nombres" required>
-                <input type="text" name="apellido" placeholder="Ingrese apellidos" required>
-                <input type="email" name="correo" placeholder="Correo electrónico" required>
-                <input type="text" name="programa" placeholder="Nombre del programa" required>
-                <input type="password" name="password" placeholder="Ingrese contraseña" required>
-                <input type="password" name="confirmar_password" placeholder="Confirme contraseña" required>
+            <!-- ✅ FORMULARIO DE REGISTRO CORREGIDO -->
+            <form id="register-form" class="form" action="javascript:void(0);" method="POST">
                 
+                <!-- ✅ Campo: Documento -->
+                <input 
+                    type="text" 
+                    name="documento" 
+                    placeholder="Ingrese documento" 
+                    required
+                    maxlength="15"
+                >
+                
+                <!-- ✅ Campo: Nombres -->
+                <input 
+                    type="text" 
+                    name="nombres" 
+                    placeholder="Ingrese nombres" 
+                    required
+                >
+                
+                <!-- ✅ Campo: Apellidos -->
+                <input 
+                    type="text" 
+                    name="apellidos" 
+                    placeholder="Ingrese apellidos" 
+                    required
+                >
+                
+                <!-- ✅ Campo: Correo -->
+                <input 
+                    type="email" 
+                    name="correo" 
+                    placeholder="Correo electrónico" 
+                    required
+                >
+                
+                <!-- ✅ Campo: Programa -->
+                <input 
+                    type="text" 
+                    name="programa" 
+                    placeholder="Nombre del programa" 
+                    required
+                >
+                
+                <!-- ✅ Campo: Contraseña -->
+                <input 
+                    type="password" 
+                    name="contrasena" 
+                    placeholder="Ingrese contraseña" 
+                    required
+                    minlength="8"
+                >
+                
+                <!-- ✅ Campo: Confirmar Contraseña -->
+                <input 
+                    type="password" 
+                    name="confirmar_contrasena" 
+                    placeholder="Confirme contraseña" 
+                    required
+                    minlength="8"
+                >
+                
+                <!-- ✅ CAMPO CRÍTICO: Tipo de Usuario (Aprendiz/Egresado) -->
                 <div class="radio-group">
                     <label>
                         <input type="radio" name="tipo" value="aprendiz" required>
@@ -39,6 +91,7 @@
                     </label>
                 </div>
                 
+                <!-- ✅ Checkbox: Términos y Condiciones -->
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" name="terminos" required>
@@ -46,7 +99,7 @@
                     </label>
                 </div>
 
-                <!-- Modal de términos -->
+                <!-- ✅ MODAL DE TÉRMINOS -->
                 <div class="modal" id="modal-terms">
                     <div class="modal-content">
                         <a href="#" class="close-button" id="close-modal-btn">&times;</a>
@@ -57,78 +110,20 @@
                         <p><strong>Fecha de entrada en vigencia:</strong> [13/08/2025]</p>
                         <p><strong>1. Aceptación del servicio</strong></p>
                         <p>Al registrarse en la plataforma SIP (SENA Interactive Portal), el usuario declara haber leído, entendido y aceptado íntegramente los presentes Términos y Condiciones. El uso del sistema implica la aceptación de todas las políticas, reglas y lineamientos aquí establecidos.</p>
+                        <p><strong>2. Uso de la plataforma</strong></p>
+                        <p>El usuario se compromete a utilizar la plataforma de manera responsable y ética.</p>
+                        <p><strong>3. Privacidad</strong></p>
+                        <p>La información personal será tratada conforme a nuestra política de privacidad.</p>
                     </div>
                 </div>
 
+                <!-- ✅ Botón de Registro -->
                 <button type="submit" class="btn">Registrarse</button>
             </form>
         </div>
     </div>
-    <script src="/js/registro.js" defer>
-        document.addEventListener('DOMContentLoaded', () => {
-            const openModalBtn = document.getElementById('open-modal-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const modal = document.getElementById('modal-terms');
-
-            // 🧾 Modal: abrir/cerrar términos
-            if (openModalBtn) {
-                openModalBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    modal.classList.add('active');
-                });
-            }
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', () => {
-                    modal.classList.remove('active');
-                });
-            }
-            window.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                }
-            });
-
-            // 🧠 Registro
-            form.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const data = {
-                    documento: form.documento.value,
-                    nombre: form.nombre.value,
-                    apellido: form.apellido.value,
-                    correo: form.correo.value,
-                    programa: form.programa.value,
-                    password: form.password.value,
-                    tipo: form.tipo.value
-                };
-
-                const confirmar = form.confirmar_password.value;
-                if (data.password !== confirmar) {
-                    alert("⚠️ Las contraseñas no coinciden");
-                    return;
-                }
-
-                try {
-                    const res = await fetch("/api/register", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
-                    });
-
-                    const result = await res.json();
-
-                    if (res.ok && result.success) {
-                        alert("✅ Registro exitoso");
-                        window.location.href = "/login";
-                    } else {
-                        alert("⚠️ " + (result.message || "Error al registrar usuario"));
-                    }
-                } catch (error) {
-                    console.error("Error:", error);
-                    alert("❌ Error en el servidor o conexión");
-                }
-            });
-        });
-    </script>
+    
+    <!-- ✅ SCRIPT DE REGISTRO -->
+    <script src="/JS/registro.js"></script>
 </body>
 </html>

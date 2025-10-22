@@ -29,7 +29,7 @@ const pool = mysql.createPool({
 pool.getConnection()
   .then(connection => {
     console.log('✅ Conectado a la base de datos MySQL - bd_sip');
-    console.log('✅ Usuario: hector');
+    console.log('✅ Usuario: root');
     
     // Verificar que podemos hacer consultas
     return connection.query('SELECT COUNT(*) as total FROM usuario')

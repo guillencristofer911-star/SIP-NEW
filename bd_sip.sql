@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 07, 2025 at 04:45 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 10-10-2025 a las 19:41:42
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,15 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `bd_sip`
+-- Base de datos: `bd_sip`
 --
-CREATE DATABASE IF NOT EXISTS `bd_sip` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `bd_sip`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `accion_moderacion`
+-- Estructura de tabla para la tabla `accion_moderacion`
 --
 
 CREATE TABLE `accion_moderacion` (
@@ -37,7 +35,7 @@ CREATE TABLE `accion_moderacion` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cambio_contraseña`
+-- Estructura de tabla para la tabla `cambio_contraseña`
 --
 
 CREATE TABLE `cambio_contraseña` (
@@ -53,7 +51,7 @@ CREATE TABLE `cambio_contraseña` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categoria`
+-- Estructura de tabla para la tabla `categoria`
 --
 
 CREATE TABLE `categoria` (
@@ -61,10 +59,20 @@ CREATE TABLE `categoria` (
   `nombre` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `categoria`
+--
+
+INSERT INTO `categoria` (`ID_categoria`, `nombre`) VALUES
+(1, 'Desarrollo de Software'),
+(2, 'Redes y Telecomunicaciones'),
+(3, 'Multimedia'),
+(4, 'Otros');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comentario_proyecto`
+-- Estructura de tabla para la tabla `comentario_proyecto`
 --
 
 CREATE TABLE `comentario_proyecto` (
@@ -79,7 +87,7 @@ CREATE TABLE `comentario_proyecto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `contenido_afectado`
+-- Estructura de tabla para la tabla `contenido_afectado`
 --
 
 CREATE TABLE `contenido_afectado` (
@@ -90,7 +98,7 @@ CREATE TABLE `contenido_afectado` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estado_comentario`
+-- Estructura de tabla para la tabla `estado_comentario`
 --
 
 CREATE TABLE `estado_comentario` (
@@ -101,18 +109,28 @@ CREATE TABLE `estado_comentario` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estado_cuenta`
+-- Estructura de tabla para la tabla `estado_cuenta`
 --
 
 CREATE TABLE `estado_cuenta` (
-  `ID_estado_cuenta` int(100) NOT NULL,
-  `Estado` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_estado_cuenta` int(11) NOT NULL,
+  `estado` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `estado_cuenta`
+--
+
+INSERT INTO `estado_cuenta` (`ID_estado_cuenta`, `estado`) VALUES
+(1, 'activo'),
+(2, 'inactivo'),
+(3, 'suspendido'),
+(4, 'eliminado');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estado_notificacion`
+-- Estructura de tabla para la tabla `estado_notificacion`
 --
 
 CREATE TABLE `estado_notificacion` (
@@ -123,7 +141,7 @@ CREATE TABLE `estado_notificacion` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estado_proyecto`
+-- Estructura de tabla para la tabla `estado_proyecto`
 --
 
 CREATE TABLE `estado_proyecto` (
@@ -131,10 +149,20 @@ CREATE TABLE `estado_proyecto` (
   `estado` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `estado_proyecto`
+--
+
+INSERT INTO `estado_proyecto` (`ID_estado_proyecto`, `estado`) VALUES
+(1, 'activo'),
+(2, 'inactivo'),
+(3, 'pendiente'),
+(4, 'rechazado');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estado_publicacion`
+-- Estructura de tabla para la tabla `estado_publicacion`
 --
 
 CREATE TABLE `estado_publicacion` (
@@ -143,18 +171,19 @@ CREATE TABLE `estado_publicacion` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `estado_publicacion`
+-- Volcado de datos para la tabla `estado_publicacion`
 --
 
 INSERT INTO `estado_publicacion` (`ID_estado_publicacion`, `estado`) VALUES
 (1, 'activo'),
 (2, 'inactivo'),
-(3, 'eliminado');
+(3, 'pendiente'),
+(4, 'rechazado');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `etiqueta`
+-- Estructura de tabla para la tabla `etiqueta`
 --
 
 CREATE TABLE `etiqueta` (
@@ -165,7 +194,7 @@ CREATE TABLE `etiqueta` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `favorito_proyecto`
+-- Estructura de tabla para la tabla `favorito_proyecto`
 --
 
 CREATE TABLE `favorito_proyecto` (
@@ -178,7 +207,7 @@ CREATE TABLE `favorito_proyecto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `favorito_publicacion`
+-- Estructura de tabla para la tabla `favorito_publicacion`
 --
 
 CREATE TABLE `favorito_publicacion` (
@@ -191,7 +220,7 @@ CREATE TABLE `favorito_publicacion` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `historial_moderación`
+-- Estructura de tabla para la tabla `historial_moderación`
 --
 
 CREATE TABLE `historial_moderación` (
@@ -206,7 +235,7 @@ CREATE TABLE `historial_moderación` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `imagen_proyecto`
+-- Estructura de tabla para la tabla `imagen_proyecto`
 --
 
 CREATE TABLE `imagen_proyecto` (
@@ -220,7 +249,7 @@ CREATE TABLE `imagen_proyecto` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notificacion`
+-- Estructura de tabla para la tabla `notificacion`
 --
 
 CREATE TABLE `notificacion` (
@@ -235,7 +264,7 @@ CREATE TABLE `notificacion` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `palabra_prohibida`
+-- Estructura de tabla para la tabla `palabra_prohibida`
 --
 
 CREATE TABLE `palabra_prohibida` (
@@ -246,51 +275,64 @@ CREATE TABLE `palabra_prohibida` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `proyecto`
+-- Estructura de tabla para la tabla `proyecto`
 --
 
 CREATE TABLE `proyecto` (
   `ID_proyecto` int(100) NOT NULL,
   `ID_usuario` int(100) NOT NULL,
   `nombre` varchar(100) NOT NULL,
-  `descripcion` varchar(100) NOT NULL,
-  `enlaces` varchar(100) NOT NULL,
-  `fecha_creacion` date NOT NULL,
-  `fecha_ultima_edicion` date NOT NULL,
+  `descripcion` text DEFAULT NULL,
+  `enlaces` text DEFAULT NULL,
+  `fecha_creacion` datetime NOT NULL,
+  `fecha_ultima_edicion` datetime NOT NULL,
   `ID_estado_proyecto` int(100) NOT NULL,
-  `ID_categoria` int(100) NOT NULL
+  `ID_categoria` int(100) NOT NULL,
+  `github_url` varchar(255) DEFAULT NULL,
+  `documento_pdf` varchar(255) DEFAULT NULL,
+  `imagenes` text DEFAULT NULL,
+  `rol_autor` varchar(50) DEFAULT NULL,
+  `ID_rol_autor` int(11) DEFAULT NULL,
+  `programa_autor` varchar(100) DEFAULT NULL,
+  `estado` varchar(50) DEFAULT 'activo'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `proyecto`
+--
+
+INSERT INTO `proyecto` (`ID_proyecto`, `ID_usuario`, `nombre`, `descripcion`, `enlaces`, `fecha_creacion`, `fecha_ultima_edicion`, `ID_estado_proyecto`, `ID_categoria`, `github_url`, `documento_pdf`, `imagenes`, `rol_autor`, `ID_rol_autor`, `programa_autor`, `estado`) VALUES
+(1, 4, 'Esta es una prueba desde el usuario juan ', 'Esta es una prueba desde el usuario juan, con el ro egresado, test de edición', NULL, '2025-10-09 15:08:35', '2025-10-09 15:22:41', 1, 1, 'https://github.com/guillencristofer911-star/SIP-NEW', '/uploads/proyecto-1760040515565-702475636.pdf', '[\"/uploads/proyecto-1760040515564-309526274.png\",\"/uploads/proyecto-1760040515564-254911494.png\"]', 'egresado', 3, 'Desarrollo de Software', 'activo');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `publicacion`
+-- Estructura de tabla para la tabla `publicacion`
 --
 
 CREATE TABLE `publicacion` (
   `ID_publicacion` int(100) NOT NULL,
   `ID_usuario` int(100) NOT NULL,
+  `ID_rol_autor` int(11) DEFAULT NULL,
   `titulo` varchar(100) NOT NULL,
-  `contenido` varchar(100) NOT NULL,
-  `fecha_creacion` datetime NOT NULL,
-  `fecha_ultima_edicion` datetime DEFAULT NULL,
+  `contenido` text NOT NULL,
+  `fecha_creacion` datetime NOT NULL DEFAULT current_timestamp(),
+  `fecha_ultima_edicion` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `ID_estado_publicacion` int(100) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `publicacion`
+-- Volcado de datos para la tabla `publicacion`
 --
 
-INSERT INTO `publicacion` (`ID_publicacion`, `ID_usuario`, `titulo`, `contenido`, `fecha_creacion`, `fecha_ultima_edicion`, `ID_estado_publicacion`) VALUES
-(6, 16, 'Publicacion Prueba', 'sdsdsdsdsdsds', '2025-10-06 19:35:39', '2025-10-06 00:00:00', 1),
-(7, 16, 'Esto es una prueba de edicion', 'erda loco esto es muy easy', '2025-10-06 19:35:39', '2025-10-06 00:00:00', 1),
-(22, 16, 'Prueba numero 7', 'Ultima prueba after pull sdsds', '2025-10-06 21:35:16', '2025-10-07 02:35:26', 1),
-(23, 16, 'Prueba numero no se cual', 'sdsjdskdjksjdkjskdjs', '2025-10-07 09:44:28', '2025-10-07 09:44:28', 1);
+INSERT INTO `publicacion` (`ID_publicacion`, `ID_usuario`, `ID_rol_autor`, `titulo`, `contenido`, `fecha_creacion`, `fecha_ultima_edicion`, `ID_estado_publicacion`) VALUES
+(1, 3, 2, 'Prueba de publicación', 'Este es un contenido de prueba', '2025-10-10 12:38:53', '2025-10-10 12:38:53', 1),
+(2, 4, 3, 'testing editar publicaciones', 'este es un testing sobre editar publicaciones desde el usuario juan, aqui se debe editar por un nuevo texto', '2025-10-10 12:40:09', '2025-10-10 12:40:29', 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `publicacion_etiqueta`
+-- Estructura de tabla para la tabla `publicacion_etiqueta`
 --
 
 CREATE TABLE `publicacion_etiqueta` (
@@ -301,7 +343,7 @@ CREATE TABLE `publicacion_etiqueta` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `recuperar_contrasena`
+-- Estructura de tabla para la tabla `recuperar_contrasena`
 --
 
 CREATE TABLE `recuperar_contrasena` (
@@ -317,7 +359,7 @@ CREATE TABLE `recuperar_contrasena` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `respuesta_publicacion`
+-- Estructura de tabla para la tabla `respuesta_publicacion`
 --
 
 CREATE TABLE `respuesta_publicacion` (
@@ -332,18 +374,28 @@ CREATE TABLE `respuesta_publicacion` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `rol`
+-- Estructura de tabla para la tabla `rol`
 --
 
 CREATE TABLE `rol` (
-  `ID_Rol` int(100) NOT NULL,
-  `Nombre` varchar(100) NOT NULL
+  `ID_rol` int(11) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `rol`
+--
+
+INSERT INTO `rol` (`ID_rol`, `nombre`, `descripcion`) VALUES
+(1, 'admin', 'Administrador del sistema'),
+(2, 'aprendiz', 'Aprendiz SENA'),
+(3, 'egresado', 'Egresado SENA');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tipo_notificación`
+-- Estructura de tabla para la tabla `tipo_notificación`
 --
 
 CREATE TABLE `tipo_notificación` (
@@ -354,56 +406,56 @@ CREATE TABLE `tipo_notificación` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuario`
+-- Estructura de tabla para la tabla `usuario`
 --
 
 CREATE TABLE `usuario` (
-  `ID_usuario` int(100) NOT NULL,
-  `documento` int(15) NOT NULL,
+  `ID_usuario` int(11) NOT NULL,
+  `documento` varchar(20) NOT NULL,
   `nombre` varchar(100) NOT NULL,
   `apellido` varchar(100) NOT NULL,
   `correo` varchar(100) NOT NULL,
   `programa` varchar(100) NOT NULL,
-  `ID_rol` int(11) DEFAULT NULL,
-  `contresena` varchar(100) NOT NULL,
-  `imagen perfil` varbinary(100) NOT NULL,
-  `ID_estado_cuenta` int(100) NOT NULL,
-  `fecha_registro` date NOT NULL
+  `ID_rol` int(11) NOT NULL DEFAULT 2,
+  `contresena` varchar(255) NOT NULL,
+  `imagen_perfil` varchar(255) DEFAULT NULL,
+  `ID_estado_cuenta` int(11) NOT NULL DEFAULT 1,
+  `fecha_registro` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `usuario`
+-- Volcado de datos para la tabla `usuario`
 --
 
-INSERT INTO `usuario` (`ID_usuario`, `documento`, `nombre`, `apellido`, `correo`, `programa`, `ID_rol`, `contresena`, `imagen perfil`, `ID_estado_cuenta`, `fecha_registro`) VALUES
-(15, 6092610, 'cristofer', 'guillen', 'rangelcristofer911@gmail.com', 'tps2', 2, '$2b$10$a7g//D/xpmLEozvj6rWWhuzJ.N1syLK7VvtzxPYNaVBT5uN5sm4TG', '', 1, '0000-00-00'),
-(16, 1111481513, 'Oliver', 'Aguayo', 'aguayosayyid2007@gmail.com', 'Tecnico en Programacion de Software', 2, '$2b$10$vF3Ij.Bx4SmXQjsHeOoJt..6AbuHf.56S5nksrA8Gzg1m/LOkjkZG', '', 1, '2025-10-06');
+INSERT INTO `usuario` (`ID_usuario`, `documento`, `nombre`, `apellido`, `correo`, `programa`, `ID_rol`, `contresena`, `imagen_perfil`, `ID_estado_cuenta`, `fecha_registro`) VALUES
+(3, '6092610', 'cristofer', 'guillen', 'rangelcristofer911@gmail.com', 'tps2 127', 2, '$2b$10$6mYPoCOyxxHCyWJTy62Ao.12xDz/rs3hg3YuEaOVwLaNp7O5lTxsa', NULL, 1, '2025-10-09 14:31:44'),
+(4, '11223344', 'Juan', 'Garcia', 'JuanGarcia023@gmail.com', 'TPS2 123', 3, '$2b$10$CRn1U3amxY19.TmV5TQnJeA14042I1CnXPGrvdcTvgR1HJZYRwzJ.', NULL, 1, '2025-10-09 14:37:56');
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `accion_moderacion`
+-- Indices de la tabla `accion_moderacion`
 --
 ALTER TABLE `accion_moderacion`
   ADD PRIMARY KEY (`ID_accion_moderacion`);
 
 --
--- Indexes for table `cambio_contraseña`
+-- Indices de la tabla `cambio_contraseña`
 --
 ALTER TABLE `cambio_contraseña`
   ADD PRIMARY KEY (`ID_cambio`),
   ADD KEY `ID_usuario` (`ID_usuario`);
 
 --
--- Indexes for table `categoria`
+-- Indices de la tabla `categoria`
 --
 ALTER TABLE `categoria`
   ADD PRIMARY KEY (`ID_categoria`);
 
 --
--- Indexes for table `comentario_proyecto`
+-- Indices de la tabla `comentario_proyecto`
 --
 ALTER TABLE `comentario_proyecto`
   ADD PRIMARY KEY (`ID_comentario`),
@@ -412,843 +464,128 @@ ALTER TABLE `comentario_proyecto`
   ADD KEY `ID_estado_comentario` (`ID_estado_comentario`);
 
 --
--- Indexes for table `contenido_afectado`
+-- Indices de la tabla `contenido_afectado`
 --
 ALTER TABLE `contenido_afectado`
   ADD PRIMARY KEY (`ID_contenido_afectado`);
 
 --
--- Indexes for table `estado_comentario`
+-- Indices de la tabla `estado_comentario`
 --
 ALTER TABLE `estado_comentario`
   ADD PRIMARY KEY (`ID_estado_comentario`);
 
 --
--- Indexes for table `estado_cuenta`
+-- Indices de la tabla `estado_cuenta`
 --
 ALTER TABLE `estado_cuenta`
   ADD PRIMARY KEY (`ID_estado_cuenta`);
 
 --
--- Indexes for table `estado_notificacion`
+-- Indices de la tabla `estado_notificacion`
 --
 ALTER TABLE `estado_notificacion`
   ADD PRIMARY KEY (`ID_estado_notificacion`);
 
 --
--- Indexes for table `estado_proyecto`
+-- Indices de la tabla `estado_proyecto`
 --
 ALTER TABLE `estado_proyecto`
   ADD PRIMARY KEY (`ID_estado_proyecto`);
 
 --
--- Indexes for table `estado_publicacion`
+-- Indices de la tabla `estado_publicacion`
 --
 ALTER TABLE `estado_publicacion`
   ADD PRIMARY KEY (`ID_estado_publicacion`);
 
 --
--- Indexes for table `etiqueta`
---
-ALTER TABLE `etiqueta`
-  ADD PRIMARY KEY (`ID_etiqueta`);
-
---
--- Indexes for table `favorito_proyecto`
---
-ALTER TABLE `favorito_proyecto`
-  ADD PRIMARY KEY (`ID_fav_proyecto`),
-  ADD KEY `ID_usuario` (`ID_usuario`,`ID_proyecto`),
-  ADD KEY `ID_proyecto` (`ID_proyecto`);
-
---
--- Indexes for table `favorito_publicacion`
---
-ALTER TABLE `favorito_publicacion`
-  ADD PRIMARY KEY (`ID_fav`),
-  ADD KEY `ID_usuario` (`ID_usuario`,`ID_publicacion`),
-  ADD KEY `ID_publicacion` (`ID_publicacion`);
-
---
--- Indexes for table `historial_moderación`
---
-ALTER TABLE `historial_moderación`
-  ADD PRIMARY KEY (`ID_historial`),
-  ADD KEY `ID_usuario_accion` (`ID_usuario_accion`,`ID_accion_moderacion`,`ID_contenido_afectado`),
-  ADD KEY `ID_contenido_afectado` (`ID_contenido_afectado`),
-  ADD KEY `ID_accion_moderacion` (`ID_accion_moderacion`);
-
---
--- Indexes for table `imagen_proyecto`
---
-ALTER TABLE `imagen_proyecto`
-  ADD PRIMARY KEY (`ID_imagen`),
-  ADD KEY `ID_proyecto` (`ID_proyecto`);
-
---
--- Indexes for table `notificacion`
---
-ALTER TABLE `notificacion`
-  ADD PRIMARY KEY (`ID_notificacion`),
-  ADD KEY `ID_usuario_destino` (`ID_usuario_destino`,`ID_tipo_publicacion`,`ID_estado_notificacion`),
-  ADD KEY `ID_tipo_publicacion` (`ID_tipo_publicacion`),
-  ADD KEY `ID_estado_notificacion` (`ID_estado_notificacion`);
-
---
--- Indexes for table `palabra_prohibida`
---
-ALTER TABLE `palabra_prohibida`
-  ADD PRIMARY KEY (`ID_palabra`);
-
---
--- Indexes for table `proyecto`
+-- Indices de la tabla `proyecto`
 --
 ALTER TABLE `proyecto`
-  ADD PRIMARY KEY (`ID_proyecto`),
-  ADD KEY `ID_usuario` (`ID_usuario`,`ID_estado_proyecto`,`ID_categoria`),
-  ADD KEY `ID_estado_proyecto` (`ID_estado_proyecto`),
-  ADD KEY `ID_categoria` (`ID_categoria`);
+  ADD PRIMARY KEY (`ID_proyecto`);
 
 --
--- Indexes for table `publicacion`
+-- Indices de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
   ADD PRIMARY KEY (`ID_publicacion`),
   ADD KEY `ID_usuario` (`ID_usuario`),
+  ADD KEY `ID_rol_autor` (`ID_rol_autor`),
   ADD KEY `ID_estado_publicacion` (`ID_estado_publicacion`);
 
 --
--- Indexes for table `publicacion_etiqueta`
+-- Indices de la tabla `publicacion_etiqueta`
 --
 ALTER TABLE `publicacion_etiqueta`
-  ADD PRIMARY KEY (`ID_publicacion`),
-  ADD KEY `ID_etiqueta` (`ID_etiqueta`);
+  ADD PRIMARY KEY (`ID_publicacion`,`ID_etiqueta`);
 
 --
--- Indexes for table `recuperar_contrasena`
---
-ALTER TABLE `recuperar_contrasena`
-  ADD PRIMARY KEY (`ID_recuperacion`),
-  ADD KEY `ID_usuario` (`ID_usuario`);
-
---
--- Indexes for table `respuesta_publicacion`
---
-ALTER TABLE `respuesta_publicacion`
-  ADD PRIMARY KEY (`ID_respuesta`),
-  ADD KEY `ID_publicacion` (`ID_publicacion`,`ID_usuario`),
-  ADD KEY `ID_usuario` (`ID_usuario`);
-
---
--- Indexes for table `rol`
+-- Indices de la tabla `rol`
 --
 ALTER TABLE `rol`
-  ADD PRIMARY KEY (`ID_Rol`);
+  ADD PRIMARY KEY (`ID_rol`);
 
 --
--- Indexes for table `tipo_notificación`
---
-ALTER TABLE `tipo_notificación`
-  ADD PRIMARY KEY (`ID_tipo_notificacion`);
-
---
--- Indexes for table `usuario`
+-- Indices de la tabla `usuario`
 --
 ALTER TABLE `usuario`
   ADD PRIMARY KEY (`ID_usuario`),
+  ADD UNIQUE KEY `documento` (`documento`),
+  ADD UNIQUE KEY `correo` (`correo`),
   ADD KEY `ID_rol` (`ID_rol`),
   ADD KEY `ID_estado_cuenta` (`ID_estado_cuenta`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `accion_moderacion`
---
-ALTER TABLE `accion_moderacion`
-  MODIFY `ID_accion_moderacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `cambio_contraseña`
---
-ALTER TABLE `cambio_contraseña`
-  MODIFY `ID_cambio` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `categoria`
---
-ALTER TABLE `categoria`
-  MODIFY `ID_categoria` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `comentario_proyecto`
---
-ALTER TABLE `comentario_proyecto`
-  MODIFY `ID_comentario` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `contenido_afectado`
---
-ALTER TABLE `contenido_afectado`
-  MODIFY `ID_contenido_afectado` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `estado_comentario`
---
-ALTER TABLE `estado_comentario`
-  MODIFY `ID_estado_comentario` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `estado_cuenta`
+-- AUTO_INCREMENT de la tabla `estado_cuenta`
 --
 ALTER TABLE `estado_cuenta`
-  MODIFY `ID_estado_cuenta` int(100) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_estado_cuenta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `estado_notificacion`
---
-ALTER TABLE `estado_notificacion`
-  MODIFY `ID_estado_notificacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `estado_proyecto`
---
-ALTER TABLE `estado_proyecto`
-  MODIFY `ID_estado_proyecto` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `estado_publicacion`
+-- AUTO_INCREMENT de la tabla `estado_publicacion`
 --
 ALTER TABLE `estado_publicacion`
-  MODIFY `ID_estado_publicacion` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ID_estado_publicacion` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `etiqueta`
---
-ALTER TABLE `etiqueta`
-  MODIFY `ID_etiqueta` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `favorito_proyecto`
---
-ALTER TABLE `favorito_proyecto`
-  MODIFY `ID_fav_proyecto` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `favorito_publicacion`
---
-ALTER TABLE `favorito_publicacion`
-  MODIFY `ID_fav` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `historial_moderación`
---
-ALTER TABLE `historial_moderación`
-  MODIFY `ID_historial` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `imagen_proyecto`
---
-ALTER TABLE `imagen_proyecto`
-  MODIFY `ID_imagen` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `notificacion`
---
-ALTER TABLE `notificacion`
-  MODIFY `ID_notificacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `palabra_prohibida`
---
-ALTER TABLE `palabra_prohibida`
-  MODIFY `ID_palabra` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `proyecto`
+-- AUTO_INCREMENT de la tabla `proyecto`
 --
 ALTER TABLE `proyecto`
-  MODIFY `ID_proyecto` int(100) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_proyecto` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `publicacion`
+-- AUTO_INCREMENT de la tabla `publicacion`
 --
 ALTER TABLE `publicacion`
-  MODIFY `ID_publicacion` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `ID_publicacion` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `publicacion_etiqueta`
---
-ALTER TABLE `publicacion_etiqueta`
-  MODIFY `ID_publicacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `recuperar_contrasena`
---
-ALTER TABLE `recuperar_contrasena`
-  MODIFY `ID_recuperacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `respuesta_publicacion`
---
-ALTER TABLE `respuesta_publicacion`
-  MODIFY `ID_respuesta` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `rol`
+-- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `ID_Rol` int(100) NOT NULL AUTO_INCREMENT;
+  MODIFY `ID_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `tipo_notificación`
---
-ALTER TABLE `tipo_notificación`
-  MODIFY `ID_tipo_notificacion` int(100) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `usuario`
+-- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `ID_usuario` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `ID_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `cambio_contraseña`
+-- Filtros para la tabla `usuario`
 --
-ALTER TABLE `cambio_contraseña`
-  ADD CONSTRAINT `cambio_contraseña_ibfk_1` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE;
-
---
--- Constraints for table `comentario_proyecto`
---
-ALTER TABLE `comentario_proyecto`
-  ADD CONSTRAINT `comentario_proyecto_ibfk_1` FOREIGN KEY (`ID_proyecto`) REFERENCES `proyecto` (`ID_proyecto`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `comentario_proyecto_ibfk_2` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `comentario_proyecto_ibfk_3` FOREIGN KEY (`ID_estado_comentario`) REFERENCES `estado_comentario` (`ID_estado_comentario`) ON UPDATE CASCADE;
-
---
--- Constraints for table `favorito_proyecto`
---
-ALTER TABLE `favorito_proyecto`
-  ADD CONSTRAINT `favorito_proyecto_ibfk_1` FOREIGN KEY (`ID_proyecto`) REFERENCES `proyecto` (`ID_proyecto`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `favorito_proyecto_ibfk_2` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE;
-
---
--- Constraints for table `favorito_publicacion`
---
-ALTER TABLE `favorito_publicacion`
-  ADD CONSTRAINT `favorito_publicacion_ibfk_1` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `favorito_publicacion_ibfk_2` FOREIGN KEY (`ID_publicacion`) REFERENCES `publicacion` (`ID_publicacion`) ON UPDATE CASCADE;
-
---
--- Constraints for table `historial_moderación`
---
-ALTER TABLE `historial_moderación`
-  ADD CONSTRAINT `historial_moderación_ibfk_1` FOREIGN KEY (`ID_contenido_afectado`) REFERENCES `contenido_afectado` (`ID_contenido_afectado`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historial_moderación_ibfk_2` FOREIGN KEY (`ID_usuario_accion`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `historial_moderación_ibfk_3` FOREIGN KEY (`ID_accion_moderacion`) REFERENCES `accion_moderacion` (`ID_accion_moderacion`) ON UPDATE CASCADE;
-
---
--- Constraints for table `imagen_proyecto`
---
-ALTER TABLE `imagen_proyecto`
-  ADD CONSTRAINT `imagen_proyecto_ibfk_1` FOREIGN KEY (`ID_proyecto`) REFERENCES `proyecto` (`ID_proyecto`) ON UPDATE CASCADE;
-
---
--- Constraints for table `notificacion`
---
-ALTER TABLE `notificacion`
-  ADD CONSTRAINT `notificacion_ibfk_1` FOREIGN KEY (`ID_usuario_destino`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `notificacion_ibfk_2` FOREIGN KEY (`ID_tipo_publicacion`) REFERENCES `categoria` (`ID_categoria`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `notificacion_ibfk_3` FOREIGN KEY (`ID_estado_notificacion`) REFERENCES `estado_proyecto` (`ID_estado_proyecto`) ON UPDATE CASCADE;
-
---
--- Constraints for table `proyecto`
---
-ALTER TABLE `proyecto`
-  ADD CONSTRAINT `proyecto_ibfk_1` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `proyecto_ibfk_2` FOREIGN KEY (`ID_estado_proyecto`) REFERENCES `estado_proyecto` (`ID_estado_proyecto`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `proyecto_ibfk_3` FOREIGN KEY (`ID_categoria`) REFERENCES `categoria` (`ID_categoria`) ON UPDATE CASCADE;
-
---
--- Constraints for table `publicacion`
---
-ALTER TABLE `publicacion`
-  ADD CONSTRAINT `publicacion_fk_usuario` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `publicacion_ibfk_estado` FOREIGN KEY (`ID_estado_publicacion`) REFERENCES `estado_publicacion` (`ID_estado_publicacion`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `publicacion_ibfk_usuario` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `publicacion_etiqueta`
---
-ALTER TABLE `publicacion_etiqueta`
-  ADD CONSTRAINT `publicacion_etiqueta_ibfk_1` FOREIGN KEY (`ID_etiqueta`) REFERENCES `etiqueta` (`ID_etiqueta`) ON UPDATE CASCADE;
-
---
--- Constraints for table `recuperar_contrasena`
---
-ALTER TABLE `recuperar_contrasena`
-  ADD CONSTRAINT `recuperar_contrasena_ibfk_1` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE;
-
---
--- Constraints for table `respuesta_publicacion`
---
-ALTER TABLE `respuesta_publicacion`
-  ADD CONSTRAINT `respuesta_publicacion_ibfk_1` FOREIGN KEY (`ID_usuario`) REFERENCES `usuario` (`ID_usuario`) ON UPDATE CASCADE;
---
--- Database: `phpmyadmin`
---
-CREATE DATABASE IF NOT EXISTS `phpmyadmin` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;
-USE `phpmyadmin`;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__bookmark`
---
-
-CREATE TABLE `pma__bookmark` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `dbase` varchar(255) NOT NULL DEFAULT '',
-  `user` varchar(255) NOT NULL DEFAULT '',
-  `label` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `query` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Bookmarks';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__central_columns`
---
-
-CREATE TABLE `pma__central_columns` (
-  `db_name` varchar(64) NOT NULL,
-  `col_name` varchar(64) NOT NULL,
-  `col_type` varchar(64) NOT NULL,
-  `col_length` text DEFAULT NULL,
-  `col_collation` varchar(64) NOT NULL,
-  `col_isNull` tinyint(1) NOT NULL,
-  `col_extra` varchar(255) DEFAULT '',
-  `col_default` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Central list of columns';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__column_info`
---
-
-CREATE TABLE `pma__column_info` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `column_name` varchar(64) NOT NULL DEFAULT '',
-  `comment` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `mimetype` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '',
-  `transformation` varchar(255) NOT NULL DEFAULT '',
-  `transformation_options` varchar(255) NOT NULL DEFAULT '',
-  `input_transformation` varchar(255) NOT NULL DEFAULT '',
-  `input_transformation_options` varchar(255) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Column information for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__designer_settings`
---
-
-CREATE TABLE `pma__designer_settings` (
-  `username` varchar(64) NOT NULL,
-  `settings_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Settings related to Designer';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__export_templates`
---
-
-CREATE TABLE `pma__export_templates` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL,
-  `export_type` varchar(10) NOT NULL,
-  `template_name` varchar(64) NOT NULL,
-  `template_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Saved export templates';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__favorite`
---
-
-CREATE TABLE `pma__favorite` (
-  `username` varchar(64) NOT NULL,
-  `tables` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Favorite tables';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__history`
---
-
-CREATE TABLE `pma__history` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL DEFAULT '',
-  `db` varchar(64) NOT NULL DEFAULT '',
-  `table` varchar(64) NOT NULL DEFAULT '',
-  `timevalue` timestamp NOT NULL DEFAULT current_timestamp(),
-  `sqlquery` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='SQL history for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__navigationhiding`
---
-
-CREATE TABLE `pma__navigationhiding` (
-  `username` varchar(64) NOT NULL,
-  `item_name` varchar(64) NOT NULL,
-  `item_type` varchar(64) NOT NULL,
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Hidden items of navigation tree';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__pdf_pages`
---
-
-CREATE TABLE `pma__pdf_pages` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `page_nr` int(10) UNSIGNED NOT NULL,
-  `page_descr` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='PDF relation pages for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__recent`
---
-
-CREATE TABLE `pma__recent` (
-  `username` varchar(64) NOT NULL,
-  `tables` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Recently accessed tables';
-
---
--- Dumping data for table `pma__recent`
---
-
-INSERT INTO `pma__recent` (`username`, `tables`) VALUES
-('root', '[{\"db\":\"bd_sip\",\"table\":\"usuario\"},{\"db\":\"bd_sip\",\"table\":\"estado_cuenta\"},{\"db\":\"bd_sip\",\"table\":\"publicacion\"},{\"db\":\"bd_sip\",\"table\":\"publicacion_etiqueta\"},{\"db\":\"bd_sip\",\"table\":\"respuesta_publicacion\"},{\"db\":\"bd_sip\",\"table\":\"estado_publicacion\"},{\"db\":\"bd_sip\",\"table\":\"estado_notificacion\"}]');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__relation`
---
-
-CREATE TABLE `pma__relation` (
-  `master_db` varchar(64) NOT NULL DEFAULT '',
-  `master_table` varchar(64) NOT NULL DEFAULT '',
-  `master_field` varchar(64) NOT NULL DEFAULT '',
-  `foreign_db` varchar(64) NOT NULL DEFAULT '',
-  `foreign_table` varchar(64) NOT NULL DEFAULT '',
-  `foreign_field` varchar(64) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Relation table';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__savedsearches`
---
-
-CREATE TABLE `pma__savedsearches` (
-  `id` int(5) UNSIGNED NOT NULL,
-  `username` varchar(64) NOT NULL DEFAULT '',
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `search_name` varchar(64) NOT NULL DEFAULT '',
-  `search_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Saved searches';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__table_coords`
---
-
-CREATE TABLE `pma__table_coords` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `pdf_page_number` int(11) NOT NULL DEFAULT 0,
-  `x` float UNSIGNED NOT NULL DEFAULT 0,
-  `y` float UNSIGNED NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Table coordinates for phpMyAdmin PDF output';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__table_info`
---
-
-CREATE TABLE `pma__table_info` (
-  `db_name` varchar(64) NOT NULL DEFAULT '',
-  `table_name` varchar(64) NOT NULL DEFAULT '',
-  `display_field` varchar(64) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Table information for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__table_uiprefs`
---
-
-CREATE TABLE `pma__table_uiprefs` (
-  `username` varchar(64) NOT NULL,
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL,
-  `prefs` text NOT NULL,
-  `last_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Tables'' UI preferences';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__tracking`
---
-
-CREATE TABLE `pma__tracking` (
-  `db_name` varchar(64) NOT NULL,
-  `table_name` varchar(64) NOT NULL,
-  `version` int(10) UNSIGNED NOT NULL,
-  `date_created` datetime NOT NULL,
-  `date_updated` datetime NOT NULL,
-  `schema_snapshot` text NOT NULL,
-  `schema_sql` text DEFAULT NULL,
-  `data_sql` longtext DEFAULT NULL,
-  `tracking` set('UPDATE','REPLACE','INSERT','DELETE','TRUNCATE','CREATE DATABASE','ALTER DATABASE','DROP DATABASE','CREATE TABLE','ALTER TABLE','RENAME TABLE','DROP TABLE','CREATE INDEX','DROP INDEX','CREATE VIEW','ALTER VIEW','DROP VIEW') DEFAULT NULL,
-  `tracking_active` int(1) UNSIGNED NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Database changes tracking for phpMyAdmin';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__userconfig`
---
-
-CREATE TABLE `pma__userconfig` (
-  `username` varchar(64) NOT NULL,
-  `timevalue` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `config_data` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='User preferences storage for phpMyAdmin';
-
---
--- Dumping data for table `pma__userconfig`
---
-
-INSERT INTO `pma__userconfig` (`username`, `timevalue`, `config_data`) VALUES
-('root', '2025-10-07 14:42:48', '{\"Console\\/Mode\":\"collapse\"}');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__usergroups`
---
-
-CREATE TABLE `pma__usergroups` (
-  `usergroup` varchar(64) NOT NULL,
-  `tab` varchar(64) NOT NULL,
-  `allowed` enum('Y','N') NOT NULL DEFAULT 'N'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='User groups with configured menu items';
-
--- --------------------------------------------------------
-
---
--- Table structure for table `pma__users`
---
-
-CREATE TABLE `pma__users` (
-  `username` varchar(64) NOT NULL,
-  `usergroup` varchar(64) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Users and their assignments to user groups';
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `pma__bookmark`
---
-ALTER TABLE `pma__bookmark`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `pma__central_columns`
---
-ALTER TABLE `pma__central_columns`
-  ADD PRIMARY KEY (`db_name`,`col_name`);
-
---
--- Indexes for table `pma__column_info`
---
-ALTER TABLE `pma__column_info`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `db_name` (`db_name`,`table_name`,`column_name`);
-
---
--- Indexes for table `pma__designer_settings`
---
-ALTER TABLE `pma__designer_settings`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indexes for table `pma__export_templates`
---
-ALTER TABLE `pma__export_templates`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `u_user_type_template` (`username`,`export_type`,`template_name`);
-
---
--- Indexes for table `pma__favorite`
---
-ALTER TABLE `pma__favorite`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indexes for table `pma__history`
---
-ALTER TABLE `pma__history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `username` (`username`,`db`,`table`,`timevalue`);
-
---
--- Indexes for table `pma__navigationhiding`
---
-ALTER TABLE `pma__navigationhiding`
-  ADD PRIMARY KEY (`username`,`item_name`,`item_type`,`db_name`,`table_name`);
-
---
--- Indexes for table `pma__pdf_pages`
---
-ALTER TABLE `pma__pdf_pages`
-  ADD PRIMARY KEY (`page_nr`),
-  ADD KEY `db_name` (`db_name`);
-
---
--- Indexes for table `pma__recent`
---
-ALTER TABLE `pma__recent`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indexes for table `pma__relation`
---
-ALTER TABLE `pma__relation`
-  ADD PRIMARY KEY (`master_db`,`master_table`,`master_field`),
-  ADD KEY `foreign_field` (`foreign_db`,`foreign_table`);
-
---
--- Indexes for table `pma__savedsearches`
---
-ALTER TABLE `pma__savedsearches`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `u_savedsearches_username_dbname` (`username`,`db_name`,`search_name`);
-
---
--- Indexes for table `pma__table_coords`
---
-ALTER TABLE `pma__table_coords`
-  ADD PRIMARY KEY (`db_name`,`table_name`,`pdf_page_number`);
-
---
--- Indexes for table `pma__table_info`
---
-ALTER TABLE `pma__table_info`
-  ADD PRIMARY KEY (`db_name`,`table_name`);
-
---
--- Indexes for table `pma__table_uiprefs`
---
-ALTER TABLE `pma__table_uiprefs`
-  ADD PRIMARY KEY (`username`,`db_name`,`table_name`);
-
---
--- Indexes for table `pma__tracking`
---
-ALTER TABLE `pma__tracking`
-  ADD PRIMARY KEY (`db_name`,`table_name`,`version`);
-
---
--- Indexes for table `pma__userconfig`
---
-ALTER TABLE `pma__userconfig`
-  ADD PRIMARY KEY (`username`);
-
---
--- Indexes for table `pma__usergroups`
---
-ALTER TABLE `pma__usergroups`
-  ADD PRIMARY KEY (`usergroup`,`tab`,`allowed`);
-
---
--- Indexes for table `pma__users`
---
-ALTER TABLE `pma__users`
-  ADD PRIMARY KEY (`username`,`usergroup`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `pma__bookmark`
---
-ALTER TABLE `pma__bookmark`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `pma__column_info`
---
-ALTER TABLE `pma__column_info`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `pma__export_templates`
---
-ALTER TABLE `pma__export_templates`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `pma__history`
---
-ALTER TABLE `pma__history`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `pma__pdf_pages`
---
-ALTER TABLE `pma__pdf_pages`
-  MODIFY `page_nr` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `pma__savedsearches`
---
-ALTER TABLE `pma__savedsearches`
-  MODIFY `id` int(5) UNSIGNED NOT NULL AUTO_INCREMENT;
---
--- Database: `test`
---
-CREATE DATABASE IF NOT EXISTS `test` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `test`;
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`ID_rol`) REFERENCES `rol` (`ID_rol`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`ID_estado_cuenta`) REFERENCES `estado_cuenta` (`ID_estado_cuenta`) ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
