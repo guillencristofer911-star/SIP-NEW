@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIP - Proyecto Individual</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SIP - Favoritos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="/Public/Favoritos.css">
 </head>
@@ -27,38 +27,71 @@
         <input type="radio" id="tab-publicaciones" name="favoritos-tab" checked>
         <input type="radio" id="tab-proyectos" name="favoritos-tab">
         <div class="favoritos-slider-bg"></div>
-        <label for="tab-publicaciones" class="favoritos-tab-btn" onclick="mostrarTab('publicaciones')">Publicaciones</label>
-        <label for="tab-proyectos" class="favoritos-tab-btn" onclick="mostrarTab('proyectos')">Proyectos</label>
+        <label for="tab-publicaciones" class="favoritos-tab-btn">Publicaciones</label>
+        <label for="tab-proyectos" class="favoritos-tab-btn">Proyectos</label>
       </div>
+
       <!-- Panel de filtros -->
       <aside class="filtros">
         <form class="filtros-form" id="filtrosForm" method="GET" action="/filtrar">
-          <input type="text" id="filtro-palabra" name="palabra_clave" placeholder="Buscar por palabra clave...">
+          <input type="text" id="input-busqueda" placeholder="Buscar por palabra clave...">
           <select id="filtro-programa" name="programa">
             <option value="">Todos los programas</option>
-            <option value="desarrollo_software">Desarrollo de Software</option>
-            <option value="diseno_grafico">Diseño Gráfico</option>
-            <option value="administracion">Administración</option>
+            <optgroup label="Tecnólogos">
+              <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
+              <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
+              <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
+              <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
+              <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
+              <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
+              <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
+              <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
+              <option value="Tecnólogo en Gestion de Redes de Datos">Tecnólogo en Gestion de Redes de Datos</option>
+              <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
+              <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
+              <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
+              <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
+            </optgroup>
+            <optgroup label="Técnicos">
+              <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
+              <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
+              <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
+              <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
+              <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
+              <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
+              <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
+              <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
+              <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
+              <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
+              <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
+              <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
+              <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
+              <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
+              <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
+              <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
+              <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
+              <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
+              <option value="Técnico en Programación de Software">Técnico en Programación de Software</option>
+              <option value="Técnico en Programación para Analítica de Datos">Técnico en Programación para Analítica de Datos</option>
+              <option value="Técnico en Recursos Humanos">Técnico en Recursos Humanos</option>
+            </optgroup>
           </select>
-          <select id="filtro-rol" name="rol">
-            <option value="">Todos los roles</option>
-            <option value="aprendiz">Aprendiz</option>
-            <option value="egresado">Egresado</option>
-            <option value="instructor">Instructor</option>
-          </select>
-          <input type="date" id="filtro-fecha" name="fecha" placeholder="dd/mm/aaaa">
-          <!-- <button type="submit" class="btn-filtrar">Filtrar</button> -->
+          <input type="date" id="input-fecha" placeholder="dd/mm/aaaa">
         </form>
         <button class="btn-limpiar" type="button" id="btnLimpiarFiltros">Limpiar Filtros</button>
       </aside>
+
       <!-- Contenido principal -->
       <main class="favoritos-main">
         <h2 class="favoritos-titulo">Mis Favoritos</h2>
-        <div class="favoritos-lista" id="lista-publicaciones">
-          <div class="proyecto-card">
+
+        <!-- Lista publicaciones (tab Publicaciones) -->
+        <div class="favoritos-lista" id="lista-publicaciones" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Publicación 1 -->
+          <div class="proyecto-card" data-fecha="2025-08-15T14:30:00.000Z">
             <div class="proyecto-header">
               <span class="proyecto-titulo">¿Oportunidades de prácticas en empresa de software?</span>
-              <span class="proyecto-fecha">13 agosto 2025, 02:30 pm</span>
+              <span class="proyecto-fecha">15 agosto 2025, 02:30 pm</span>
               <form method="POST" action="/favorito" style="display: inline;">
                 <input type="hidden" name="publicacion_id" value="1">
                 <input type="hidden" name="accion" value="toggle">
@@ -74,120 +107,25 @@
               La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
             </div>
             <div class="proyecto-footer" style="display: flex; align-items: center; gap: 12px;">
-            <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista1')" style="cursor:pointer; font-weight:600;">5 Respuestas</span>
-            <button class="btn-abrir btn-responder" type="button" data-publicacion="1" style="margin-left:auto;">Responder</button>
-          </div>
-          <div class="comentarios-lista" id="comentariosLista1" style="display:none;">
-          <!-- Comentarios para publicación 1 -->
-            <div class="comentario-card">
-              <div class="comentario-header">
-                <span class="comentario-autor">Daniela Paz</span>
-                <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-                <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
-                <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-                <div class="comentario-menu" style="display:none;">
-                  <form method="POST" action="/reportar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="1">
-                    <button type="submit">Reportar</button>
-                  </form>
-                  <form method="POST" action="/editar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="1">
-                    <button type="submit">Editar</button>
-                  </form>
-                </div>
-              </div>
-           <div class="comentario-texto">
-                Hola estoy interesada en hacer las practicas...
-              </div>
+              <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista1')" style="cursor:pointer; font-weight:600;">5 Respuestas</span>
+              <button class="btn-abrir btn-responder" type="button" data-publicacion="1" style="margin-left:auto;">Responder</button>
             </div>
-            <div class="comentario-card">
-              <div class="comentario-header">
-                <span class="comentario-autor">Juan Perez</span>
-                <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-                <span class="comentario-fecha">13 agosto 2025, 11:45 am</span>
-                <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-                <div class="comentario-menu" style="display:none;">
-                  <form method="POST" action="/reportar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="2">
-                    <button type="submit">Reportar</button>
-                  </form>
-                  <form method="POST" action="/editar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="2">
-                    <button type="submit">Editar</button>
-                  </form>
+            <div class="comentarios-lista" id="comentariosLista1" style="display:none;">
+              <div class="comentario-card">
+                <div class="comentario-header">
+                  <span class="comentario-autor">Daniela Paz</span>
+                  <span class="comentario-etiqueta aprendiz">Aprendiz</span>
+                  <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
                 </div>
-              </div>
-              <div class="comentario-texto">
-                Me interesa Ana Gomez, mi correo es hola@mundo.com
-              </div>
-            </div>
-            <div class="comentario-card">
-              <div class="comentario-header">
-                <span class="comentario-autor">Oliver Aguayo</span>
-                <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-                <span class="comentario-fecha">13 agosto 2025, 11:30 pm</span>
-                <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-                <div class="comentario-menu" style="display:none;">
-                  <form method="POST" action="/reportar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="3">
-                    <button type="submit">Reportar</button>
-                  </form>
-                  <form method="POST" action="/editar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="3">
-                    <button type="submit">Editar</button>
-                  </form>
+                <div class="comentario-texto">
+                  Hola estoy interesada en hacer las practicas...
                 </div>
-              </div>
-              <div class="comentario-texto">
-                Hola puedes por favor compartir el contacto
-              </div>
-            </div>
-            <div class="comentario-card">
-              <div class="comentario-header">
-                <span class="comentario-autor">Johan Ramos</span>
-                <span class="comentario-etiqueta aprendiz">Aprendiz</span>
-                <span class="comentario-fecha">13 agosto 2025, 09:30 pm</span>
-                <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-                <div class="comentario-menu" style="display:none;">
-                  <form method="POST" action="/reportar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="4">
-                    <button type="submit">Reportar</button>
-                  </form>
-                  <form method="POST" action="/editar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="4">
-                    <button type="submit">Editar</button>
-                  </form>
-                </div>
-              </div>
-              <div class="comentario-texto">
-                Gracias por información Ana, lo estaba necesitando
-              </div>
-            </div>
-            <div class="comentario-card">
-              <div class="comentario-header">
-                <span class="comentario-autor">Cristofér Rangel</span>
-                <span class="proyecto-etiqueta aprendiz">Aprendiz</span>
-                <span class="comentario-fecha">14 agosto 2025, 02:30 pm</span>
-                <button class="comentario-menu-btn" onclick="toggleMenu(this)">...</button>
-                <div class="comentario-menu" style="display:none;">
-                  <form method="POST" action="/reportar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="5">
-                    <button type="submit">Reportar</button>
-                  </form>
-                  <form method="POST" action="/editar" style="display: inline;">
-                    <input type="hidden" name="comentario_id" value="5">
-                    <button type="submit">Editar</button>
-                  </form>
-                </div>
-              </div>
-              <div class="comentario-texto">
-                Uyyy, que buena información, GRACIASSS...
               </div>
             </div>
           </div>
-        </div>
-          <!-- Repite .proyecto-card para más tarjetas -->
-          <div class="proyecto-card">
+
+          <!-- Publicación 2 -->
+          <div class="proyecto-card" data-fecha="2025-08-13T14:30:00.000Z">
             <div class="proyecto-header">
               <span class="proyecto-titulo">¿Oportunidades de prácticas en empresa de software?</span>
               <span class="proyecto-fecha">13 agosto 2025, 02:30 pm</span>
@@ -197,251 +135,343 @@
                 <button class="proyecto-fav" type="submit"><i class="fa-solid fa-star"></i></button>
               </form>
             </div>
-            <div class="proyecto-autor">
-              Ana Gomez
-              <span class="proyecto-etiqueta egresado">Egresado</span>
-            </div>
+            <div class="proyecto-autor">Ana Gomez <span class="proyecto-etiqueta egresado">Egresado</span></div>
             <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-            <div class="proyecto-desc">
-              La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.
+            <div class="proyecto-desc">La empresa TechSolutions está buscando aprendices SENA para prácticas profesionales. Requisitos: conocimientos en Java y SQL.</div>
+            <div class="proyecto-footer" style="display:flex; align-items:center; gap:12px;">
+              <span class="proyecto-comentarios" onclick="toggleComentarios(this,'comentariosLista2')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+              <button class="btn-abrir btn-responder" type="button" data-publicacion="2" style="margin-left:auto;">Responder</button>
             </div>
-            <div class="proyecto-footer" style="display: flex; align-items: center; gap: 12px;">
-            <span class="proyecto-comentarios" onclick="toggleComentarios(this, 'comentariosLista2')" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
-            <button class="btn-abrir btn-responder" type="button" data-publicacion="2" style="margin-left:auto;">Responder</button>
-          </div>
-          <div class="comentarios-lista" id="comentariosLista2" style="display:none;">
-            <div class="comentario-vacio">No hay comentarios.</div>
+            <div class="comentarios-lista" id="comentariosLista2" style="display:none;">
+              <div class="comentario-vacio">No hay comentarios.</div>
+            </div>
           </div>
         </div>
-        </div>
-        <div class="favoritos-lista" id="lista-proyectos" style="display:none;">
-          <div class="proyecto-card">
+
+        <!-- Lista proyectos (tab Proyectos) -->
+        <div class="favoritos-lista" id="lista-proyectos" style="display:none; flex-direction:column; gap:16px;">
+          <div class="proyecto-card" data-fecha="2025-08-16T14:30:00.000Z">
             <div class="proyecto-header">
               <span class="proyecto-titulo">Menú Restaurante APP</span>
-              <span class="proyecto-fecha">13 agosto 2025, 02:30 pm</span>
-              <form method="POST" action="/favorito" style="display: inline;">
+              <span class="proyecto-fecha">16 agosto 2025, 02:30 pm</span>
+              <form method="POST" action="/favorito" style="display:inline;">
                 <input type="hidden" name="proyecto_id" value="1">
                 <input type="hidden" name="accion" value="toggle">
                 <button class="proyecto-fav" type="submit"><i class="fa-solid fa-star"></i></button>
               </form>
             </div>
-            <div class="proyecto-autor">
-              Ana Gomez
-              <span class="proyecto-etiqueta egresado">Egresado</span>
-            </div>
+            <div class="proyecto-autor">Ana Gomez <span class="proyecto-etiqueta egresado">Egresado</span></div>
             <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-            <div class="proyecto-desc">
-              App de menú para restaurante Amelia, va dirigido a los restaurantes que quieren tener mas visibilidad a lo que ofrecen a sus clientes
-            </div>
-            <div class="proyecto-footer" style="display: flex; align-items: center; gap: 12px;">
+            <div class="proyecto-desc">App de menú para restaurante Amelia, va dirigido a los restaurantes que quieren tener mas visibilidad a lo que ofrecen a sus clientes</div>
+            <div class="proyecto-footer" style="display:flex; align-items:center; gap:12px;">
               <form method="GET" action="/proyecto/1" style="margin-left:auto;">
                 <button class="btn-abrir" type="submit">Abrir</button>
               </form>
             </div>
           </div>
-          <div class="proyecto-card">
+
+          <div class="proyecto-card" data-fecha="2025-08-13T14:30:00.000Z">
             <div class="proyecto-header">
-              <span class="proyecto-titulo">Menú Restaurante APP</span>
+              <span class="proyecto-titulo">Sistema de Gestión Inventario</span>
               <span class="proyecto-fecha">13 agosto 2025, 02:30 pm</span>
-              <form method="POST" action="/favorito" style="display: inline;">
+              <form method="POST" action="/favorito" style="display:inline;">
                 <input type="hidden" name="proyecto_id" value="2">
                 <input type="hidden" name="accion" value="toggle">
                 <button class="proyecto-fav" type="submit"><i class="fa-solid fa-star"></i></button>
               </form>
             </div>
-            <div class="proyecto-autor">
-              Ana Gomez
-              <span class="proyecto-etiqueta egresado">Egresado</span>
-            </div>
+            <div class="proyecto-autor">Juan Perez <span class="proyecto-etiqueta egresado">Egresado</span></div>
             <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-            <div class="proyecto-desc">
-              App de menú para restaurante Amelia, va dirigido a los restaurantes que quieren tener mas visibilidad a lo que ofrecen a sus clientes
-            </div>
-            <div class="proyecto-footer" style="display: flex; align-items: center; gap: 12px;">
+            <div class="proyecto-desc">Sistema completo de gestión de inventario para pequeñas empresas con control de stock, alertas y reportes</div>
+            <div class="proyecto-footer" style="display:flex; align-items:center; gap:12px;">
               <form method="GET" action="/proyecto/2" style="margin-left:auto;">
                 <button class="btn-abrir" type="submit">Abrir</button>
               </form>
             </div>
           </div>
         </div>
-<!-- Modal responder publicación -->
- 
-<div id="modal-responder" class="modal-responder" style="display:none;">
-  <div class="modal-responder-content">
-    <div class="modal-responder-title">Responder publicación</div>
-    <form class="modal-responder-publicacion" action="/responder" method="POST" id="form-respuesta">
-      <input type="hidden" name="publicacion_id" id="publicacion_id" value="">
-      <input type="hidden" name="usuario_id" value="1">
-      <textarea class="modal-responder-textarea" name="descripcion_respuesta" placeholder="Ingrese la descripción..." required></textarea>
-      <div class="modal-responder-btns">
-        <button type="submit" id="btn-publicar-respuesta" class="btn-publicar">Publicar</button>
-        <button type="button" id="btn-cancelar-respuesta" class="btn-cancelar">Cancelar</button>
-      </div>
-    </form>
-  </div>
-</div>
-     <!-- Footer -->
-   </div> <!-- cierre de .main-container -->
-  <footer class="footer">
-    <div class="footer-content">
-      <hr class="footer-line">
-      <div class="footer-icons">
-        <i class="fab fa-twitter"></i>
-        <i class="fab fa-facebook"></i>
-        <i class="fab fa-instagram"></i>
-      </div>
-      <hr class="footer-line">
-    </div>
-    <div class="footer-text">
-      Copyright © 2025 SENA INTERACTIVE PORTAL
-    </div>
-    <div class="footer-links">
-      <span>Información legal</span>
-      <span>Política de privacidad</span>
-    </div>
-  </footer>
-  </div>
 
-    <!-- Menú Popover de Usuario -->
-    <div id="popover-menu" class="popover-menu">
-      <div class="popover-arrow"></div>
-      <div class="popover-content">
-        <ul class="popover-list">
-          <li>
-            <form method="GET" action="/perfil">
-              <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
-                <span class="icon">
-                  <i class="fa-regular fa-user"></i>
-                </span>
-                <span>Perfil</span>
-              </button>
+        <!-- Modal responder publicación -->
+        <div id="modal-responder" class="modal-responder" style="display:none;">
+          <div class="modal-responder-content">
+            <div class="modal-responder-title">Responder publicación</div>
+            <form class="modal-responder-publicacion" action="/responder" method="POST" id="form-respuesta">
+              <input type="hidden" name="publicacion_id" id="publicacion_id" value="">
+              <input type="hidden" name="usuario_id" value="1">
+              <textarea class="modal-responder-textarea" name="descripcion_respuesta" placeholder="Ingrese la descripción..." required></textarea>
+              <div class="modal-responder-btns">
+                <button type="submit" id="btn-publicar-respuesta" class="btn-publicar">Publicar</button>
+                <button type="button" id="btn-cancelar-respuesta" class="btn-cancelar">Cancelar</button>
+              </div>
             </form>
-          </li>
-          <li>
-            <form method="GET" action="/configuracion">
-              <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
-                <span class="icon">
-                  <i class="fa-solid fa-gear"></i>
-                </span>
-                <span>Configuración</span>
-              </button>
-            </form>
-          </li>
-          <li>
-            <form method="GET" action="/favoritos">
-              <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
-                <span class="icon">
-                  <i class="fa-regular fa-star"></i>
-                </span>
-                <span>Favoritos</span>
-              </button>
-            </form>
-          </li>
-          <li>
-            <form method="GET" action="/ayuda">
-              <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
-                <span class="icon">
-                  <i class="fa-regular fa-circle-question"></i>
-                </span>
-                <span>Ayuda</span>
-              </button>
-            </form>
-          </li>
-        </ul>
-        <form method="POST" action="/logout">
-          <button class="logout-btn" type="submit" id="logoutBtn">Cerrar sesión</button>
-        </form>
-      </div>
+          </div>
+        </div>
+
+      </main>
     </div>
 
-    <!-- Popover de Notificaciones -->
-    <div id="notificaciones-popover" class="notificaciones-popover">
-      <div class="notificaciones-content">
-        <div class="notificaciones-titulo">Notificaciones</div>
-        <form method="POST" action="/marcar_leida">
-          <input type="hidden" name="notificacion_id" value="1">
-          <div class="notificacion-item" onclick="this.parentNode.submit()">
-            <span class="notificacion-avatar">A</span>
-            <div>
-              <div class="notificacion-tipo">Respondió tu publicación</div>
-              <div class="notificacion-texto">Te dare varias ideas para tu proyecto...</div>
-            </div>
-          </div>
-        </form>
-        <form method="POST" action="/marcar_leida">
-          <input type="hidden" name="notificacion_id" value="2">
-          <div class="notificacion-item" onclick="this.parentNode.submit()">
-            <span class="notificacion-avatar">J</span>
-            <div>
-              <div class="notificacion-tipo">Respondió tu publicación</div>
-              <div class="notificacion-texto">Te dare varias ideas para tu proyecto...</div>
-            </div>
-          </div>
-        </form>
-        <form method="POST" action="/marcar_leida">
-          <input type="hidden" name="notificacion_id" value="3">
-          <div class="notificacion-item" onclick="this.parentNode.submit()">
-            <span class="notificacion-avatar">D</span>
-            <div>
-              <div class="notificacion-tipo">Comentó tu proyecto</div>
-              <div class="notificacion-texto">Muchas gracias me sirvió mucho, sig...</div>
-            </div>
-          </div>
-        </form>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <hr class="footer-line">
+        <div class="footer-icons">
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-facebook"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+        <hr class="footer-line">
+      </div>
+      <div class="footer-text">Copyright © 2025 SENA INTERACTIVE PORTAL</div>
+      <div class="footer-links">
+        <span>Información legal</span>
+        <span>Política de privacidad</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Menú Popover de Usuario -->
+  <div id="popover-menu" class="popover-menu">
+    <div class="popover-arrow"></div>
+    <div class="popover-content">
+      <ul class="popover-list">
+        <li>
+          <form method="GET" action="/perfil">
+            <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
+              <span class="icon"><i class="fa-regular fa-user"></i></span><span>Perfil</span>
+            </button>
+          </form>
+        </li>
+        <li>
+          <form method="GET" action="/configuracion">
+            <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
+              <span class="icon"><i class="fa-solid fa-gear"></i></span><span>Configuración</span>
+            </button>
+          </form>
+        </li>
+        <li>
+          <form method="GET" action="/favoritos">
+            <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
+              <span class="icon"><i class="fa-regular fa-star"></i></span><span>Favoritos</span>
+            </button>
+          </form>
+        </li>
+        <li>
+          <form method="GET" action="/ayuda">
+            <button type="submit" style="background: none; border: none; width: 100%; text-align: left; padding: 0;">
+              <span class="icon"><i class="fa-regular fa-circle-question"></i></span><span>Ayuda</span>
+            </button>
+          </form>
+        </li>
+      </ul>
+      <form method="POST" action="/logout">
+        <button class="logout-btn" type="submit" id="logoutBtn">Cerrar sesión</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Popover de Notificaciones -->
+  <div id="notificaciones-popover" class="notificaciones-popover" style="display:none;">
+    <div class="notificaciones-content">
+      <div class="notificaciones-titulo">Notificaciones</div>
+      <div class="notificacion-item">
+        <span class="notif-avatar">A</span>
+        <div>
+          <strong>Respondió tu publicación</strong>
+          <div class="notif-text">Te dare varias ideas para tu proyecto...</div>
+        </div>
       </div>
     </div>
+  </div>
+
   <script>
-    // ===== MENÚ POPOVER USUARIO =====
+    // ========== CAMBIO DE TABS (PUBLICACIONES/PROYECTOS) ==========
+    function mostrarTab(tab) {
+      const listaPublicaciones = document.getElementById('lista-publicaciones');
+      const listaProyectos = document.getElementById('lista-proyectos');
+      
+      if (tab === 'publicaciones') {
+        listaPublicaciones.style.display = 'flex';
+        listaProyectos.style.display = 'none';
+      } else {
+        listaPublicaciones.style.display = 'none';
+        listaProyectos.style.display = 'flex';
+      }
+      
+      // Aplicar filtros al tab activo
+      filtrarPublicaciones();
+    }
+
+    // Configurar eventos de los radio buttons para cambiar tabs
+    document.getElementById('tab-publicaciones').addEventListener('change', function() {
+      if (this.checked) mostrarTab('publicaciones');
+    });
+    
+    document.getElementById('tab-proyectos').addEventListener('change', function() {
+      if (this.checked) mostrarTab('proyectos');
+    });
+
+    // También agregar evento a los labels para mejor UX
+    document.querySelectorAll('.favoritos-tab-btn').forEach((label, index) => {
+      label.addEventListener('click', function() {
+        if (index === 0) {
+          mostrarTab('publicaciones');
+        } else {
+          mostrarTab('proyectos');
+        }
+      });
+    });
+
+    // ========== FILTRADO DE PUBLICACIONES Y PROYECTOS ==========
+    function filtrarPublicaciones() {
+      const texto = (document.getElementById('input-busqueda').value || '').toLowerCase().trim();
+      const programaSeleccionado = (document.getElementById('filtro-programa').value || '').trim();
+      let fechaInput = (document.getElementById('input-fecha').value || '').trim();
+
+      // Convertir "07 10 2025" o "07/10/2025" -> "2025-10-07"
+      if (fechaInput.match(/^(\d{1,2})[\/\s-](\d{1,2})[\/\s-](\d{4})$/)) {
+        const m = fechaInput.match(/^(\d{1,2})[\/\s-](\d{1,2})[\/\s-](\d{4})$/);
+        const dia = m[1].padStart(2, "0");
+        const mes = m[2].padStart(2, "0");
+        const anio = m[3];
+        fechaInput = `${anio}-${mes}-${dia}`;
+      }
+
+      // Detectar qué tab está visible
+      const tabPublicaciones = document.getElementById("tab-publicaciones").checked;
+      const tabVisible = tabPublicaciones 
+        ? document.getElementById("lista-publicaciones")
+        : document.getElementById("lista-proyectos");
+
+      // Filtrar solo las tarjetas del tab visible
+      tabVisible.querySelectorAll(".proyecto-card").forEach(card => {
+        const titulo = card.querySelector(".proyecto-titulo")?.innerText.toLowerCase() || "";
+        const carrera = card.querySelector(".proyecto-carrera")?.innerText.trim() || "";
+        const descripcion = card.querySelector(".proyecto-desc")?.innerText.toLowerCase() || "";
+
+        // === FECHA DEL CARD ===
+        let fechaCardYYYYMMDD = "";
+        const dataFecha = card.getAttribute("data-fecha");
+
+        if (dataFecha) {
+          // Convertir UTC a local antes de comparar
+          const dateObj = new Date(dataFecha);
+          if (!isNaN(dateObj)) {
+            const localY = dateObj.getFullYear();
+            const localM = String(dateObj.getMonth() + 1).padStart(2, "0");
+            const localD = String(dateObj.getDate()).padStart(2, "0");
+            fechaCardYYYYMMDD = `${localY}-${localM}-${localD}`;
+          }
+        } else {
+          // Si no hay data-fecha, intentar desde el texto visible
+          const visible = card.querySelector(".proyecto-fecha")?.innerText || "";
+          const match = visible.match(/(\d{1,2})\s+\w+\s+(\d{4})/);
+          if (match) {
+            const meses = {
+              enero: "01", febrero: "02", marzo: "03", abril: "04", 
+              mayo: "05", junio: "06", julio: "07", agosto: "08",
+              septiembre: "09", octubre: "10", noviembre: "11", diciembre: "12"
+            };
+            const partes = visible.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+            if (partes) {
+              const dia = partes[1].padStart(2, "0");
+              const mes = meses[partes[2].toLowerCase()];
+              const anio = partes[3];
+              if (mes) fechaCardYYYYMMDD = `${anio}-${mes}-${dia}`;
+            }
+          }
+        }
+
+        // === APLICAR FILTROS ===
+        const coincideTexto =
+          texto === "" ||
+          titulo.includes(texto) ||
+          carrera.toLowerCase().includes(texto) ||
+          descripcion.includes(texto);
+
+        // Filtro de programa
+        const coincidePrograma = 
+          programaSeleccionado === "" || 
+          carrera === programaSeleccionado ||
+          carrera.toLowerCase() === programaSeleccionado.toLowerCase();
+
+        // Coincidencia de fecha (día exacto, mes o año)
+        let coincideFecha = false;
+        if (!fechaInput) {
+          coincideFecha = true;
+        } else {
+          const [fY, fM, fD] = fechaInput.split("-");
+          const [cY, cM, cD] = fechaCardYYYYMMDD.split("-");
+          coincideFecha =
+            (!fY || fY === cY) &&
+            (!fM || fM === cM) &&
+            (!fD || fD === cD);
+        }
+
+        card.style.display = (coincideTexto && coincidePrograma && coincideFecha) ? "" : "none";
+      });
+    }
+
+    // ========== EVENTOS DE FILTRADO ==========
+    const inputTexto = document.getElementById("input-busqueda");
+    const inputFecha = document.getElementById("input-fecha");
+    const selectPrograma = document.getElementById("filtro-programa");
+    const btnLimpiar = document.getElementById("btnLimpiarFiltros");
+
+    if (inputTexto) {
+      inputTexto.addEventListener("input", filtrarPublicaciones);
+    }
+    
+    if (inputFecha) {
+      inputFecha.addEventListener("change", filtrarPublicaciones);
+      inputFecha.addEventListener("input", filtrarPublicaciones);
+    }
+    
+    if (selectPrograma) {
+      selectPrograma.addEventListener("change", filtrarPublicaciones);
+    }
+    
+    if (btnLimpiar) {
+      btnLimpiar.addEventListener("click", function(e) {
+        e.preventDefault();
+        if (inputTexto) inputTexto.value = "";
+        if (inputFecha) inputFecha.value = "";
+        if (selectPrograma) selectPrograma.selectedIndex = 0;
+        filtrarPublicaciones();
+      });
+    }
+
+    // ========== MENÚ POPOVER USUARIO ==========
     const perfilBtn = document.getElementById('perfil-btn');
     const popoverMenu = document.getElementById('popover-menu');
 
     perfilBtn.addEventListener('click', function(e) {
       e.stopPropagation();
+      const notiPopover = document.getElementById('notificaciones-popover');
+      if (notiPopover) notiPopover.style.display = 'none';
+      
       if (popoverMenu.style.display === 'block') {
         popoverMenu.style.display = 'none';
       } else {
-        // Calcula posición
         const rect = perfilBtn.getBoundingClientRect();
         popoverMenu.style.display = 'block';
         popoverMenu.style.position = 'absolute';
         popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
+        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
       }
     });
 
-    // Cerrar menú al hacer clic fuera
     document.addEventListener('click', function(e) {
       if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
         popoverMenu.style.display = 'none';
       }
     });
 
-    // Función para boton de publicados y proyectos
-    function mostrarTab(tab) {
-      document.getElementById('lista-publicaciones').style.display = (tab === 'publicaciones') ? 'flex' : 'none';
-      document.getElementById('lista-proyectos').style.display = (tab === 'proyectos') ? 'flex' : 'none';
-      // Mostrar/ocultar filtro de roles según el tab
-      var filtroRol = document.getElementById('filtro-rol');
-      if (tab === 'proyectos') {
-        filtroRol.style.display = 'none';
-      } else {
-        filtroRol.style.display = '';
-      }
-    }
-
-    // Limpiar filtros
-    document.getElementById('btnLimpiarFiltros').addEventListener('click', function() {
-      document.getElementById('filtro-palabra').value = '';
-      document.getElementById('filtro-programa').selectedIndex = 0;
-      document.getElementById('filtro-rol').selectedIndex = 0;
-      document.getElementById('filtro-fecha').value = '';
-    });
-     // Menú de comentario
+    // ========== MENU COMENTARIOS ==========
     window.toggleMenu = function(btn) {
       var menu = btn.nextElementSibling;
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     };
-    // Mostrar/ocultar comentarios por publicación
+
     function toggleComentarios(btn, listaId) {
       var lista = document.getElementById(listaId);
       if (lista.style.display === 'none' || lista.style.display === '') {
@@ -450,57 +480,51 @@
         lista.style.display = 'none';
       }
     }
-    
-    // ===== POPOVER NOTIFICACIONES =====
+
+    // ========== POPOVER NOTIFICACIONES ==========
     const notificacionesBtn = document.getElementById('notificaciones-btn');
     const notificacionesPopover = document.getElementById('notificaciones-popover');
 
     notificacionesBtn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      // Cierra el popover de usuario si está abierto
       popoverMenu.style.display = 'none';
+      
       if (notificacionesPopover.style.display === 'block') {
         notificacionesPopover.style.display = 'none';
       } else {
-        // Posiciona el popover debajo del botón de notificaciones
         const rect = notificacionesBtn.getBoundingClientRect();
         notificacionesPopover.style.display = 'block';
         notificacionesPopover.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        notificacionesPopover.style.left = (rect.left + rect.width/2 - 170) + 'px'; // ancho aprox: 340px/2
+        notificacionesPopover.style.left = (rect.left + rect.width/2 - 170) + 'px';
       }
     });
 
-    // Cierra el popover al hacer clic fuera
     document.addEventListener('click', function(e) {
       if (!notificacionesPopover.contains(e.target) && e.target !== notificacionesBtn) {
         notificacionesPopover.style.display = 'none';
       }
     });
-    
-    // Modal responder publicación
+
+    // ========== MODAL RESPONDER PUBLICACIÓN ==========
     const btnResponder = document.querySelectorAll('.btn-responder');
     const modalResponder = document.getElementById('modal-responder');
     const btnCancelarRespuesta = document.getElementById('btn-cancelar-respuesta');
     const formRespuesta = document.getElementById('form-respuesta');
 
-    // Mostrar modal al hacer click en cualquier botón "Responder"
     btnResponder.forEach(btn => {
       btn.addEventListener('click', () => {
         modalResponder.style.display = 'flex';
-        // Asignar el ID de la publicación al campo hidden
         const publicacionId = btn.getAttribute('data-publicacion');
         document.getElementById('publicacion_id').value = publicacionId;
       });
     });
 
-    // Ocultar modal al hacer click en "Cancelar"
     btnCancelarRespuesta.addEventListener('click', () => {
       modalResponder.style.display = 'none';
       formRespuesta.reset();
     });
 
-    // Ocultar modal al hacer click fuera del contenido del modal
     document.addEventListener('mousedown', function(e) {
       if (modalResponder.style.display === 'flex' && e.target === modalResponder) {
         modalResponder.style.display = 'none';
@@ -508,7 +532,6 @@
       }
     });
 
-    // Interceptar envío del formulario para mostrar en consola
     formRespuesta.addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
@@ -518,29 +541,18 @@
       this.reset();
     });
 
-    // Interceptar envío de filtros
+    // ========== INTERCEPTAR FORMULARIOS ==========
     document.getElementById('filtrosForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const formData = new FormData(this);
       console.log('Filtros aplicados:', Object.fromEntries(formData));
-      alert('Filtros aplicados! Ver datos en el inspector (consola)');
+      filtrarPublicaciones();
     });
 
-    // Interceptar todos los formularios para mostrar datos en consola
-    document.querySelectorAll('form').forEach(form => {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        const action = this.getAttribute('action');
-        const method = this.getAttribute('method');
-        console.log(`Formulario enviado - Action: ${action}, Method: ${method}`, Object.fromEntries(formData));
-        
-        if (action === '/logout') {
-          alert('Sesión cerrada! Ver datos en el inspector (consola)');
-        } else if (!action.includes('/responder') && !action.includes('/filtrar')) {
-          alert(`Acción: ${action} - Ver datos en el inspector (consola)`);
-        }
-      });
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mostrar tab inicial
+      mostrarTab('publicaciones');
     });
   </script>
 </body>
