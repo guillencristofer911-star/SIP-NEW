@@ -10,6 +10,7 @@ import { methods as publicacionController } from "./controllers/publications.con
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
 import favoritosRoutes from "./routes/favoritos.routes.js";
+import pool from './db.js';
 
 dotenv.config();
 
@@ -46,6 +47,10 @@ app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
 
+app.get("/configuracion", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "Configuracion.html"));
+});
+
 // ==================== API PÚBLICA ====================
 // Autenticación
 app.post("/api/login", authController.login);
@@ -78,6 +83,71 @@ app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarR
 app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
 app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
 app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
+
+// ==================== RUTAS DE PERFIL ====================
+
+// Actualizar correo del usuario
+app.put("/api/perfil/correo", verificarToken, async (req, res) => {
+  try {
+    const { nuevoCorreo } = req.body;
+    const usuarioId = req.usuario.id;
+
+    // Validar que el correo no esté vacío
+    if (!nuevoCorreo || nuevoCorreo.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: "El correo no puede estar vacío"
+      });
+    }
+
+    // Validar formato de correo
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(nuevoCorreo)) {
+      return res.status(400).json({
+        success: false,
+        message: "El formato del correo no es válido"
+      });
+    }
+
+    // Verificar si el correo ya existe en otro usuario
+    const connection = await pool.getConnection();
+    try {
+      const [existingUsers] = await connection.execute(
+        'SELECT ID_usuario FROM usuario WHERE correo = ? AND ID_usuario != ?',
+        [nuevoCorreo, usuarioId]
+      );
+
+      if (existingUsers.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Este correo ya está en uso por otro usuario"
+        });
+      }
+
+      // Actualizar el correo
+      await connection.execute(
+        'UPDATE usuario SET correo = ? WHERE ID_usuario = ?',
+        [nuevoCorreo, usuarioId]
+      );
+
+      res.json({
+        success: true,
+        message: "Correo actualizado exitosamente",
+        nuevoCorreo: nuevoCorreo
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (error) {
+    console.error("Error al actualizar correo:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error interno del servidor al actualizar el correo"
+    });
+  }
+});
 
 // ==================== RUTAS PROTEGIDAS ====================
 app.get("/api/perfil", verificarToken, (req, res) => {
