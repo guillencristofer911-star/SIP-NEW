@@ -156,6 +156,50 @@ app.use((err, req, res, next) => {
   });
 });
 
+<<<<<<< Updated upstream
+=======
+// ==================== RUTAS DE PUBLICACIONES ====================
+
+// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
+app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
+
+// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
+app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
+
+// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
+app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
+
+// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
+app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
+
+// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
+app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
+
+// ==================== MANEJO DE ERRORES ====================
+
+// Ruta para manejar solicitudes a rutas no existentes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
+});
+
+//Favoritos
+import favoritosRoutes from "./routes/favoritos.routes.js";
+app.use("/api/favoritos", favoritosRoutes);
+
+
+// Middleware global para manejo de errores del servidor
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Error interno del servidor"
+  });
+});
+
+>>>>>>> Stashed changes
 // ==================== INICIAR SERVIDOR ====================
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
