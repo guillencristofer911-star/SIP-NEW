@@ -2,18 +2,14 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
+import { methods as respuestasController } from "./controllers/respuestas.controller.js";
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
-<<<<<<< HEAD
-=======
-import favoritosRoutes from "./routes/favoritos.routes.js";
-<<<<<<< HEAD
->>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
-=======
->>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
+
+
 
 dotenv.config();
 
@@ -58,6 +54,7 @@ app.get("/feed-proyectos", (req, res) => {
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
+
 
 // ==================== API PÚBLICA ====================
 
@@ -123,101 +120,23 @@ app.post("/api/publicaciones", verificarToken, publicacionController.crearPublic
 app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-// ==================== RUTAS DE PERFIL ====================
-
-// Actualizar correo del usuario
-app.put("/api/perfil/correo", verificarToken, async (req, res) => {
-  try {
-    const { nuevoCorreo } = req.body;
-    const usuarioId = req.usuario.id;
-
-    // Validar que el correo no esté vacío
-    if (!nuevoCorreo || nuevoCorreo.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        message: "El correo no puede estar vacío"
-      });
-    }
-
-    // Validar formato de correo
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(nuevoCorreo)) {
-      return res.status(400).json({
-        success: false,
-        message: "El formato del correo no es válido"
-      });
-    }
-
-    // Verificar si el correo ya existe en otro usuario
-    const connection = await pool.getConnection();
-    try {
-      const [existingUsers] = await connection.execute(
-        'SELECT ID_usuario FROM usuario WHERE correo = ? AND ID_usuario != ?',
-        [nuevoCorreo, usuarioId]
-      );
-
-      if (existingUsers.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: "Este correo ya está en uso por otro usuario"
-        });
-      }
-
-      // Actualizar el correo
-      await connection.execute(
-        'UPDATE usuario SET correo = ? WHERE ID_usuario = ?',
-        [nuevoCorreo, usuarioId]
-      );
-
-      res.json({
-        success: true,
-        message: "Correo actualizado exitosamente",
-        nuevoCorreo: nuevoCorreo
-      });
-
-    } finally {
-      connection.release();
-    }
-
-  } catch (error) {
-    console.error("Error al actualizar correo:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error interno del servidor al actualizar el correo"
-    });
-  }
-});
-
-=======
-=======
->>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 // ==================== RUTAS DE RESPUESTAS ====================
+
+// Obtener todas las respuestas de una publicación (público)
 app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+
+// Obtener el conteo de respuestas (público)
 app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+
+// Crear una respuesta (requiere autenticación)
 app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+
+// Editar una respuesta (requiere autenticación)
 app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+
+// Eliminar una respuesta (requiere autenticación)
 app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
-// ==================== RUTAS PROTEGIDAS ====================
-app.get("/api/perfil", verificarToken, (req, res) => {
-  res.json({ success: true, message: "Perfil de usuario", usuario: req.usuario });
-});
-app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
-  res.json({ success: true, message: "Lista de usuarios (solo admin)" });
-});
-app.get("/api/verificar-token", verificarToken, (req, res) => {
-  res.json({ success: true, valido: true, usuario: req.usuario });
-});
-app.post("/api/logout", verificarToken, (req, res) => {
-  res.json({ success: true, message: "Sesión cerrada exitosamente" });
-});
-
-// Favoritos (router separado)
-app.use("/api/favoritos", favoritosRoutes);
-
->>>>>>> parent of 7c1a78b (Configuracion y Cambiar Correo)
 // ==================== MANEJO DE ERRORES ====================
 
 // Ruta no encontrada
@@ -237,6 +156,50 @@ app.use((err, req, res, next) => {
   });
 });
 
+<<<<<<< Updated upstream
+=======
+// ==================== RUTAS DE PUBLICACIONES ====================
+
+// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
+app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
+
+// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
+app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
+
+// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
+app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
+
+// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
+app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
+
+// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
+app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
+
+// ==================== MANEJO DE ERRORES ====================
+
+// Ruta para manejar solicitudes a rutas no existentes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
+});
+
+//Favoritos
+import favoritosRoutes from "./routes/favoritos.routes.js";
+app.use("/api/favoritos", favoritosRoutes);
+
+
+// Middleware global para manejo de errores del servidor
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Error interno del servidor"
+  });
+});
+
+>>>>>>> Stashed changes
 // ==================== INICIAR SERVIDOR ====================
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
