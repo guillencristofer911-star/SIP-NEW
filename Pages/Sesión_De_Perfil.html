@@ -245,6 +245,15 @@
       });
     });
 
+    //FAVOTITOS
+    <button class="btn-favorito" data-id-publicacion="123">❤️ Favorito</button>
+    document.querySelectorAll('.btn-favorito').forEach(function(button) {
+      button.addEventListener('click', function() {
+        const publicacionId = button.getAttribute('data-id-publicacion');
+        console.log('Publicación marcada como favorita:', publicacionId);
+        alert('¡Has marcado esta publicación como favorita!');
+      });
+    });
     // ===== MENÚ POPOVER USUARIO =====
     const perfilBtn = document.getElementById('perfil-btn');
     const popoverMenu = document.getElementById('popover-menu');

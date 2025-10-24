@@ -9,6 +9,9 @@ const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000;
 
+/**
+ * Verifica si un usuario puede intentar iniciar sesión según sus intentos previos.
+ */
 function checkLoginAttempts(documento) {
   const now = Date.now();
   const attempts = loginAttempts.get(documento) || { count: 0, lockedUntil: 0 };
@@ -37,6 +40,9 @@ function resetLoginAttempts(documento) {
   loginAttempts.delete(documento);
 }
 
+/**
+ * Controlador para el inicio de sesión de usuarios.
+ */
 async function login(req, res) {
   try {
     const { documento, contrasena } = req.body;
@@ -63,10 +69,13 @@ async function login(req, res) {
       });
     }
 
-    const [usuarios] = await db.query(
-      'SELECT * FROM usuario WHERE documento = ?',
-      [documento]
-    );
+    // 🔥 CONSULTA MEJORADA: Obtener usuario con nombre de rol
+    const [usuarios] = await db.query(`
+      SELECT u.*, r.nombre as rol_nombre 
+      FROM usuario u
+      LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+      WHERE u.documento = ?
+    `, [documento]);
 
     if (usuarios.length === 0) {
       recordFailedAttempt(documento);
@@ -102,7 +111,8 @@ async function login(req, res) {
         id: usuario.ID_usuario,
         documento: usuario.documento,
         correo: usuario.correo,
-        rol: usuario.ID_rol
+        rol: usuario.ID_rol,
+        rol_nombre: usuario.rol_nombre
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
@@ -119,12 +129,13 @@ async function login(req, res) {
         apellido: usuario.apellido,
         correo: usuario.correo,
         programa: usuario.programa,
-        rol: usuario.ID_rol
+        rol: usuario.ID_rol,
+        rol_nombre: usuario.rol_nombre // 🔥 Enviar nombre del rol
       }
     });
 
   } catch (error) {
-    console.error("Error en login:", error);
+    console.error("❌ Error en login:", error);
     res.status(500).json({
       success: false,
       message: "Error en el servidor"
@@ -132,14 +143,36 @@ async function login(req, res) {
   }
 }
 
+/**
+ * Controlador para el registro de nuevos usuarios.
+ * 🔥 ACTUALIZADO: Ahora acepta el rol seleccionado por el usuario
+ */
 async function register(req, res) {
   try {
-    const { documento, nombres, apellidos, correo, programa, contrasena, confirmar_contrasena } = req.body;
+    const { 
+      documento, 
+      nombres, 
+      apellidos, 
+      correo, 
+      programa, 
+      contrasena, 
+      confirmar_contrasena,
+      tipo // 🔥 NUEVO: recibe 'aprendiz' o 'egresado'
+    } = req.body;
 
-    if (!documento || !nombres || !apellidos || !correo || !programa || !contrasena || !confirmar_contrasena) {
+    // Validaciones básicas
+    if (!documento || !nombres || !apellidos || !correo || !programa || !contrasena || !confirmar_contrasena || !tipo) {
       return res.status(400).json({
         success: false,
         message: "Todos los campos son obligatorios"
+      });
+    }
+
+    // 🔥 Validar tipo de usuario
+    if (!['aprendiz', 'egresado'].includes(tipo)) {
+      return res.status(400).json({
+        success: false,
+        message: "Tipo de usuario inválido. Debe ser 'aprendiz' o 'egresado'"
       });
     }
 
@@ -180,6 +213,7 @@ async function register(req, res) {
       });
     }
 
+    // Verificar si el usuario ya existe
     const [usuariosExistentes] = await db.query(
       'SELECT * FROM usuario WHERE correo = ? OR documento = ?',
       [correo, documento]
@@ -200,13 +234,21 @@ async function register(req, res) {
       }
     }
 
-    const contrasenaHash = await bcryptjs.hash(contrasena, 10);
-    const fechaRegistro = new Date().toISOString().split('T')[0];
+    // 🔥 Determinar ID_rol según el tipo seleccionado
+    // 1 = admin, 2 = aprendiz, 3 = egresado
+    const ID_rol = tipo === 'aprendiz' ? 2 : 3;
 
+    const contrasenaHash = await bcryptjs.hash(contrasena, 10);
+
+    // 🔥 INSERT MEJORADO: Incluye ID_rol
     const [resultado] = await db.query(
-      'INSERT INTO usuario (documento, nombre, apellido, correo, programa, contresena, ID_rol, ID_estado_cuenta, fecha_registro, `imagen perfil`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [documento, nombres, apellidos, correo, programa, contrasenaHash, 2, 1, fechaRegistro, '']
+      `INSERT INTO usuario 
+       (documento, nombre, apellido, correo, programa, contresena, ID_rol, ID_estado_cuenta, fecha_registro, imagen_perfil) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, 1, NOW(), NULL)`,
+      [documento, nombres, apellidos, correo, programa, contrasenaHash, ID_rol]
     );
+
+    console.log(`✅ Usuario registrado: ID=${resultado.insertId}, Rol=${tipo} (ID_rol=${ID_rol})`);
 
     res.status(201).json({
       success: true,
@@ -217,15 +259,16 @@ async function register(req, res) {
         nombres,
         apellidos,
         correo,
-        programa
+        programa,
+        rol: tipo
       }
     });
 
   } catch (error) {
-    console.error("Error en registro:", error);
+    console.error("❌ Error en registro:", error);
     res.status(500).json({
       success: false,
-      message: "Error en el servidor"
+      message: "Error en el servidor: " + error.message
     });
   }
 }
