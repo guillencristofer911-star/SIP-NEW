@@ -317,9 +317,14 @@ async function cargarPublicaciones() {
               <span class="proyecto-titulo">${escapeHtml(pub.titulo)}</span>
               <span class="proyecto-fecha">${formatearFecha(pub.fecha_creacion)}${indicadorTiempo}</span>
               <button class="proyecto-fav" type="button"><i class="fa-regular fa-star"></i></button>
-                  ${!esAutor ? `
-                    <button class="publicacion-reportar-btn" onclick="mostrarModalReportarPublicacion(${pub.ID_publicacion})" title="Reportar publicación">⋮</button>
-                  ` : ''}
+              ${!esAutor ? `
+                  <button class="publicacion-menu-btn" onclick="toggleMenuReporte(this, ${pub.ID_publicacion})">⋯</button>
+                  <div class="menu-reporte" style="display:none;">
+                    <button class="menu-btn reportar" onclick="mostrarModalReportarPublicacion(${pub.ID_publicacion})">
+                      Reportar
+                    </button>
+                  </div>
+                ` : ''}
               ${esAutor ? `
                 <button class="publicacion-menu-btn" onclick="togglePublicacionMenu(this)">...</button>
                 <div class="publicacion-menu" style="display:none;">
@@ -1266,3 +1271,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+
+// ========== MENÚ DE REPORTE ==========
+window.toggleMenuReporte = function(btn, idPublicacion) {
+  const menu = btn.nextElementSibling;
+  const isVisible = menu.style.display === 'flex';
+  
+  // Cerrar todos los menús de reporte
+  document.querySelectorAll('.menu-reporte').forEach(m => {
+    if (m !== menu) m.style.display = 'none';
+  });
+  
+  menu.style.display = isVisible ? 'none' : 'flex';
+  
+  // Cerrar al hacer clic fuera
+  if (!isVisible) {
+    setTimeout(() => {
+      document.addEventListener('click', function cerrarMenu(e) {
+        if (!btn.contains(e.target) && !menu.contains(e.target)) {
+          menu.style.display = 'none';
+          document.removeEventListener('click', cerrarMenu);
+        }
+      });
+    }, 10);
+  }
+};
