@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIP - Proyecto Individual</title>
+  <title>SIP - Detalles del Proyecto</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="/Public/Detalles_Proyectos.css">
+  <link rel="stylesheet" href="/Detalles_Proyectos.css">
 </head>
 <body>
   <div class="main-container">
     <!-- Header -->
     <header class="header">
-      <img src="img/../../../3-registro/html/img/logo.png" alt="SIP Logo" class="logo-header">
+      <img src="/img/logo.png" alt="SIP Logo" class="logo-header">
       <nav class="nav-header">
-       <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
-      <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
-      <div class="user-info" id="perfil-btn">
-        <span class="user-avatar">D</span>
-        <span class="user-name">Daniela</span>
-      </div>
-    </nav>
+        <a href="/feed-proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
+        <div class="user-info" id="perfil-btn">
+          <span class="user-avatar">D</span>
+          <span class="user-name">Daniela</span>
+        </div>
+      </nav>
       <!-- Notificaciones Popover -->
       <div id="notificaciones-popover" class="notificaciones-popover">
         <div class="notificaciones-arrow"></div>
@@ -47,132 +47,143 @@
         </div>
       </div>
     </header>
-   <!-- Menú Popover de Usuario -->
-<div id="popover-menu" class="popover-menu">
-  <div class="popover-arrow"></div>
-  <div class="popover-content">
-    <ul class="popover-list">
-      <li>
-        <span class="icon">
-          <i class="fa-regular fa-user"></i>
-        </span>
-        <span>Perfil</span>
-      </li>
-      <li>
-        <span class="icon">
-          <i class="fa-solid fa-gear"></i>
-        </span>
-        <span>Configuración</span>
-      </li>
-      <li>
-        <span class="icon">
-          <i class="fa-regular fa-star"></i>
-        </span>
-        <span>Favoritos</span>
-      </li>
-      <li>
-        <span class="icon">
-          <i class="fa-regular fa-circle-question"></i>
-        </span>
-        <span>Ayuda</span>
-      </li>
-    </ul>
-    <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
-  </div>
-</div>
+
+    <!-- Menú Popover de Usuario -->
+    <div id="popover-menu" class="popover-menu">
+      <div class="popover-arrow"></div>
+      <div class="popover-content">
+        <ul class="popover-list">
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-user"></i>
+            </span>
+            <span>Perfil</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-solid fa-gear"></i>
+            </span>
+            <span>Configuración</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-star"></i>
+            </span>
+            <span>Favoritos</span>
+          </li>
+          <li>
+            <span class="icon">
+              <i class="fa-regular fa-circle-question"></i>
+            </span>
+            <span>Ayuda</span>
+          </li>
+        </ul>
+        <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+      </div>
+    </div>
 
     <main class="detalle-main">
-      <!-- ...contenido igual que antes... -->
+      <!-- Información principal del proyecto -->
       <section class="detalle-proyecto-card">
         <div class="detalle-img">
-          <img src="ruta/a/imagen.png" alt="Imagen del proyecto">
+          <img id="imagen-principal" src="/img/placeholder-proyecto.png" alt="Imagen del proyecto">
         </div>
         <div class="detalle-info">
-          <h2 class="detalle-titulo">APP VIDEOJUEGO "JHON WICK"</h2>
-          <div class="detalle-autor">Ana Gomez</div>
-          <div class="detalle-desc">
-            Body text for your whole article or post. We’ll put in some lorem ipsum to show how a filled-out page might look:
+          <h2 class="detalle-titulo" id="proyecto-titulo">Cargando proyecto...</h2>
+          <div class="detalle-autor" id="proyecto-autor">Cargando autor...</div>
+          <div class="detalle-desc" id="proyecto-descripcion">
+            Cargando descripción del proyecto...
           </div>
-          <div class="detalle-desc">
-            Excepteur efficient emerging, minim veniam anim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content. Qui  international first-class nulla ut. Punctual adipisicing, essential lovely queen tempor eiusmod irure. Exclusive izakaya charming Scandinavian impeccable aute quality of life soft power pariatur Melbourne occaecat discerning. Qui wardrobe aliquip, et Porter destination Toto remarkable officia Helsinki excepteur Basset hound. Zürich sleepy perfect consectetur.
+          <div class="detalle-meta">
+            <div class="meta-item">
+              <i class="fas fa-graduation-cap"></i>
+              <span id="proyecto-programa">Cargando programa...</span>
+            </div>
+            <div class="meta-item">
+              <i class="fab fa-github"></i>
+              <span id="proyecto-github">GitHub no disponible</span>
+            </div>
+            <div class="meta-item">
+              <i class="far fa-calendar"></i>
+              <span id="proyecto-fecha">Cargando fecha...</span>
+            </div>
           </div>
         </div>
       </section>
-      <section class="detalle-galeria">
-        <div class="galeria-img"><img src="ruta/a/placeholder.png" alt=""></div>
-        <div class="galeria-img"><img src="ruta/a/placeholder.png" alt=""></div>
-        <div class="galeria-img"><img src="ruta/a/placeholder.png" alt=""></div>
-        <div class="galeria-img"><img src="ruta/a/placeholder.png" alt=""></div>
+
+      <!-- Galería de imágenes -->
+      <section class="detalle-galeria" id="galeria-proyecto">
+        <h3>Galería del Proyecto</h3>
+        <div class="galeria-contenedor" id="galeria-contenedor">
+          <!-- Las imágenes se cargarán dinámicamente aquí -->
+        </div>
       </section>
+
+      <!-- Documentación PDF -->
+      <section class="detalle-documentacion" id="seccion-documentacion" style="display: none;">
+        <h3>Documentación</h3>
+        <div class="documento-item">
+          <i class="far fa-file-pdf"></i>
+          <a id="enlace-pdf" href="#" target="_blank">Ver documentación PDF</a>
+        </div>
+      </section>
+
+      <!-- Comentarios -->
       <section class="detalle-comentarios">
-        <!-- Ejemplo para un comentario -->
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">Daniela Paz</span>
-            <span class="comentario-etiqueta">Aprendiz</span>
-            <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleComentarioMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <button class="menu-btn reportar" onclick="mostrarReportarComentarioModal()">Reportar</button>
-              <button class="menu-btn editar" onclick="mostrarEditarComentarioModal(this)">Editar</button>
-            </div>
+        <h3>Comentarios</h3>
+        
+        <!-- Formulario para nuevo comentario -->
+        <div class="nuevo-comentario">
+          <textarea id="texto-comentario" placeholder="Escribe tu comentario... (máximo 100 caracteres)"></textarea>
+          <div class="contador-caracteres">
+            <span id="contador">0</span>/100 caracteres
           </div>
-          <div class="comentario-texto">
-            Hola muy buen proyecto, felicitaciones...
-          </div>
+          <button id="btn-publicar-comentario" class="btn-comentar">Publicar comentario</button>
         </div>
 
-        <div class="comentario-card">
-          <div class="comentario-header">
-            <span class="comentario-autor">andres aaa</span>
-            <span class="comentario-etiqueta">Aprendiz</span>
-            <span class="comentario-fecha">14 agosto 2025, 01:30 pm</span>
-            <button class="comentario-menu-btn" onclick="toggleComentarioMenu(this)">...</button>
-            <div class="comentario-menu" style="display:none;">
-              <button class="menu-btn reportar" onclick="mostrarReportarComentarioModal()">Reportar</button>
-              <button class="menu-btn editar" onclick="mostrarEditarComentarioModal(this)">Editar</button>
-            </div>
-          </div>
-          <div class="comentario-texto">
-            Hola muy buen proyecto, felicitaciones...
-          </div>
+        <!-- Lista de comentarios -->
+        <div id="lista-comentarios">
+          <!-- Los comentarios se cargarán dinámicamente aquí -->
         </div>
       </section>
     </main>
 
     <!-- Modal Editar Comentario -->
-<div id="modal-editar-comentario" class="modal-publicacion" style="display:none;">
-  <div class="modal-content">
-    <h2>Edita tu comentario</h2>
-    <textarea id="editar-comentario-texto" placeholder="Escribe tu comentario..."></textarea>
-    <div class="modal-btns">
-      <button id="btn-editar-comentario-publicar" class="btn-modal">Publicar</button>
-      <button id="btn-editar-comentario-cancelar" class="btn-modal cancelar">Cancelar</button>
+    <div id="modal-editar-comentario" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2>Editar Comentario</h2>
+        <form id="form-editar-comentario">
+          <input type="hidden" id="edit_comentario_id">
+          <textarea id="editar-comentario-texto" placeholder="Escribe tu comentario..." maxlength="100"></textarea>
+          <div class="contador-caracteres">
+            <span id="edit-contador">0</span>/100 caracteres
+          </div>
+          <div class="modal-btns">
+            <button type="submit" id="btn-editar-comentario-publicar" class="btn-modal">Actualizar</button>
+            <button type="button" id="btn-editar-comentario-cancelar" class="btn-modal cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- Modal Reportar Comentario -->
-<div id="modal-reportar-comentario" class="modal-publicacion" style="display:none;">
-  <div class="modal-content">
-    <h2 style="color:#184C3A; font-size:1.3em; text-align:center; margin-bottom:18px;">Motivo de su reporte</h2>
-    <select id="motivo-reporte" style="width:100%; border:1.5px solid #184C3A; border-radius:8px; padding:8px; margin-bottom:18px; font-size:1em; color:#184C3A; background:#f8fbfa;">
-      <option value="" disabled selected>Seleccione su motivo...</option>
-      <option value="spam">Spam</option>
-      <option value="ofensivo">Contenido ofensivo</option>
-      <option value="fuera-tema">Fuera de tema</option>
-      <option value="otro">Otro</option>
-    </select>
-    <div class="modal-btns">
-      <button id="btn-reportar-comentario" class="btn-modal reportar-btn">Reportar</button>
-      <button id="btn-cancelar-reporte" class="btn-modal cancelar">Cancelar</button>
+    <!-- Modal Reportar Comentario -->
+    <div id="modal-reportar-comentario" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2 style="color:#184C3A; font-size:1.3em; text-align:center; margin-bottom:18px;">Motivo de su reporte</h2>
+        <select id="motivo-reporte" style="width:100%; border:1.5px solid #184C3A; border-radius:8px; padding:8px; margin-bottom:18px; font-size:1em; color:#184C3A; background:#f8fbfa;">
+          <option value="" disabled selected>Seleccione su motivo...</option>
+          <option value="spam">Spam</option>
+          <option value="ofensivo">Contenido ofensivo</option>
+          <option value="fuera-tema">Fuera de tema</option>
+          <option value="otro">Otro</option>
+        </select>
+        <div class="modal-btns">
+          <button id="btn-reportar-comentario" class="btn-modal reportar-btn">Reportar</button>
+          <button id="btn-cancelar-reporte" class="btn-modal cancelar">Cancelar</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-    
-
-    <!-- Footer -->
     <footer class="footer">
       <div class="footer-content">
         <hr class="footer-line">
@@ -192,105 +203,7 @@
       </div>
     </footer>
   </div>
-  <script>
-    // Menú de notificaciones popover
-    const notiBtn = document.getElementById('notificaciones-btn');
-    const notiPopover = document.getElementById('notificaciones-popover');
-    notiBtn.onclick = function(e) {
-      e.stopPropagation();
-      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
-    };
-    notiPopover.onclick = function(e) {
-      e.stopPropagation();
-    };
-    document.addEventListener('click', function(e) {
-      if (!notiPopover.contains(e.target) && e.target !== notiBtn) {
-        notiPopover.style.display = 'none';
-      }
-    });
-    
-    // Menú Popover Usuario
-const perfilBtn = document.getElementById('perfil-btn');
-const popoverMenu = document.getElementById('popover-menu');
-perfilBtn.addEventListener('click', function(e) {
-  e.stopPropagation();
-  if (popoverMenu.style.display === 'block') {
-    popoverMenu.style.display = 'none';
-  } else {
-    // Calcula posición
-    const rect = perfilBtn.getBoundingClientRect();
-    popoverMenu.style.display = 'block';
-    popoverMenu.style.position = 'absolute';
-    popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-    popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
-  }
-});
-document.addEventListener('click', function(e) {
-  if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-    popoverMenu.style.display = 'none';
-  }
-});
 
-// Botón cerrar sesión
-document.getElementById('logoutBtn').addEventListener('click', function() {
-  alert('Sesión cerrada.');
-  popoverMenu.style.display = 'none';
-});
-
-// Opciones del menú (puedes personalizar acciones)
-document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-  li.addEventListener('click', () => {
-    switch(idx) {
-      case 0: alert('Ir al Perfil'); break;
-      case 1: alert('Ir a Configuración'); break;
-      case 2: alert('Ir a Favoritos'); break;
-      case 3: alert('Ir a Ayuda'); break;
-    }
-    popoverMenu.style.display = 'none';
-  });
-});
-
-// Mostrar/ocultar menú de comentario
-function toggleComentarioMenu(btn) {
-  // Oculta otros menús abiertos
-  document.querySelectorAll('.comentario-menu').forEach(menu => {
-    if (menu !== btn.nextElementSibling) menu.style.display = 'none';
-  });
-  // Alterna el menú actual
-  var menu = btn.nextElementSibling;
-  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-}
-
-// Cierra el menú si se hace clic fuera
-document.addEventListener('click', function(e) {
-  document.querySelectorAll('.comentario-menu').forEach(menu => {
-    if (!menu.contains(e.target) && !menu.previousElementSibling.contains(e.target)) {
-      menu.style.display = 'none';
-    }
-  });
-});
-
-// Mostrar modal de edición de comentario
-function mostrarEditarComentarioModal(btn) {
-  const comentarioTexto = btn.closest('.comentario-card').querySelector('.comentario-texto').innerText;
-  document.getElementById('editar-comentario-texto').value = comentarioTexto;
-  document.getElementById('modal-editar-comentario').style.display = 'flex';
-}
-
-// Cerrar modal de edición de comentario
-document.getElementById('btn-editar-comentario-cancelar').onclick = function() {
-  document.getElementById('modal-editar-comentario').style.display = 'none';
-};
-
-// Mostrar modal de reporte
-function mostrarReportarComentarioModal() {
-  document.getElementById('modal-reportar-comentario').style.display = 'flex';
-}
-
-// Cerrar modal de reporte
-document.getElementById('btn-cancelar-reporte').onclick = function() {
-  document.getElementById('modal-reportar-comentario').style.display = 'none';
-};
-  </script>
+  <script src="/JS/detalles_proyecto.js"></script>
 </body>
 </html>
