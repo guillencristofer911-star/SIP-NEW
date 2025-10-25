@@ -51,6 +51,13 @@ app.get("/feed-proyectos", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Feed_Proyectos.html"));
 });
 
+app.get("/Detalles_Proyecto.html", (req, res) => {
+  const proyectoId = req.query.id; // Captura el ID del URL
+  console.log("Abriendo proyecto ID:", proyectoId);
+  res.sendFile(path.join(__dirname, "Pages", "Detalles_Proyecto.html"));
+});
+
+// API de autenticación (públicas)
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
@@ -76,6 +83,19 @@ app.put("/api/proyectos/:id/editar", upload.fields([
 ]), proyectosController.editarProyecto);
 app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
+// ==================== RUTAS DE COMENTARIOS ====================
+
+// Obtener comentarios de un proyecto
+app.get("/api/proyectos/:id/comentarios", proyectosController.obtenerComentariosProyecto);
+
+// Crear nuevo comentario
+app.post("/api/proyectos/:id/comentarios", proyectosController.crearComentario);
+
+// EDITAR comentario (FALTABA ESTA RUTA)
+app.put("/api/comentarios/:id/editar", proyectosController.editarComentario);
+
+// ELIMINAR comentario (FALTABA ESTA RUTA)
+app.delete("/api/comentarios/:id/eliminar", proyectosController.eliminarComentario);
 // ==================== RUTAS PROTEGIDAS ====================
 
 // Perfil (requiere token)
