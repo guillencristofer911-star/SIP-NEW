@@ -1,4 +1,3 @@
-// ...existing code...
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -10,46 +9,63 @@ import { methods as reportesController } from "./controllers/reportes.controller
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
-import favoritosRoutes from "./routes/favoritos.routes.js";
+
+
 
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Inicializa la aplicación Express y configura el puerto
 const app = express();
 app.set("port", process.env.PORT || 4000);
 
-app.use(express.static('public'));
-
-
-// Middlewares
+// Middleware para parsear JSON en las solicitudes
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Archivos estáticos
+// Servir archivos estáticos (CSS, JS, imágenes)
 app.use(express.static(path.join(__dirname, "Public")));
+
+// Servir archivos subidos
 app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
 
 // ==================== RUTAS PÚBLICAS ====================
+
+// Páginas HTML públicas
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "index.html"));
 });
+
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Login.html"));
 });
+
 app.get("/registro", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Registro.html"));
 });
+
 app.get("/publicaciones", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
+
 app.get("/feed-proyectos", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "Feed_Proyectos.html"));
 });
+
+app.get("/Detalles_Proyecto.html", (req, res) => {
+  const proyectoId = req.query.id; // Captura el ID del URL
+  console.log("Abriendo proyecto ID:", proyectoId);
+  res.sendFile(path.join(__dirname, "Pages", "Detalles_Proyecto.html"));
+});
+
+// API de autenticación (públicas)
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
 
+
 // ==================== API PÚBLICA ====================
+
 // Autenticación
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
@@ -68,7 +84,57 @@ app.put("/api/proyectos/:id/editar", upload.fields([
 ]), proyectosController.editarProyecto);
 app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
 
+// ==================== RUTAS DE COMENTARIOS ====================
+
+// Obtener comentarios de un proyecto
+app.get("/api/proyectos/:id/comentarios", proyectosController.obtenerComentariosProyecto);
+
+// Crear nuevo comentario
+app.post("/api/proyectos/:id/comentarios", proyectosController.crearComentario);
+
+// EDITAR comentario (FALTABA ESTA RUTA)
+app.put("/api/comentarios/:id/editar", proyectosController.editarComentario);
+
+// ELIMINAR comentario (FALTABA ESTA RUTA)
+app.delete("/api/comentarios/:id/eliminar", proyectosController.eliminarComentario);
+// ==================== RUTAS PROTEGIDAS ====================
+
+// Perfil (requiere token)
+app.get("/api/perfil", verificarToken, (req, res) => {
+  res.json({
+    success: true,
+    message: "Perfil de usuario",
+    usuario: req.usuario
+  });
+});
+
+// Solo administradores
+app.get("/api/admin/usuarios", verificarToken, verificarAdmin, async (req, res) => {
+  res.json({
+    success: true,
+    message: "Lista de usuarios (solo admin)"
+  });
+});
+
+// Verificar token (útil para frontend)
+app.get("/api/verificar-token", verificarToken, (req, res) => {
+  res.json({
+    success: true,
+    valido: true,
+    usuario: req.usuario
+  });
+});
+
+// Logout (no invalida token en servidor, solo responde OK)
+app.post("/api/logout", verificarToken, (req, res) => {
+  res.json({
+    success: true,
+    message: "Sesión cerrada exitosamente"
+  });
+});
+
 // ==================== RUTAS DE PUBLICACIONES ====================
+
 app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
 app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
 app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
@@ -76,50 +142,80 @@ app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPu
 app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
 
 // ==================== RUTAS DE RESPUESTAS ====================
+
+// Obtener todas las respuestas de una publicación (público)
 app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+
+// Obtener el conteo de respuestas (público)
 app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+
+// Crear una respuesta (requiere autenticación)
 app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+
+// Editar una respuesta (requiere autenticación)
 app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+
+// Eliminar una respuesta (requiere autenticación)
 app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
-// ==================== RUTAS DE REPORTES ====================
-app.post("/api/publicaciones/:id/reportar", verificarToken, reportesController.reportarPublicacion);
-app.get("/api/reportes", verificarToken, verificarAdmin, reportesController.obtenerReportes);
-
-
-// ==================== RUTAS PROTEGIDAS ====================
-app.get("/api/perfil", verificarToken, (req, res) => {
-  res.json({ success: true, message: "Perfil de usuario", usuario: req.usuario });
-});
-app.get("/api/admin/usuarios", verificarToken, verificarAdmin, (req, res) => {
-  res.json({ success: true, message: "Lista de usuarios (solo admin)" });
-});
-app.get("/api/verificar-token", verificarToken, (req, res) => {
-  res.json({ success: true, valido: true, usuario: req.usuario });
-});
-app.post("/api/logout", verificarToken, (req, res) => {
-  res.json({ success: true, message: "Sesión cerrada exitosamente" });
-});
-
-// ==================== PANEL DE ADMINISTRACIÓN ====================
-
-app.get("/admin/panel", (req, res) => {
-  res.sendFile(path.join(__dirname, "Pages", "Admin_Panel.html"));
-});
-
-// Favoritos (router separado)
-app.use("/api/favoritos", favoritosRoutes);
-
 // ==================== MANEJO DE ERRORES ====================
-// 404 único
+
+// Ruta no encontrada
 app.use((req, res) => {
-  res.status(404).json({ success: false, message: "Ruta no encontrada" });
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
 });
 
-// Error handler único
+// Manejo de errores global
 app.use((err, req, res, next) => {
   console.error("Error:", err);
-  res.status(500).json({ success: false, message: "Error interno del servidor" });
+  res.status(500).json({
+    success: false,
+    message: "Error interno del servidor"
+  });
+});
+
+// ==================== RUTAS DE PUBLICACIONES ====================
+
+// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
+app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
+
+// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
+app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
+
+// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
+app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
+
+// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
+app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
+
+// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
+app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
+
+// ==================== MANEJO DE ERRORES ====================
+
+// Ruta para manejar solicitudes a rutas no existentes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Ruta no encontrada"
+  });
+});
+
+//Favoritos
+import favoritosRoutes from "./routes/favoritos.routes.js";
+app.use("/api/favoritos", favoritosRoutes);
+
+
+// Middleware global para manejo de errores del servidor
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Error interno del servidor"
+  });
 });
 
 // ==================== INICIAR SERVIDOR ====================
