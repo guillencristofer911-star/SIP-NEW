@@ -32,10 +32,10 @@ function verificarAutenticacion() {
     try {
         usuarioActual = JSON.parse(usuarioStr);
         console.log('✅ Usuario autenticado:', usuarioActual);
-        console.log('✅ ID del usuario:', usuarioActual.id);
         
-        // ✅ ACTUALIZAR ID DE USUARIO EN LOS INPUTS HIDDEN
-        actualizarUserIdEnFormularios();
+        // ✅ ACTUALIZAR ID DE USUARIO EN FORMULARIOS
+        document.getElementById('user_id').value = usuarioActual.id;
+        document.getElementById('edit_user_id').value = usuarioActual.id;
         
         // Actualizar header con info del usuario
         actualizarHeaderUsuario();
@@ -44,30 +44,6 @@ function verificarAutenticacion() {
         console.error('Error al parsear usuario:', error);
         alert('Error en la sesión. Por favor inicia sesión nuevamente.');
         window.location.href = '/login';
-    }
-}
-
-// ✅ FUNCIÓN PARA ACTUALIZAR user_id EN TODOS LOS FORMULARIOS
-function actualizarUserIdEnFormularios() {
-    if (!usuarioActual || !usuarioActual.id) {
-        console.error('❌ No hay usuario autenticado');
-        return;
-    }
-    
-    // Actualizar input en modal de crear proyecto
-    const userIdInput = document.getElementById('user_id');
-    if (userIdInput) {
-        userIdInput.value = usuarioActual.id;
-        console.log('✅ user_id establecido en formulario crear:', usuarioActual.id);
-    } else {
-        console.error('❌ Input #user_id no encontrado en el DOM');
-    }
-    
-    // Actualizar input en modal de editar proyecto
-    const editUserIdInput = document.getElementById('edit_user_id');
-    if (editUserIdInput) {
-        editUserIdInput.value = usuarioActual.id;
-        console.log('✅ edit_user_id establecido:', usuarioActual.id);
     }
 }
 
@@ -102,19 +78,6 @@ function configurarEventListeners() {
                 popoverMenu.style.right = '20px';
             }
         });
-        
-        // Opciones del menú
-        document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-            li.addEventListener('click', () => {
-                switch(idx) {
-                    case 0: alert('Ir al Perfil'); break;
-                    case 1: alert('Ir a Configuración'); break;
-                    case 2: alert('Ir a Favoritos'); break;
-                    case 3: alert('Ir a Ayuda'); break;
-                }
-                popoverMenu.style.display = 'none';
-            });
-        });
     }
     
     // Cerrar popover al hacer clic fuera
@@ -139,10 +102,6 @@ function configurarEventListeners() {
                 window.location.href = '/login';
                 return;
             }
-            
-            // ✅ ASEGURAR QUE EL user_id ESTÉ ACTUALIZADO ANTES DE ABRIR EL MODAL
-            actualizarUserIdEnFormularios();
-            
             document.getElementById('modal-subir-proyecto').style.display = 'flex';
         });
     }
@@ -163,31 +122,19 @@ function configurarEventListeners() {
     }
     
     // Cerrar modales al hacer clic fuera
-    const modalSubir = document.getElementById('modal-subir-proyecto');
-    if (modalSubir) {
-        modalSubir.addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
-    }
+    document.getElementById('modal-subir-proyecto').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
     
-    const modalEditar = document.getElementById('modal-editar-proyecto');
-    if (modalEditar) {
-        modalEditar.addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
-    }
+    document.getElementById('modal-editar-proyecto').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
     
     // Formulario de subir proyecto
-    const formSubir = document.getElementById('form-subir-proyecto');
-    if (formSubir) {
-        formSubir.addEventListener('submit', subirProyecto);
-    }
+    document.getElementById('form-subir-proyecto').addEventListener('submit', subirProyecto);
     
     // Formulario de editar proyecto
-    const formEditar = document.getElementById('form-editar-proyecto');
-    if (formEditar) {
-        formEditar.addEventListener('submit', actualizarProyecto);
-    }
+    document.getElementById('form-editar-proyecto').addEventListener('submit', actualizarProyecto);
     
     // PDF personalizado
     configurarPDFInputs();
@@ -203,13 +150,82 @@ function configurarEventListeners() {
 }
 
 // ==================== CERRAR SESIÓN ====================
-function cerrarSesion(e) {
-    e.preventDefault();
+function cerrarSesion() {
     console.log('👋 Cerrando sesión...');
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
     alert('Sesión cerrada exitosamente');
     window.location.href = '/login';
+}
+
+// ==================== FUNCIONES DE TIEMPO ====================
+function verificarTiempoEdicion(fechaCreacion) {
+    try {
+        const ahora = Date.now();
+        const fechaCreacionTime = new Date(fechaCreacion).getTime();
+        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
+        
+        console.log(`⏱️ Verificando tiempo: ${diferenciaMinutos.toFixed(2)} minutos transcurridos`);
+        
+        return diferenciaMinutos <= 15;
+    } catch (error) {
+        console.error('Error al verificar tiempo:', error);
+        return false;
+    }
+}
+
+function calcularMinutosRestantes(fechaCreacion) {
+    try {
+        const ahora = Date.now();
+        const fechaCreacionTime = new Date(fechaCreacion).getTime();
+        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
+        
+        return Math.max(0, Math.floor(15 - diferenciaMinutos));
+    } catch (error) {
+        return 0;
+    }
+}
+
+let intervaloActualizacion = null;
+
+function iniciarActualizacionTiempo() {
+    if (intervaloActualizacion) {
+        clearInterval(intervaloActualizacion);
+    }
+    
+    intervaloActualizacion = setInterval(() => {
+        document.querySelectorAll('.proyecto-card').forEach(card => {
+            const fechaCreacion = card.getAttribute('data-fecha-creacion');
+            if (!fechaCreacion) return;
+            
+            const minutosRestantes = calcularMinutosRestantes(fechaCreacion);
+            const fechaSpan = card.querySelector('.proyecto-fecha');
+            
+            if (fechaSpan) {
+                const fechaBase = fechaSpan.textContent.replace(/⏱️.*$/g, '').trim();
+                
+                if (minutosRestantes > 0) {
+                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#28a745; font-size:12px; margin-left:8px;">⏱️ ${minutosRestantes} min para editar</span>`;
+                } else {
+                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#dc3545; font-size:12px; margin-left:8px;">⏱️ Tiempo expirado</span>`;
+                    
+                    const menu = card.querySelector('.menu-desplegable');
+                    if (menu) {
+                        const btnEditar = menu.querySelector('.editar');
+                        if (btnEditar && !btnEditar.disabled) {
+                            btnEditar.disabled = true;
+                            btnEditar.style.opacity = '0.5';
+                            btnEditar.style.cursor = 'not-allowed';
+                            btnEditar.title = 'Tiempo de edición expirado';
+                            btnEditar.innerHTML = '<i class="fas fa-edit"></i> Editar (Expirado)';
+                        }
+                    }
+                }
+            }
+        });
+    }, 60000);
+    
+    console.log('⏱️ Actualizador de tiempo iniciado');
 }
 
 // ==================== SUBIR PROYECTO ====================
@@ -222,55 +238,27 @@ async function subirProyecto(e) {
         return;
     }
     
-    // ✅ VERIFICAR Y ACTUALIZAR user_id JUSTO ANTES DE ENVIAR
-    actualizarUserIdEnFormularios();
-    
     const formData = new FormData(this);
     const submitBtn = document.getElementById('btn-publicar');
     
-    // ✅ VERIFICAR QUE user_id ESTÉ EN EL FORMDATA
-    let userId = formData.get('user_id');
-    console.log('📋 user_id en FormData:', userId);
+    formData.set('user_id', usuarioActual.id);
     
-    // ✅ SI NO ESTÁ, AGREGARLO MANUALMENTE
-    if (!userId || userId === '') {
-        console.log('⚠️ user_id vacío, estableciendo manualmente...');
-        formData.set('user_id', usuarioActual.id);
-        userId = usuarioActual.id;
-        console.log('✅ user_id establecido manualmente:', userId);
-    }
+    console.log('📤 Enviando proyecto con user_id:', usuarioActual.id);
     
-    // Validar otros campos requeridos
     const titulo = formData.get('titulo');
     const descripcion = formData.get('descripcion');
     const programa = formData.get('programa');
     
-    console.log('📋 Datos del formulario:', { 
-        titulo, 
-        descripcion, 
-        programa, 
-        userId 
-    });
-    
     if (!titulo || !descripcion || !programa) {
-        alert('❌ Por favor completa todos los campos requeridos (título, descripción, programa)');
+        alert('❌ Por favor completa todos los campos requeridos');
         return;
     }
     
-    if (!userId) {
-        alert('❌ Error: No se pudo obtener el ID de usuario. Por favor recarga la página.');
-        console.error('❌ user_id no está presente después de intentar establecerlo');
-        return;
-    }
-    
-    // Mostrar loading
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
     submitBtn.disabled = true;
     
     try {
-        console.log('📤 Enviando proyecto...');
-        
         const response = await fetch('/api/proyectos/crear', {
             method: 'POST',
             body: formData
@@ -415,160 +403,15 @@ function mostrarProyectos(proyectos) {
                 ` : ''}
                 
                 <div class="proyecto-footer">
-                    <div class="proyecto-comentarios-container" id="comentarios-${proyecto.ID_proyecto}">
-                        <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;" 
-                              onclick="toggleComentariosProyecto(${proyecto.ID_proyecto})">
-                            Ver comentarios
-                        </span>
-                        <div class="mini-comentarios" id="mini-comentarios-${proyecto.ID_proyecto}" style="display:none;">
-                            <!-- Los comentarios se cargarán aquí -->
-                        </div>
-                    </div>
-                    <a href="/Detalles_Proyecto.html?id=${proyecto.ID_proyecto}" class="btn-abrir">Abrir</a>
+                    <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
+                    <button class="btn-abrir" onclick="abrirProyecto(${proyecto.ID_proyecto})">Abrir</button>
                 </div>
             </div>
         `;
     }).join('');
     
-    // Cargar el contador de comentarios para cada proyecto
-    proyectos.forEach(proyecto => {
-        cargarComentariosProyecto(proyecto.ID_proyecto);
-    });
-    
     aplicarEventListenersFavoritos();
     iniciarActualizacionTiempo();
-}
-
-// ==================== COMENTARIOS DE PROYECTOS ====================
-async function cargarComentariosProyecto(proyectoId) {
-    try {
-        if (!usuarioActual || !usuarioActual.id) {
-            console.log('⚠️ No hay usuario autenticado, no se pueden cargar comentarios');
-            return;
-        }
-        
-        const user_id = usuarioActual.id;
-        const response = await fetch(`/api/proyectos/${proyectoId}/comentarios?user_id=${user_id}`);
-        const data = await response.json();
-        
-        const contenedor = document.getElementById(`mini-comentarios-${proyectoId}`);
-        if (!contenedor) return;
-        
-        if (data.success && data.comentarios && data.comentarios.length > 0) {
-            // Mostrar solo los primeros 2 comentarios
-            const comentariosLimitados = data.comentarios.slice(0, 2);
-            
-            contenedor.innerHTML = comentariosLimitados.map(comentario => `
-                <div class="mini-comentario">
-                    <strong>${comentario.nombre || 'Usuario'} ${comentario.apellido || ''}:</strong>
-                    <span>${comentario.contenido}</span>
-                    <small>${formatearFechaMini(comentario.fecha_creacion)}</small>
-                </div>
-            `).join('');
-            
-            // Actualizar el texto del botón
-            const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
-            if (boton) {
-                boton.textContent = `${data.comentarios.length} comentarios`;
-            }
-        } else {
-            const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
-            if (boton) {
-                boton.textContent = 'No hay comentarios';
-            }
-        }
-    } catch (error) {
-        console.error('Error al cargar comentarios:', error);
-        const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
-        if (boton) {
-            boton.textContent = 'Error al cargar';
-        }
-    }
-}
-
-function toggleComentariosProyecto(proyectoId) {
-    const contenedor = document.getElementById(`mini-comentarios-${proyectoId}`);
-    if (!contenedor) return;
-    
-    const estaVisible = contenedor.style.display === 'block';
-    
-    if (!estaVisible) {
-        // Cargar comentarios si no se han cargado
-        if (contenedor.innerHTML === '') {
-            cargarComentariosProyecto(proyectoId);
-        }
-        contenedor.style.display = 'block';
-    } else {
-        contenedor.style.display = 'none';
-    }
-}
-
-window.toggleComentariosProyecto = toggleComentariosProyecto;
-
-// ==================== FUNCIONES DE TIEMPO ====================
-function verificarTiempoEdicion(fechaCreacion) {
-    try {
-        const ahora = Date.now();
-        const fechaCreacionTime = new Date(fechaCreacion).getTime();
-        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
-        
-        return diferenciaMinutos <= 15;
-    } catch (error) {
-        console.error('Error al verificar tiempo:', error);
-        return false;
-    }
-}
-
-function calcularMinutosRestantes(fechaCreacion) {
-    try {
-        const ahora = Date.now();
-        const fechaCreacionTime = new Date(fechaCreacion).getTime();
-        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
-        
-        return Math.max(0, Math.floor(15 - diferenciaMinutos));
-    } catch (error) {
-        return 0;
-    }
-}
-
-let intervaloActualizacion = null;
-
-function iniciarActualizacionTiempo() {
-    if (intervaloActualizacion) {
-        clearInterval(intervaloActualizacion);
-    }
-    
-    intervaloActualizacion = setInterval(() => {
-        document.querySelectorAll('.proyecto-card').forEach(card => {
-            const fechaCreacion = card.getAttribute('data-fecha-creacion');
-            if (!fechaCreacion) return;
-            
-            const minutosRestantes = calcularMinutosRestantes(fechaCreacion);
-            const fechaSpan = card.querySelector('.proyecto-fecha');
-            
-            if (fechaSpan) {
-                const fechaBase = fechaSpan.textContent.replace(/⏱️.*$/g, '').trim();
-                
-                if (minutosRestantes > 0) {
-                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#28a745; font-size:12px; margin-left:8px;">⏱️ ${minutosRestantes} min para editar</span>`;
-                } else {
-                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#dc3545; font-size:12px; margin-left:8px;">⏱️ Tiempo expirado</span>`;
-                    
-                    const menu = card.querySelector('.menu-desplegable');
-                    if (menu) {
-                        const btnEditar = menu.querySelector('.editar');
-                        if (btnEditar && !btnEditar.disabled) {
-                            btnEditar.disabled = true;
-                            btnEditar.style.opacity = '0.5';
-                            btnEditar.style.cursor = 'not-allowed';
-                            btnEditar.title = 'Tiempo de edición expirado';
-                            btnEditar.innerHTML = '<i class="fas fa-edit"></i> Editar (Expirado)';
-                        }
-                    }
-                }
-            }
-        });
-    }, 60000);
 }
 
 // ==================== EDITAR PROYECTO ====================
@@ -592,9 +435,6 @@ async function editarProyecto(proyectoId) {
                 alert(`❌ El tiempo límite para editar este proyecto (15 minutos) ha expirado.\n\nTiempo transcurrido: ${minutosTranscurridos} minutos`);
                 return;
             }
-            
-            // ✅ ASEGURAR QUE edit_user_id ESTÉ ACTUALIZADO
-            actualizarUserIdEnFormularios();
             
             document.getElementById('edit_proyecto_id').value = proyectoId;
             document.getElementById('edit_titulo').value = proyecto.nombre || '';
@@ -649,7 +489,6 @@ async function actualizarProyecto(e) {
     const submitBtn = document.getElementById('btn-actualizar');
     const proyectoId = document.getElementById('edit_proyecto_id').value;
     
-    // ✅ ASEGURAR QUE user_id ESTÉ EN EL FORMDATA
     formData.set('user_id', usuarioActual.id);
     
     const originalText = submitBtn.innerHTML;
@@ -728,34 +567,11 @@ function formatearFecha(fechaString) {
     }
 }
 
-function formatearFechaMini(fechaString) {
-    try {
-        const fecha = new Date(fechaString);
-        const ahora = new Date();
-        const diferencia = ahora - fecha;
-        const diferenciaMinutos = Math.floor(diferencia / (1000 * 60));
-        const diferenciaHoras = Math.floor(diferencia / (1000 * 60 * 60));
-        
-        if (diferenciaMinutos < 1) {
-            return 'Ahora';
-        } else if (diferenciaMinutos < 60) {
-            return `Hace ${diferenciaMinutos}m`;
-        } else if (diferenciaHoras < 24) {
-            return `Hace ${diferenciaHoras}h`;
-        } else if (fecha.toDateString() === ahora.toDateString()) {
-            return 'Hoy';
-        } else if (fecha.toDateString() === new Date(ahora - 86400000).toDateString()) {
-            return 'Ayer';
-        } else {
-            return fecha.toLocaleDateString('es-ES', {
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-    } catch (error) {
-        return '';
-    }
+function abrirProyecto(proyectoId) {
+    alert(`Abriendo proyecto ${proyectoId} - Esta funcionalidad se implementará después`);
 }
+
+window.abrirProyecto = abrirProyecto;
 
 function toggleProyectoMenu(proyectoId, event) {
     event.stopPropagation();
@@ -773,17 +589,8 @@ window.toggleProyectoMenu = toggleProyectoMenu;
 
 function aplicarEventListenersFavoritos() {
     document.querySelectorAll('.proyecto-fav').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
+        btn.addEventListener('click', function() {
             this.classList.toggle('active');
-            const icon = this.querySelector('i');
-            if (this.classList.contains('active')) {
-                icon.classList.remove('fa-regular');
-                icon.classList.add('fa-solid');
-            } else {
-                icon.classList.remove('fa-solid');
-                icon.classList.add('fa-regular');
-            }
         });
     });
 }
@@ -845,16 +652,6 @@ function configurarNotificaciones() {
             e.stopPropagation();
             const isVisible = notiPopover.style.display === 'block';
             notiPopover.style.display = isVisible ? 'none' : 'block';
-            
-            // Cerrar menú de perfil si está abierto
-            const popoverMenu = document.getElementById('popover-menu');
-            if (popoverMenu) {
-                popoverMenu.style.display = 'none';
-            }
-        });
-        
-        notiPopover.addEventListener('click', function(e) {
-            e.stopPropagation();
         });
     }
     
@@ -875,7 +672,6 @@ function limpiarFiltros() {
     alert('Filtros limpiados.');
 }
 
-// Cerrar menús al hacer clic fuera
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.proyecto-acciones')) {
         document.querySelectorAll('.menu-desplegable').forEach(menu => {

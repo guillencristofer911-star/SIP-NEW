@@ -346,395 +346,179 @@ export const methods = {
     },
 
     // ===== NUEVOS MÉTODOS PARA COMENTARIOS =====
-obtenerComentariosProyecto: async (req, res) => {
-    try {
-        const proyectoId = req.params.id;
-        const user_id = req.query.user_id;
-        
-        console.log('=== DEBUG COMENTARIOS ===');
-        console.log('1. Proyecto ID recibido:', proyectoId);
-        console.log('2. User ID recibido:', user_id);
-        
-        // ✅ CONSULTA MEJORADA - Obtener timestamp actual del servidor MySQL
-        const [tiempoServidor] = await pool.execute('SELECT NOW() as ahora, UNIX_TIMESTAMP(NOW()) as timestamp_ahora');
-        console.log('⏰ Tiempo servidor MySQL:', tiempoServidor[0]);
-        
-        const query = `
-            SELECT 
-                cp.ID_comentario,
-                cp.contenido,
-                cp.fecha_creacion,
-                UNIX_TIMESTAMP(cp.fecha_creacion) as fecha_creacion_timestamp,
-                cp.ID_estado_comentario,
-                cp.ID_usuario,
-                u.ID_usuario as usuario_id,
-                u.nombre,
-                u.apellido,
-                COALESCE(r.Nombre, 'Aprendiz') as rol,
-                CASE WHEN cp.ID_usuario = ? THEN 1 ELSE 0 END as es_autor,
-                NOW() as servidor_ahora,
-                UNIX_TIMESTAMP(NOW()) as servidor_timestamp_ahora
-            FROM comentario_proyecto cp
-            LEFT JOIN usuario u ON cp.ID_usuario = u.ID_usuario
-            LEFT JOIN rol r ON u.ID_rol = r.ID_Rol
-            WHERE cp.ID_proyecto = ? AND (cp.ID_estado_comentario = 1 OR cp.ID_estado_comentario IS NULL)
-            ORDER BY cp.fecha_creacion DESC
-        `;
-        
-        console.log('3. Ejecutando query...');
-        const [comentarios] = await pool.execute(query, [user_id || 0, proyectoId]);
-        
-        console.log('4. Comentarios encontrados:', comentarios.length);
-        
-        // ✅ PROCESAR COMENTARIOS CON DEBUGGING DETALLADO
-        const comentariosProcesados = comentarios.map(comentario => {
-            const fecha_creacion_js = comentario.fecha_creacion_timestamp * 1000;
-            const ahora_js = comentario.servidor_timestamp_ahora * 1000;
+    obtenerComentariosProyecto: async (req, res) => {
+        try {
+            const proyectoId = req.params.id;
+            const user_id = req.query.user_id; // Obtener user_id desde query params
             
-            console.log(`📝 Comentario ${comentario.ID_comentario}:`, {
-                fecha_creacion: comentario.fecha_creacion,
-                fecha_creacion_timestamp: comentario.fecha_creacion_timestamp,
-                fecha_creacion_js: fecha_creacion_js,
-                servidor_ahora: comentario.servidor_ahora,
-                servidor_timestamp_ahora: comentario.servidor_timestamp_ahora,
-                ahora_js: ahora_js,
-                diferencia_ms: ahora_js - fecha_creacion_js,
-                diferencia_min: Math.floor((ahora_js - fecha_creacion_js) / 60000)
+            console.log('=== DEBUG COMENTARIOS ===');
+            console.log('1. Proyecto ID recibido:', proyectoId);
+            console.log('2. User ID recibido:', user_id);
+            
+            // CONSULTA MEJORADA CON INFORMACIÓN DE AUTORÍA
+            const query = `
+                SELECT 
+                    cp.ID_comentario,
+                    cp.contenido,
+                    cp.fecha_creacion,
+                    cp.ID_estado_comentario,
+                    cp.ID_usuario,
+                    u.ID_usuario as usuario_id,
+                    u.nombre,
+                    u.apellido,
+                    COALESCE(r.Nombre, 'Aprendiz') as rol,
+                    -- Verificar si el usuario actual es el autor del comentario
+                    CASE WHEN cp.ID_usuario = ? THEN 1 ELSE 0 END as es_autor
+                FROM comentario_proyecto cp
+                LEFT JOIN usuario u ON cp.ID_usuario = u.ID_usuario
+                LEFT JOIN rol r ON u.ID_rol = r.ID_Rol
+                WHERE cp.ID_proyecto = ? AND (cp.ID_estado_comentario = 1 OR cp.ID_estado_comentario IS NULL)
+                ORDER BY cp.fecha_creacion DESC
+            `;
+            
+            console.log('3. Ejecutando query...');
+            const [comentarios] = await pool.execute(query, [user_id || 0, proyectoId]);
+            
+            console.log('4. Comentarios encontrados:', comentarios.length);
+            
+            res.json({
+                success: true,
+                comentarios: comentarios
             });
             
-            return {
-                ID_comentario: comentario.ID_comentario,
-                contenido: comentario.contenido,
-                fecha_creacion: comentario.fecha_creacion,
-                fecha_creacion_timestamp: comentario.fecha_creacion_timestamp,
-                fecha_creacion_js: fecha_creacion_js,
-                ID_estado_comentario: comentario.ID_estado_comentario,
-                ID_usuario: comentario.ID_usuario,
-                usuario_id: comentario.usuario_id,
-                nombre: comentario.nombre,
-                apellido: comentario.apellido,
-                rol: comentario.rol,
-                es_autor: comentario.es_autor
-            };
-        });
-        
-        res.json({
-            success: true,
-            comentarios: comentariosProcesados
-        });
-        
-    } catch (error) {
-        console.error('❌ ERROR en obtenerComentariosProyecto:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al cargar comentarios: ' + error.message
-        });
-    }
-},
-
-crearComentario: async (req, res) => {
-    try {
-        const proyectoId = parseInt(req.params.id);
-        const { contenido, user_id } = req.body;
-        
-        console.log('=== CREANDO COMENTARIO ===');
-        console.log('Proyecto ID:', proyectoId);
-        console.log('User ID:', user_id);
-        console.log('Contenido:', contenido);
-
-        // Validaciones
-        if (!contenido || !user_id) {
-            return res.status(400).json({
+        } catch (error) {
+            console.error('❌ ERROR en obtenerComentariosProyecto:', error);
+            res.status(500).json({
                 success: false,
-                message: 'Contenido y user_id son requeridos'
+                message: 'Error al cargar comentarios: ' + error.message
             });
         }
+    },
 
-        if (contenido.trim().length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'El comentario no puede estar vacío'
-            });
-        }
-
-        if (contenido.length > 100) {
-            return res.status(400).json({
-                success: false,
-                message: 'El comentario no puede tener más de 100 caracteres'
-            });
-        }
-
-        // VERIFICAR QUE EL PROYECTO EXISTA
-        const [proyectos] = await pool.execute(
-            'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
-            [proyectoId]
-        );
-
-        if (proyectos.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Proyecto no encontrado'
-            });
-        }
-
-        // VERIFICAR QUE EL USUARIO EXISTA
-        const [usuarios] = await pool.execute(
-            'SELECT ID_usuario FROM usuario WHERE ID_usuario = ?',
-            [user_id]
-        );
-
-        if (usuarios.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuario no encontrado'
-            });
-        }
-
-        // ✅ OBTENER TIEMPO ACTUAL DEL SERVIDOR MYSQL ANTES DE INSERTAR
-        const [tiempoAntes] = await pool.execute('SELECT NOW() as ahora, UNIX_TIMESTAMP(NOW()) as timestamp_ahora');
-        console.log('⏰ Tiempo antes de INSERT:', tiempoAntes[0]);
-
-        // ✅ INSERTAR COMENTARIO - Asegurarse que fecha_creacion use NOW()
-        const query = `
-            INSERT INTO comentario_proyecto 
-            (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
-            VALUES (?, ?, ?, NOW(), 1)
-        `;
-        
-        console.log('📝 Ejecutando INSERT con valores:', [proyectoId, user_id, contenido.trim()]);
-        
-        const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
-        
-        console.log('✅ Comentario creado con ID:', result.insertId);
-
-        // Verificar que se creó correctamente
-        if (!result.insertId || result.insertId === 0) {
-            throw new Error('No se generó un ID válido para el comentario');
-        }
-
-        // ✅ OBTENER COMENTARIO RECIÉN CREADO CON TIMESTAMP CORRECTO
-        const [comentariosCreados] = await pool.execute(`
-            SELECT 
-                cp.ID_comentario,
-                cp.contenido,
-                cp.fecha_creacion,
-                UNIX_TIMESTAMP(cp.fecha_creacion) as fecha_creacion_timestamp,
-                u.ID_usuario,
-                u.nombre,
-                u.apellido,
-                COALESCE(r.nombre, 'Usuario') as rol,
-                NOW() as servidor_ahora,
-                UNIX_TIMESTAMP(NOW()) as servidor_timestamp_ahora
-            FROM comentario_proyecto cp
-            INNER JOIN usuario u ON cp.ID_usuario = u.ID_usuario
-            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
-            WHERE cp.ID_comentario = ?
-        `, [result.insertId]);
-
-        if (comentariosCreados.length === 0) {
-            throw new Error('No se pudo recuperar el comentario creado');
-        }
-
-        const comentario = comentariosCreados[0];
-        const fecha_creacion_js = comentario.fecha_creacion_timestamp * 1000;
-        const ahora_js = comentario.servidor_timestamp_ahora * 1000;
-
-        console.log('📅 Comentario creado - DEBUGGING:', {
-            id: comentario.ID_comentario,
-            fecha_mysql: comentario.fecha_creacion,
-            timestamp_segundos: comentario.fecha_creacion_timestamp,
-            fecha_creacion_js: fecha_creacion_js,
-            servidor_ahora: comentario.servidor_ahora,
-            servidor_timestamp: comentario.servidor_timestamp_ahora,
-            ahora_js: ahora_js,
-            diferencia_ms: ahora_js - fecha_creacion_js,
-            diferencia_segundos: (ahora_js - fecha_creacion_js) / 1000
-        });
-
-        res.json({
-            success: true,
-            message: 'Comentario publicado exitosamente',
-            comentario: {
-                ID_comentario: comentario.ID_comentario,
-                contenido: comentario.contenido,
-                fecha_creacion: comentario.fecha_creacion,
-                fecha_creacion_timestamp: comentario.fecha_creacion_timestamp,
-                fecha_creacion_js: fecha_creacion_js,
-                ID_usuario: comentario.ID_usuario,
-                nombre: comentario.nombre,
-                apellido: comentario.apellido,
-                rol: comentario.rol
+    crearComentario: async (req, res) => {
+        try {
+            const proyectoId = parseInt(req.params.id);
+            const { contenido, user_id } = req.body;
+            
+            console.log('=== CREANDO COMENTARIO ===');
+            console.log('Proyecto ID:', proyectoId);
+            console.log('User ID:', user_id);
+            console.log('Contenido:', contenido);
+    
+            // Validaciones más estrictas
+            if (!contenido || !user_id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Contenido y user_id son requeridos'
+                });
             }
-        });
-        
-    } catch (error) {
-        console.error('❌ Error al crear comentario:', error);
-        console.error('Código de error:', error.code);
-        console.error('Número de error SQL:', error.errno);
-        
-        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-            return res.status(400).json({
-                success: false,
-                message: 'Error de referencia: Verifique que el proyecto y usuario existan'
-            });
-        }
-        
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({
-                success: false,
-                message: 'Error: Ya existe un comentario con ese ID. Por favor intenta nuevamente.'
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor: ' + error.message
-        });
-    }
-},
-
-crearComentario: async (req, res) => {
-    try {
-        const proyectoId = parseInt(req.params.id);
-        const { contenido, user_id } = req.body;
-        
-        console.log('=== CREANDO COMENTARIO ===');
-        console.log('Proyecto ID:', proyectoId);
-        console.log('User ID:', user_id);
-        console.log('Contenido:', contenido);
-
-        // Validaciones
-        if (!contenido || !user_id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Contenido y user_id son requeridos'
-            });
-        }
-
-        if (contenido.trim().length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: 'El comentario no puede estar vacío'
-            });
-        }
-
-        if (contenido.length > 100) {
-            return res.status(400).json({
-                success: false,
-                message: 'El comentario no puede tener más de 100 caracteres'
-            });
-        }
-
-        // VERIFICAR QUE EL PROYECTO EXISTA
-        const [proyectos] = await pool.execute(
-            'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
-            [proyectoId]
-        );
-
-        if (proyectos.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Proyecto no encontrado'
-            });
-        }
-
-        // VERIFICAR QUE EL USUARIO EXISTA
-        const [usuarios] = await pool.execute(
-            'SELECT ID_usuario FROM usuario WHERE ID_usuario = ?',
-            [user_id]
-        );
-
-        if (usuarios.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuario no encontrado'
-            });
-        }
-
-        // ✅ INSERTAR COMENTARIO SIN VERIFICAR ESTADO (usar DEFAULT o NULL)
-        const query = `
-            INSERT INTO comentario_proyecto 
-            (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
-            VALUES (?, ?, ?, NOW(), 1)
-        `;
-        
-        console.log('📝 Ejecutando INSERT con valores:', [proyectoId, user_id, contenido.trim()]);
-        
-        const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
-        
-        console.log('✅ Comentario creado con ID:', result.insertId);
-
-        // Verificar que se creó correctamente
-        if (!result.insertId || result.insertId === 0) {
-            throw new Error('No se generó un ID válido para el comentario');
-        }
-
-        // ✅ OBTENER COMENTARIO CON TIMESTAMP EN MILISEGUNDOS (igual que respuestas)
-        const [comentariosCreados] = await pool.execute(`
-            SELECT 
-                cp.ID_comentario,
-                cp.contenido,
-                DATE_FORMAT(cp.fecha_creacion, '%Y-%m-%d %H:%i:%s') as fecha_creacion,
-                UNIX_TIMESTAMP(cp.fecha_creacion) as fecha_creacion_timestamp,
-                u.ID_usuario,
-                u.nombre,
-                u.apellido,
-                COALESCE(r.nombre, 'Usuario') as rol
-            FROM comentario_proyecto cp
-            INNER JOIN usuario u ON cp.ID_usuario = u.ID_usuario
-            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
-            WHERE cp.ID_comentario = ?
-        `, [result.insertId]);
-
-        if (comentariosCreados.length === 0) {
-            throw new Error('No se pudo recuperar el comentario creado');
-        }
-
-        // ✅ CONVERTIR TIMESTAMP A MILISEGUNDOS (igual que en respuestas)
-        const comentario = comentariosCreados[0];
-        const fecha_creacion_js = comentario.fecha_creacion_timestamp * 1000;
-
-        console.log('📅 Comentario creado:', {
-            id: comentario.ID_comentario,
-            fecha_mysql: comentario.fecha_creacion,
-            timestamp_segundos: comentario.fecha_creacion_timestamp,
-            fecha_creacion_js: fecha_creacion_js
-        });
-
-        res.json({
-            success: true,
-            message: 'Comentario publicado exitosamente',
-            comentario: {
-                ...comentario,
-                fecha_creacion_js: fecha_creacion_js // ✅ AGREGAR TIMESTAMP EN MILISEGUNDOS
+    
+            if (contenido.trim().length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El comentario no puede estar vacío'
+                });
             }
-        });
-        
-    } catch (error) {
-        console.error('❌ Error al crear comentario:', error);
-        console.error('Código de error:', error.code);
-        console.error('Número de error SQL:', error.errno);
-        
-        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-            return res.status(400).json({
+    
+            // Validar longitud máxima
+            if (contenido.length > 100) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'El comentario no puede tener más de 100 caracteres'
+                });
+            }
+    
+            // VERIFICAR QUE EL PROYECTO EXISTA
+            const [proyectos] = await pool.execute(
+                'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
+                [proyectoId]
+            );
+    
+            if (proyectos.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Proyecto no encontrado'
+                });
+            }
+    
+            // VERIFICAR QUE EL USUARIO EXISTA
+            const [usuarios] = await pool.execute(
+                'SELECT ID_usuario FROM usuario WHERE ID_usuario = ?',
+                [user_id]
+            );
+    
+            if (usuarios.length === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Usuario no encontrado'
+                });
+            }
+    
+            // VERIFICAR QUE EL ESTADO COMENTARIO EXISTA
+            const [estados] = await pool.execute(
+                'SELECT ID_estado_comentario FROM estado_comentario WHERE ID_estado_comentario = 1'
+            );
+    
+            if (estados.length === 0) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Estado de comentario no configurado en el sistema'
+                });
+            }
+    
+            // CONSULTA CORREGIDA - Usando NOW() para fecha y asegurando ID_estado_comentario
+            const query = `
+                INSERT INTO comentario_proyecto 
+                (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
+                VALUES (?, ?, ?, NOW(), 1)
+            `;
+            
+            console.log('Ejecutando inserción de comentario...');
+            const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
+            
+            console.log('✅ Comentario creado con ID:', result.insertId);
+    
+            // Obtener el comentario recién creado con datos del usuario
+            const [comentariosCreados] = await pool.execute(`
+                SELECT 
+                    cp.ID_comentario,
+                    cp.contenido,
+                    cp.fecha_creacion,
+                    u.ID_usuario,
+                    u.nombre,
+                    u.apellido,
+                    r.nombre as rol
+                FROM comentario_proyecto cp
+                INNER JOIN usuario u ON cp.ID_usuario = u.ID_usuario
+                INNER JOIN rol r ON u.ID_rol = r.ID_rol
+                WHERE cp.ID_comentario = ?
+            `, [result.insertId]);
+    
+            res.json({
+                success: true,
+                message: 'Comentario publicado exitosamente',
+                comentario: comentariosCreados[0]
+            });
+            
+        } catch (error) {
+            console.error('❌ Error al crear comentario:', error);
+            console.error('Código de error:', error.code);
+            console.error('Detalles completos:', error);
+            
+            // Manejar errores específicos de MySQL
+            if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Error de referencia: Verifique que el proyecto y usuario existan'
+                });
+            }
+    
+            res.status(500).json({
                 success: false,
-                message: 'Error de referencia: Verifique que el proyecto y usuario existan'
+                message: 'Error interno del servidor: ' + error.message
             });
         }
-        
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(400).json({
-                success: false,
-                message: 'Error: Ya existe un comentario con ese ID. Por favor intenta nuevamente.'
-            });
-        }
-
-        res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor: ' + error.message
-        });
-    }
-},
+    },
         // ===== MÉTODOS PARA EDITAR Y ELIMINAR COMENTARIOS =====
     editarComentario: async (req, res) => {
         try {
