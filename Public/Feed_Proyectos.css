@@ -1360,3 +1360,72 @@ body, html {
 .proyecto-comentarios:hover {
   color: #184C3A;
 }
+
+
+
+/* ===========================
+   MENÚ DE REPORTES (3 PUNTOS)
+   =========================== */
+
+.menu-reporte-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 50%;
+  font-size: 1.3em;
+  color: #000000;
+  transition: background 0.2s;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-reporte-btn:hover {
+  background: #e6f7f2;
+}
+
+.menu-reporte {
+  position: absolute;
+  right: 0;
+  top: 36px;
+  background: #ffffff;
+  border: 2px solid #c54b4b;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(197, 75, 75, 0.15);
+  padding: 8px 0;
+  min-width: 140px;
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+}
+
+.menu-reporte.mostrar {
+  display: flex;
+}
+
+.menu-reporte .menu-btn {
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c54b4b;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menu-reporte .menu-btn:hover {
+  background: #ffe5e5;
+}
+
+.menu-reporte .menu-btn i {
+  font-size: 0.95rem;
+}

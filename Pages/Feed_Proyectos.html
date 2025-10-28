@@ -162,6 +162,41 @@
       </div>
     </div>
 
+    <!-- MODAL REPORTAR PROYECTO -->
+    <div id="modal-reportar-proyecto" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2>Reportar Proyecto</h2>
+        <form id="form-reportar-proyecto">
+          <input type="hidden" name="proyecto_id" id="reporte_proyecto_id">
+          
+          <label for="motivo-reporte" style="display:block; text-align:left; margin-bottom:8px; font-weight:600; color:#184C3A;">
+            Motivo del reporte:
+          </label>
+          <select name="motivo" id="motivo-reporte" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
+            <option value="">Selecciona un motivo</option>
+            <option value="Contenido inapropiado">Contenido inapropiado</option>
+            <option value="Spam">Spam</option>
+            <option value="Información falsa">Información falsa</option>
+            <option value="Plagio">Plagio</option>
+            <option value="Otro">Otro</option>
+          </select>
+          
+          <label for="descripcion-reporte" style="display:block; text-align:left; margin-bottom:8px; font-weight:600; color:#184C3A;">
+            Descripción (opcional):
+          </label>
+          <textarea name="descripcion" id="descripcion-reporte" placeholder="Describe el problema..." 
+                    style="min-height:100px; margin-bottom:18px;"></textarea>
+          
+          <div class="modal-btns">
+            <button type="submit" class="btn-modal">Enviar Reporte</button>
+            <button type="button" id="btn-cancelar-reporte" class="btn-modal cancelar">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+
     <!-- Menú Popover de Usuario -->
     <div id="popover-menu" class="popover-menu">
       <div class="popover-arrow"></div>
@@ -227,7 +262,6 @@
         <!-- Los proyectos se cargarán dinámicamente aquí -->
       </section>
     </main>
-
     
 
     <!-- Footer -->

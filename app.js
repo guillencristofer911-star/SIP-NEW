@@ -9,8 +9,7 @@ import { methods as reportesController } from "./controllers/reportes.controller
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
-
-
+import favoritosRoutes from "./routes/favoritos.routes.js";
 
 dotenv.config();
 
@@ -28,6 +27,22 @@ app.use(express.static(path.join(__dirname, "Public")));
 
 // Servir archivos subidos
 app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
+
+
+// ==================== RUTAS DE REPORTES ====================
+
+// Reportar un proyecto (requiere autenticación)
+app.post("/api/proyectos/:id/reportar", verificarToken, reportesController.reportarProyecto);
+
+// Reportar un comentario de proyecto (requiere autenticación)
+app.post("/api/comentarios/:id/reportar", verificarToken, reportesController.reportarComentario);
+
+// Obtener reportes (solo admin)
+app.get("/api/reportes/publicaciones", verificarToken, verificarAdmin, reportesController.obtenerReportesPublicaciones);
+app.get("/api/reportes/proyectos", verificarToken, verificarAdmin, reportesController.obtenerReportesProyectos);
+app.get("/api/reportes/comentarios", verificarToken, verificarAdmin, reportesController.obtenerReportesComentarios);
+app.get("/api/reportes/todos", verificarToken, verificarAdmin, reportesController.obtenerTodosLosReportes);
+
 
 // ==================== RUTAS PÚBLICAS ====================
 
@@ -53,12 +68,11 @@ app.get("/feed-proyectos", (req, res) => {
 });
 
 app.get("/Detalles_Proyecto.html", (req, res) => {
-  const proyectoId = req.query.id; // Captura el ID del URL
+  const proyectoId = req.query.id;
   console.log("Abriendo proyecto ID:", proyectoId);
   res.sendFile(path.join(__dirname, "Pages", "Detalles_Proyecto.html"));
 });
 
-// API de autenticación (públicas)
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
@@ -70,7 +84,9 @@ app.get("/crear-publicacion", (req, res) => {
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
 
-// Proyectos (temporalmente públicas)
+
+// ==================== RUTAS DE PROYECTOS ====================
+
 app.post("/api/proyectos/crear", upload.fields([
   { name: 'imagenes', maxCount: 5 },
   { name: 'documento_pdf', maxCount: 1 }
@@ -78,11 +94,14 @@ app.post("/api/proyectos/crear", upload.fields([
 
 app.get("/api/proyectos", proyectosController.obtenerProyectos);
 app.get("/api/proyectos/:id", proyectosController.obtenerProyectoPorId);
+
 app.put("/api/proyectos/:id/editar", upload.fields([
   { name: 'imagenes', maxCount: 5 },
   { name: 'documento_pdf', maxCount: 1 }
 ]), proyectosController.editarProyecto);
+
 app.delete("/api/proyectos/:id/eliminar", proyectosController.eliminarProyecto);
+
 
 // ==================== RUTAS DE COMENTARIOS ====================
 
@@ -92,11 +111,54 @@ app.get("/api/proyectos/:id/comentarios", proyectosController.obtenerComentarios
 // Crear nuevo comentario
 app.post("/api/proyectos/:id/comentarios", proyectosController.crearComentario);
 
-// EDITAR comentario (FALTABA ESTA RUTA)
+// Editar comentario
 app.put("/api/comentarios/:id/editar", proyectosController.editarComentario);
 
-// ELIMINAR comentario (FALTABA ESTA RUTA)
+// Eliminar comentario
 app.delete("/api/comentarios/:id/eliminar", proyectosController.eliminarComentario);
+
+
+// ==================== RUTAS DE PUBLICACIONES ====================
+
+// Obtener todas las publicaciones (Pública)
+app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
+
+// Obtener una publicación por ID (Pública)
+app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
+
+// Crear una nueva publicación (Protegida)
+app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
+
+// Editar una publicación (Protegida)
+app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
+
+// Eliminar una publicación (Protegida)
+app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
+
+
+// ==================== RUTAS DE RESPUESTAS ====================
+
+// Obtener todas las respuestas de una publicación (público)
+app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
+
+// Obtener el conteo de respuestas (público)
+app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
+
+// Crear una respuesta (requiere autenticación)
+app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
+
+// Editar una respuesta (requiere autenticación)
+app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
+
+// Eliminar una respuesta (requiere autenticación)
+app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
+
+
+// ==================== RUTAS DE FAVORITOS ====================
+
+app.use("/api/favoritos", favoritosRoutes);
+
+
 // ==================== RUTAS PROTEGIDAS ====================
 
 // Perfil (requiere token)
@@ -125,7 +187,7 @@ app.get("/api/verificar-token", verificarToken, (req, res) => {
   });
 });
 
-// Logout (no invalida token en servidor, solo responde OK)
+// Logout
 app.post("/api/logout", verificarToken, (req, res) => {
   res.json({
     success: true,
@@ -133,30 +195,6 @@ app.post("/api/logout", verificarToken, (req, res) => {
   });
 });
 
-// ==================== RUTAS DE PUBLICACIONES ====================
-
-app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
-app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
-app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
-app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
-app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
-
-// ==================== RUTAS DE RESPUESTAS ====================
-
-// Obtener todas las respuestas de una publicación (público)
-app.get("/api/publicaciones/:id/respuestas", respuestasController.obtenerRespuestas);
-
-// Obtener el conteo de respuestas (público)
-app.get("/api/publicaciones/:id/respuestas/contar", respuestasController.contarRespuestas);
-
-// Crear una respuesta (requiere autenticación)
-app.post("/api/publicaciones/:id/respuestas", verificarToken, respuestasController.crearRespuesta);
-
-// Editar una respuesta (requiere autenticación)
-app.put("/api/respuestas/:id", verificarToken, respuestasController.editarRespuesta);
-
-// Eliminar una respuesta (requiere autenticación)
-app.delete("/api/respuestas/:id", verificarToken, respuestasController.eliminarRespuesta);
 
 // ==================== MANEJO DE ERRORES ====================
 
@@ -177,49 +215,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ==================== RUTAS DE PUBLICACIONES ====================
-
-// ✅ OBTENER TODAS LAS PUBLICACIONES (Pública - sin autenticación)
-app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);
-
-// ✅ OBTENER UNA PUBLICACIÓN POR ID (Pública - sin autenticación)
-app.get("/api/publicaciones/:id", publicacionController.obtenerPublicacionPorId);
-
-// ✅ CREAR UNA NUEVA PUBLICACIÓN (Protegida - requiere autenticación)
-app.post("/api/publicaciones", verificarToken, publicacionController.crearPublicacion);
-
-// ✅ EDITAR UNA PUBLICACIÓN (Protegida - solo el autor)
-app.put("/api/publicaciones/:id", verificarToken, publicacionController.editarPublicacion);
-
-// ✅ ELIMINAR UNA PUBLICACIÓN (Protegida - solo el autor o administrador)
-app.delete("/api/publicaciones/:id", verificarToken, publicacionController.eliminarPublicacion);
-
-// ==================== MANEJO DE ERRORES ====================
-
-// Ruta para manejar solicitudes a rutas no existentes
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: "Ruta no encontrada"
-  });
-});
-
-//Favoritos
-import favoritosRoutes from "./routes/favoritos.routes.js";
-app.use("/api/favoritos", favoritosRoutes);
-
-
-// Middleware global para manejo de errores del servidor
-app.use((err, req, res, next) => {
-  console.error("Error:", err);
-  res.status(500).json({
-    success: false,
-    message: "Error interno del servidor"
-  });
-});
 
 // ==================== INICIAR SERVIDOR ====================
+
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
-// ...existing code...

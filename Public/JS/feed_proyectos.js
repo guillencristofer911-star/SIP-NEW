@@ -200,6 +200,25 @@ function configurarEventListeners() {
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', limpiarFiltros);
     }
+
+    const btnCancelarReporte = document.getElementById('btn-cancelar-reporte');
+    if (btnCancelarReporte) {
+        btnCancelarReporte.addEventListener('click', function() {
+            document.getElementById('modal-reportar-proyecto').style.display = 'none';
+        });
+    }
+
+    const formReporte = document.getElementById('form-reportar-proyecto');
+    if (formReporte) {
+        formReporte.addEventListener('submit', enviarReporteProyecto);
+    }
+
+    const modalReporte = document.getElementById('modal-reportar-proyecto');
+    if (modalReporte) {
+        modalReporte.addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
+    }
 }
 
 // ==================== CERRAR SESIÓN ====================
@@ -391,7 +410,22 @@ function mostrarProyectos(proyectos) {
                     </div>
                     ` : ''}
                     
+                    <!-- CONTENEDOR DE ESTRELLA Y MENÚ DE REPORTE -->
+                    
+                <div style="display: flex; align-items: center; gap: 4px; position: relative; margin-left: ${esAutor ? '8px' : 'auto'};">
                     <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+    
+                    ${!esAutor ? `
+                        <!-- MENÚ PARA NO AUTORES (Reportar) -->
+                        <button class="menu-reporte-btn" onclick="toggleMenuReporte(1, event)">⋯</button>
+        
+                       <div class="menu-reporte" id="menu-reporte-${proyecto.ID_proyecto}">
+                            <button class="menu-btn reportar" onclick="abrirModalReporte(${proyecto.ID_proyecto}, event)">
+                                Reportar
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
                 </div>
                 
                 <div class="proyecto-autor">${proyecto.autor_completo || 'Autor no disponible'}</div>
@@ -712,6 +746,88 @@ async function eliminarProyecto(proyectoId) {
 
 window.eliminarProyecto = eliminarProyecto;
 
+
+// ==================== REPORTAR PROYECTO ====================
+let menuReporteAbierto = null;
+
+function toggleMenuReporte(proyectoId, event) {
+    event.stopPropagation();
+    const menu = document.getElementById(`menu-reporte-${proyectoId}`);
+    
+    if (menuReporteAbierto && menuReporteAbierto !== menu) {
+        menuReporteAbierto.classList.remove('mostrar');
+    }
+    
+    menu.classList.toggle('mostrar');
+    menuReporteAbierto = menu.classList.contains('mostrar') ? menu : null;
+}
+
+function abrirModalReporte(proyectoId, event) {
+    event.stopPropagation();
+    
+    if (!usuarioActual || !token) {
+        alert('⚠️ Debes iniciar sesión para reportar proyectos');
+        window.location.href = '/login';
+        return;
+    }
+    
+    const menu = document.getElementById(`menu-reporte-${proyectoId}`);
+    if (menu) {
+        menu.classList.remove('mostrar');
+    }
+    
+    document.getElementById('reporte_proyecto_id').value = proyectoId;
+    document.getElementById('form-reportar-proyecto').reset();
+    document.getElementById('modal-reportar-proyecto').style.display = 'flex';
+}
+
+async function enviarReporteProyecto(e) {
+    e.preventDefault();
+    
+    if (!usuarioActual || !token) {
+        alert('⚠️ Debes iniciar sesión para reportar');
+        window.location.href = '/login';
+        return;
+    }
+    
+    const formData = new FormData(e.target);
+    const proyectoId = formData.get('proyecto_id');
+    const motivo = formData.get('motivo');
+    const descripcion = formData.get('descripcion');
+    
+    if (!motivo) {
+        alert('⚠️ Por favor selecciona un motivo');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/proyectos/${proyectoId}/reportar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ motivo, descripcion })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('✅ Reporte enviado exitosamente. Será revisado por un administrador.');
+            document.getElementById('modal-reportar-proyecto').style.display = 'none';
+            e.target.reset();
+        } else {
+            alert('❌ Error: ' + (data.message || 'No se pudo enviar el reporte'));
+        }
+    } catch (error) {
+        console.error('Error al enviar reporte:', error);
+        alert('❌ Error al enviar el reporte. Por favor intenta nuevamente.');
+    }
+}
+
+window.toggleMenuReporte = toggleMenuReporte;
+window.abrirModalReporte = abrirModalReporte;
+
 // ==================== FUNCIONES AUXILIARES ====================
 function formatearFecha(fechaString) {
     try {
@@ -882,5 +998,12 @@ document.addEventListener('click', function(e) {
             menu.classList.remove('mostrar');
         });
         menuAbierto = null;
+    }
+    
+    if (!e.target.closest('.menu-reporte-btn') && !e.target.closest('.menu-reporte')) {
+        document.querySelectorAll('.menu-reporte').forEach(menu => {
+            menu.classList.remove('mostrar');
+        });
+        menuReporteAbierto = null;
     }
 });
