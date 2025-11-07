@@ -1076,6 +1076,35 @@ body, html {
   color: #1b5e4a;
 }
 
+/* Estilos para los enlaces del menú popover */
+.menu-link {
+  color: #333 !important; /* Color oscuro normal */
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.menu-link:visited {
+  color: #333 !important; /* Mismo color aunque esté visitado */
+}
+
+.menu-link:hover {
+  color: #007bff !important; /* Azul al hover */
+  background-color: transparent;
+}
+
+/* O también puedes aplicar esto más específicamente */
+.popover-list li a {
+  color: #333 !important;
+  text-decoration: none;
+}
+
+.popover-list li a:visited {
+  color: #333 !important;
+}
+
 
 /* Botón de 3 puntos para reportar */
 .publicacion-reportar-btn {

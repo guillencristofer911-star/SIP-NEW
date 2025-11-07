@@ -1,5 +1,6 @@
 import db from '../database/db.js';
 import dotenv from 'dotenv';
+import { filtro } from '../utils/filtroPalabras.js';
 
 dotenv.config();
 
@@ -19,19 +20,27 @@ async function crearPublicacion(req, res) {
         message: "El título y contenido son obligatorios"
       });
     }
+       //  - DESPUÉS DE VALIDAR QUE EXISTEN
+    const resultadoTitulo = filtro.analizarContenido(titulo);
+    const resultadoContenido = filtro.analizarContenido(contenido);
 
-    if (titulo.length < 5 || titulo.length > 100) {
+    const tituloFiltrado = resultadoTitulo.censurado;
+    const contenidoFiltrado = resultadoContenido.censurado;
+
+    // Validaciones de longitud (usando versiones filtradas)
+    if (tituloFiltrado.length < 5 || tituloFiltrado.length > 100) {
       return res.status(400).json({
         success: false,
         message: "El título debe tener entre 5 y 100 caracteres"
       });
     }
 
-    if (contenido.length < 10) {
+     if (contenidoFiltrado.length < 10) {
       return res.status(400).json({
         success: false,
         message: "El contenido debe tener al menos 10 caracteres"
       });
+    
     }
 
     // 🔥 OBTENER ROL DEL USUARIO
@@ -50,7 +59,11 @@ async function crearPublicacion(req, res) {
     }
 
     const usuario = usuarios[0];
-    const ID_estado_publicacion = 1; // Estado activo
+    
+    
+        // Determinar si requiere moderación
+    const requiereModeracion = resultadoTitulo.requiereModeracion || resultadoContenido.requiereModeracion;
+    const ID_estado_publicacion = requiereModeracion ? 2 : 1;
 
     console.log('💾 Guardando publicación con rol:', usuario.rol_nombre);
 
@@ -59,7 +72,7 @@ async function crearPublicacion(req, res) {
       `INSERT INTO publicacion 
        (ID_usuario, titulo, contenido, ID_rol_autor, ID_estado_publicacion) 
        VALUES (?, ?, ?, ?, ?)`,
-      [ID_usuario, titulo, contenido, usuario.ID_rol, ID_estado_publicacion]
+      [ID_usuario, tituloFiltrado, contenidoFiltrado, usuario.ID_rol, ID_estado_publicacion]
     );
 
     const ID_publicacion = resultado.insertId;
@@ -92,6 +105,22 @@ async function crearPublicacion(req, res) {
     `, [ID_publicacion]);
 
     const pubData = publicacionCreada[0];
+
+
+  if (requiereModeracion) {
+    return res.status(202).json({
+      success: true,
+      message: "Tu publicación ha sido enviada a moderación debido a su contenido. Será revisada pronto.",
+      publicacion: {
+        id: ID_publicacion,
+        titulo: tituloFiltrado,
+        contenido: contenidoFiltrado,
+        rol: usuario.rol_nombre,
+        estado: 'pendiente_moderacion',
+        fecha_creacion: pubData.fecha_creacion
+    }
+  });
+}
     
     console.log('📅 Fecha creación MySQL:', pubData.fecha_creacion);
     console.log('🕐 Timestamp creación:', pubData.fecha_creacion_timestamp);

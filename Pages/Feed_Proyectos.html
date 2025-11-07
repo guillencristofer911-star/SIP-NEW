@@ -6,113 +6,6 @@
   <title>SIP - Proyecto Individual</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="/Feed_Proyectos.css">
-  <style>
-    /* ESTILOS ORIGINALES - MANTENER */
-    .proyecto-acciones {
-        display: flex;
-        gap: 8px;
-        margin-left: auto;
-    }
-
-    .btn-editar, .btn-eliminar {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 4px;
-        font-size: 14px;
-        transition: all 0.3s ease;
-    }
-
-    .btn-editar {
-        color: #3ec9a7;
-    }
-
-    .btn-editar:hover {
-        background-color: #e8f8f4;
-        transform: scale(1.1);
-    }
-
-    .btn-eliminar {
-        color: #e53e3e;
-    }
-
-    .btn-eliminar:hover {
-        background-color: #fde8e8;
-        transform: scale(1.1);
-    }
-
-    /* ESTILOS PARA EL MENÚ DE 3 PUNTOS - AGREGAR */
-    .proyecto-acciones {
-        position: relative;
-    }
-
-    .menu-tres-puntos {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 6px;
-        border-radius: 4px;
-        font-size: 16px;
-        color: #666;
-        transition: all 0.3s ease;
-    }
-
-    .menu-tres-puntos:hover {
-        background-color: #f0f0f0;
-        transform: scale(1.1);
-    }
-
-    .menu-desplegable {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        padding: 8px 0;
-        min-width: 120px;
-        z-index: 100;
-        display: none;
-    }
-
-    .menu-desplegable.mostrar {
-        display: block;
-    }
-
-    .menu-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background: none;
-        border: none;
-        width: 100%;
-        text-align: left;
-        cursor: pointer;
-        font-size: 14px;
-        color: #333;
-        transition: background-color 0.2s;
-    }
-
-    .menu-item:hover {
-        background-color: #f5f5f5;
-    }
-
-    .menu-item.editar {
-        color: #3ec9a7;
-    }
-
-    .menu-item.eliminar {
-        color: #e53e3e;
-    }
-
-    .menu-item i {
-        font-size: 14px;
-        width: 16px;
-    }
-  </style>
 </head>
 <body>
   <div class="main-container">
@@ -165,46 +58,43 @@
           <input type="text" name="titulo" placeholder="Título..." required />
           <textarea name="descripcion" placeholder="Ingrese la descripción..." required></textarea>
           
-        <!-- SELECT DE PROGRAMA -->
-        <div class="custom-select">
-          <div class="select-selected">Selecciona tu programa</div>
-          <div class="select-items select-hide">
-            <div>Tecnólogo en Análisis y Desarrollo de Software</div>
-            <div>Tecnólogo en Animación Digital</div>
-            <div>Tecnólogo en Automatización de Sistemas Mecatrónicos</div>
-            <div>Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</div>
-            <div>Tecnólogo en Desarrollo Multimedia y Web</div>
-            <div>Tecnólogo en Electricidad Industrial</div>
-            <div>Tecnólogo en Gestión de la Producción Industrial</div>
-            <div>Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</div>
-            <div>Tecnólogo en Gestión de Redes de Datos</div>
-            <div>Tecnólogo en Gestión eficiente de la energía</div>
-            <div>Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</div>
-            <div>Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</div>
-            <div>Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</div>
-            <div>Técnico en Instalación de Redes Internas de Telecomunicaciones</div>
-            <div>Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</div>
-            <div>Técnico en Instrumentación Industrial</div>
-            <div>Técnico en Integración de Contenidos Digitales</div>
-            <div>Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</div>
-            <div>Técnico en Asistencia Administrativa</div>
-            <div>Técnico en Atención Integral al Cliente</div>
-            <div>Técnico en Control de la Seguridad Digital</div>
-            <div>Técnico en Dibujo Mecánico</div>
-            <div>Técnico en Electricista Industrial</div>
-            <div>Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</div>
-            <div>Técnico en Modelado 3D para la Industria</div>
-            <div>Técnico en Monitoreo Ambiental</div>
-            <div>Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</div>
-            <div>Técnico en Procesos de Manufactura</div>
-            <div>Técnico en Servicios y Operaciones Microfinancieras</div>
-            <div>Técnico en Sistemas teleinformáticos</div>
-            <div>Técnico en Programación de Aplicaciones para Dispositivos Móviles</div>
-            <div>Técnico en Programación de Software</div>
-            <div>Técnico en Programación para Aplicaciones</div>
-          </div>
-          
-        </div>
+        <!-- SELECT DE PROGRAMA CORREGIDO -->
+<select name="programa" id="select-programa" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
+  <option value="">Selecciona tu programa</option>
+  <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
+  <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
+  <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
+  <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
+  <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
+  <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
+  <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
+  <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
+  <option value="Tecnólogo en Gestión de Redes de Datos">Tecnólogo en Gestión de Redes de Datos</option>
+  <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
+  <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
+  <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
+  <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
+  <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
+  <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
+  <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
+  <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
+  <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
+  <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
+  <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
+  <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
+  <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
+  <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
+  <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
+  <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
+  <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
+  <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
+  <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
+  <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
+  <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
+  <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
+  <option value="Técnico en Programación de Software">Técnico en Programación de Software</option>
+  <option value="Técnico en Programación para Aplicaciones">Técnico en Programación para Aplicaciones</option>
+</select>
         
 
           
@@ -244,9 +134,40 @@
           <!-- SELECT DE PROGRAMA -->
           <select name="programa" id="edit_programa" required style="width:100%; padding:12px; margin-bottom:18px; border:1.5px solid #3ec9a7; border-radius:12px;">
             <option value="">Selecciona tu programa</option>
-            <option value="Desarrollo de Software">Tecnología en Desarrollo de Software</option>
-            <option value="Redes y Telecomunicaciones">Redes y Telecomunicaciones</option>
-          </select>
+  <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
+  <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
+  <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
+  <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
+  <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
+  <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
+  <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
+  <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
+  <option value="Tecnólogo en Gestión de Redes de Datos">Tecnólogo en Gestión de Redes de Datos</option>
+  <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
+  <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
+  <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
+  <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
+  <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
+  <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
+  <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
+  <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
+  <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
+  <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
+  <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
+  <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
+  <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
+  <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
+  <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
+  <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
+  <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
+  <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
+  <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
+  <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
+  <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
+  <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
+  <option value="Técnico en Programación de Software">Técnico en Programación de Software</option>
+  <option value="Técnico en Programación para Aplicaciones">Técnico en Programación para Aplicaciones</option>
+</select>
           
           <div style="margin-bottom:10px; text-align:left; color:#444; font-weight:500;">Agrega maximo 5 imagenes...</div>
           <input type="file" name="imagenes" id="edit_imagenes" accept="image/*" multiple style="margin-bottom:10px;">
@@ -362,109 +283,422 @@
   </div>
 
   <script>
-    // ===== FUNCIONES PARA EL MENÚ DE 3 PUNTOS =====
-    let menuAbierto = null;
+// ==================== VARIABLES GLOBALES ====================
+let usuarioActual = null;
+let token = null;
+let menuAbierto = null;
+let currentMenu = null;
 
-    function toggleProyectoMenu(proyectoId, event) {
-        event.stopPropagation();
-        const menu = document.getElementById(`menu-${proyectoId}`);
-        
-        // Cerrar menú anterior si hay uno abierto
-        if (menuAbierto && menuAbierto !== menu) {
-            menuAbierto.classList.remove('mostrar');
-        }
-        
-        // Alternar el menú actual
-        menu.classList.toggle('mostrar');
-        menuAbierto = menu.classList.contains('mostrar') ? menu : null;
+// ==================== INICIALIZACIÓN ====================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Iniciando aplicación de proyectos...');
+    
+    // Verificar autenticación
+    verificarAutenticacion();
+    
+    // Configurar event listeners
+    configurarEventListeners();
+    
+    // Cargar proyectos
+    cargarProyectos();
+});
+
+// ==================== AUTENTICACIÓN ====================
+function verificarAutenticacion() {
+    token = localStorage.getItem('token');
+    const usuarioStr = localStorage.getItem('usuario');
+    
+    if (!token || !usuarioStr) {
+        console.log('❌ No hay sesión activa, redirigiendo al login...');
+        alert('Debes iniciar sesión para acceder a esta página');
+        window.location.href = '/login';
+        return;
     }
+    
+    try {
+        usuarioActual = JSON.parse(usuarioStr);
+        console.log('✅ Usuario autenticado:', usuarioActual);
+        
+        // ✅ ACTUALIZAR ID DE USUARIO EN FORMULARIOS
+        document.getElementById('user_id').value = usuarioActual.id;
+        document.getElementById('edit_user_id').value = usuarioActual.id;
+        
+        // Actualizar header con info del usuario
+        actualizarHeaderUsuario();
+        
+    } catch (error) {
+        console.error('Error al parsear usuario:', error);
+        alert('Error en la sesión. Por favor inicia sesión nuevamente.');
+        window.location.href = '/login';
+    }
+}
 
-    // Cerrar menú al hacer clic fuera de él
-    document.addEventListener('click', function(e) {
-        if (menuAbierto && !e.target.closest('.proyecto-acciones')) {
-            menuAbierto.classList.remove('mostrar');
-            menuAbierto = null;
-        }
+function actualizarHeaderUsuario() {
+    const userNameElement = document.querySelector('.user-name');
+    const userAvatarElement = document.querySelector('.user-avatar');
+    
+    if (userNameElement && usuarioActual) {
+        userNameElement.textContent = usuarioActual.nombre;
+    }
+    
+    if (userAvatarElement && usuarioActual) {
+        userAvatarElement.textContent = usuarioActual.nombre.charAt(0).toUpperCase();
+    }
+}
+
+// ==================== CONFIGURACIÓN DEL MENÚ DE PERFIL ====================
+function configurarMenuPerfil() {
+    const perfilBtn = document.getElementById('perfil-btn');
+    const popoverMenu = document.getElementById('popover-menu');
+
+    if (perfilBtn && popoverMenu) {
+        // Remover event listeners anteriores para evitar duplicados
+        perfilBtn.replaceWith(perfilBtn.cloneNode(true));
+        const nuevoPerfilBtn = document.getElementById('perfil-btn');
+        
+        nuevoPerfilBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = popoverMenu.style.display === 'block';
+            
+            // Cerrar notificaciones si están abiertas
+            document.getElementById('notificaciones-popover').style.display = 'none';
+            
+            popoverMenu.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                const rect = nuevoPerfilBtn.getBoundingClientRect();
+                popoverMenu.style.position = 'fixed';
+                popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+                popoverMenu.style.left = (rect.left + window.scrollX - 100) + 'px';
+                popoverMenu.style.zIndex = '1000';
+            }
+        });
+
+        // Configurar items del menú
+        document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+            li.addEventListener('click', () => {
+                switch(idx) {
+                    case 0: 
+                        window.location.href = '/perfil';
+                        break;
+                    case 1: 
+                        window.location.href = '/configuracion';
+                        break;
+                    case 2: 
+                        window.location.href = '/favoritos';
+                        break;
+                    case 3: 
+                        window.location.href = '/ayuda';
+                        break;
+                }
+                popoverMenu.style.display = 'none';
+            });
+        });
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (popoverMenu && !popoverMenu.contains(e.target) && e.target !== nuevoPerfilBtn) {
+                popoverMenu.style.display = 'none';
+            }
+        });
+    }
+}
+
+// ==================== EVENT LISTENERS ====================
+function configurarEventListeners() {
+    // Menú de perfil - PRIMERO Y MÁS IMPORTANTE
+    configurarMenuPerfil();
+    
+    // Logout
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            cerrarSesion();
+        });
+    }
+    
+    // Modal subir proyecto
+    const btnSubir = document.querySelector('.btn-subir');
+    if (btnSubir) {
+        btnSubir.addEventListener('click', function() {
+            if (!usuarioActual) {
+                alert('Debes iniciar sesión para subir proyectos');
+                window.location.href = '/login';
+                return;
+            }
+            document.getElementById('modal-subir-proyecto').style.display = 'flex';
+        });
+    }
+    
+    // Botones de cancelar modales
+    const btnCancelar = document.getElementById('btn-cancelar');
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function() {
+            document.getElementById('modal-subir-proyecto').style.display = 'none';
+        });
+    }
+    
+    const btnCancelarEdicion = document.getElementById('btn-cancelar-edicion');
+    if (btnCancelarEdicion) {
+        btnCancelarEdicion.addEventListener('click', function() {
+            document.getElementById('modal-editar-proyecto').style.display = 'none';
+        });
+    }
+    
+    // Cerrar modales al hacer clic fuera
+    document.getElementById('modal-subir-proyecto').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
     });
+    
+    document.getElementById('modal-editar-proyecto').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+    
+    // Formulario de subir proyecto
+    document.getElementById('form-subir-proyecto').addEventListener('submit', subirProyecto);
+    
+    // Formulario de editar proyecto
+    document.getElementById('form-editar-proyecto').addEventListener('submit', actualizarProyecto);
+    
+    // PDF personalizado
+    configurarPDFInputs();
+    
+    // Notificaciones
+    configurarNotificaciones();
+    
+    // Botón limpiar filtros
+    const btnLimpiar = document.querySelector('.btn-limpiar');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', limpiarFiltros);
+    }
+    
+    // Botones de estrella (favorito)
+    aplicarEventListenersFavoritos();
+}
 
-    // ===== FUNCIONES PARA SUBIR Y MOSTRAR PROYECTOS =====
+// ==================== CERRAR SESIÓN ====================
+function cerrarSesion() {
+    console.log('👋 Cerrando sesión...');
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    alert('Sesión cerrada exitosamente');
+    window.location.href = '/login';
+}
 
-    // Función para cargar proyectos desde la API
-    async function cargarProyectos() {
-        try {
-            console.log('Cargando proyectos...');
+// ==================== FUNCIONES DE TIEMPO ====================
+function verificarTiempoEdicion(fechaCreacion) {
+    try {
+        const ahora = Date.now();
+        const fechaCreacionTime = new Date(fechaCreacion).getTime();
+        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
+        
+        console.log(`⏱️ Verificando tiempo: ${diferenciaMinutos.toFixed(2)} minutos transcurridos`);
+        
+        return diferenciaMinutos <= 15;
+    } catch (error) {
+        console.error('Error al verificar tiempo:', error);
+        return false;
+    }
+}
+
+function calcularMinutosRestantes(fechaCreacion) {
+    try {
+        const ahora = Date.now();
+        const fechaCreacionTime = new Date(fechaCreacion).getTime();
+        const diferenciaMinutos = (ahora - fechaCreacionTime) / 60000;
+        
+        return Math.max(0, Math.floor(15 - diferenciaMinutos));
+    } catch (error) {
+        return 0;
+    }
+}
+
+let intervaloActualizacion = null;
+
+function iniciarActualizacionTiempo() {
+    if (intervaloActualizacion) {
+        clearInterval(intervaloActualizacion);
+    }
+    
+    intervaloActualizacion = setInterval(() => {
+        document.querySelectorAll('.proyecto-card').forEach(card => {
+            const fechaCreacion = card.getAttribute('data-fecha-creacion');
+            if (!fechaCreacion) return;
             
-            const response = await fetch('/api/proyectos');
+            const minutosRestantes = calcularMinutosRestantes(fechaCreacion);
+            const fechaSpan = card.querySelector('.proyecto-fecha');
             
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            if (fechaSpan) {
+                const fechaBase = fechaSpan.textContent.replace(/⏱️.*$/g, '').trim();
+                
+                if (minutosRestantes > 0) {
+                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#28a745; font-size:12px; margin-left:8px;">⏱️ ${minutosRestantes} min para editar</span>`;
+                } else {
+                    fechaSpan.innerHTML = `${fechaBase}<span style="color:#dc3545; font-size:12px; margin-left:8px;">⏱️ Tiempo expirado</span>`;
+                    
+                    const menu = card.querySelector('.menu-desplegable');
+                    if (menu) {
+                        const btnEditar = menu.querySelector('.editar');
+                        if (btnEditar && !btnEditar.disabled) {
+                            btnEditar.disabled = true;
+                            btnEditar.style.opacity = '0.5';
+                            btnEditar.style.cursor = 'not-allowed';
+                            btnEditar.title = 'Tiempo de edición expirado';
+                            btnEditar.innerHTML = '<i class="fas fa-edit"></i> Editar (Expirado)';
+                        }
+                    }
+                }
             }
+        });
+    }, 60000);
+    
+    console.log('⏱️ Actualizador de tiempo iniciado');
+}
+
+// ==================== SUBIR PROYECTO ====================
+async function subirProyecto(e) {
+    e.preventDefault();
+    
+    if (!usuarioActual || !token) {
+        alert('❌ Debes iniciar sesión para subir proyectos');
+        window.location.href = '/login';
+        return;
+    }
+    
+    const formData = new FormData(this);
+    const submitBtn = document.getElementById('btn-publicar');
+    
+    formData.set('user_id', usuarioActual.id);
+    
+    console.log('📤 Enviando proyecto con user_id:', usuarioActual.id);
+    
+    const titulo = formData.get('titulo');
+    const descripcion = formData.get('descripcion');
+    const programa = formData.get('programa');
+    
+    if (!titulo || !descripcion || !programa) {
+        alert('❌ Por favor completa todos los campos requeridos');
+        return;
+    }
+    
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/api/proyectos/crear', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        console.log('📥 Respuesta del servidor:', data);
+        
+        if (data.success) {
+            alert('✅ Proyecto publicado exitosamente!');
             
-            const data = await response.json();
-            console.log('Proyectos cargados:', data);
+            document.getElementById('modal-subir-proyecto').style.display = 'none';
             
-            if (data.success) {
-                mostrarProyectos(data.proyectos);
-            } else {
-                throw new Error(data.message || 'Error al cargar proyectos');
-            }
-        } catch (error) {
-            console.error('Error al cargar proyectos:', error);
-            // Mantener los proyectos de ejemplo si hay error
-            document.getElementById('proyectos-lista').innerHTML = `
-                <div class="proyecto-card">
-                    <div class="proyecto-header">
-                        <span class="proyecto-titulo">App SIP</span>
-                        <span class="proyecto-etiqueta egresado">Egresado</span>
-                        <span class="proyecto-fecha">${new Date().toLocaleDateString('es-ES')}</span>
-                        <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
-                    </div>
-                    <div class="proyecto-autor">Ana Gomez</div>
-                    <div class="proyecto-carrera">Tecnología en Desarrollo de Software</div>
-                    <div class="proyecto-desc">
-                        Proyecto de ejemplo - Los proyectos reales se cargarán del servidor
-                    </div>
-                    <div class="proyecto-footer">
-                        <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
-                        <button class="btn-abrir">Abrir</button>
-                    </div>
-                </div>
-            `;
+            this.reset();
+            document.getElementById('pdf-name').textContent = '';
+            document.getElementById('pdf-preview').innerHTML = '';
+            
+            await cargarProyectos();
+        } else {
+            throw new Error(data.message || 'Error al publicar proyecto');
         }
+        
+    } catch (error) {
+        console.error('❌ Error al publicar proyecto:', error);
+        alert('❌ Error al publicar proyecto: ' + error.message);
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// ==================== CARGAR PROYECTOS ====================
+async function cargarProyectos() {
+    try {
+        console.log('📖 Cargando proyectos...');
+        
+        const response = await fetch('/api/proyectos');
+        
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        console.log('📚 Proyectos cargados:', data);
+        
+        if (data.success) {
+            mostrarProyectos(data.proyectos);
+        } else {
+            throw new Error(data.message || 'Error al cargar proyectos');
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar proyectos:', error);
+        document.getElementById('proyectos-lista').innerHTML = `
+            <div class="proyecto-card" style="text-align: center; padding: 40px;">
+                <h3>Error al cargar proyectos</h3>
+                <p>${error.message}</p>
+            </div>
+        `;
+    }
+}
+
+// ==================== MOSTRAR PROYECTOS ====================
+function mostrarProyectos(proyectos) {
+    const contenedor = document.getElementById('proyectos-lista');
+    
+    if (!proyectos || proyectos.length === 0) {
+        contenedor.innerHTML = `
+            <div class="proyecto-card" style="text-align: center; padding: 40px;">
+                <h3>No hay proyectos publicados aún</h3>
+                <p>¡Sé el primero en compartir tu proyecto!</p>
+            </div>
+        `;
+        return;
     }
 
-    // Función para mostrar proyectos en la interfaz
-    function mostrarProyectos(proyectos) {
-        const contenedor = document.getElementById('proyectos-lista');
+    contenedor.innerHTML = proyectos.map((proyecto) => {
+        const esAutor = usuarioActual && usuarioActual.id === proyecto.ID_usuario;
+        const puedeEditar = esAutor && verificarTiempoEdicion(proyecto.fecha_creacion);
+        const minutosRestantes = calcularMinutosRestantes(proyecto.fecha_creacion);
         
-        if (!proyectos || proyectos.length === 0) {
-            contenedor.innerHTML = `
-                <div class="proyecto-card" style="text-align: center; padding: 40px;">
-                    <h3>No hay proyectos publicados aún</h3>
-                    <p>Sé el primero en compartir tu proyecto!</p>
-                </div>
-            `;
-            return;
+        let indicadorTiempo = '';
+        if (esAutor && minutosRestantes > 0) {
+            indicadorTiempo = `<span style="color:#28a745; font-size:12px; margin-left:8px;">⏱️ ${minutosRestantes} min para editar</span>`;
+        } else if (esAutor && minutosRestantes === 0) {
+            indicadorTiempo = `<span style="color:#dc3545; font-size:12px; margin-left:8px;">⏱️ Tiempo expirado</span>`;
         }
-
-        contenedor.innerHTML = proyectos.map((proyecto, index) => `
-            <div class="proyecto-card" data-proyecto-id="${proyecto.ID_proyecto}">
+        
+        return `
+            <div class="proyecto-card" data-proyecto-id="${proyecto.ID_proyecto}" data-fecha-creacion="${proyecto.fecha_creacion}">
                 <div class="proyecto-header">
                     <span class="proyecto-titulo">${proyecto.nombre || 'Sin título'}</span>
-                    <span class="proyecto-etiqueta egresado">Egresado</span>
-                    <span class="proyecto-fecha">${formatearFecha(proyecto.fecha_creacion)}</span>
+                    <span class="proyecto-etiqueta egresado">${proyecto.rol_autor || 'Egresado'}</span>
+                    <span class="proyecto-fecha">${formatearFecha(proyecto.fecha_creacion)}${indicadorTiempo}</span>
                     
-                    <!-- MENÚ DE 3 PUNTOS -->
+                    ${esAutor ? `
                     <div class="proyecto-acciones">
                         <button class="menu-tres-puntos" onclick="toggleProyectoMenu(${proyecto.ID_proyecto}, event)">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         
                         <div class="menu-desplegable" id="menu-${proyecto.ID_proyecto}">
-                            <button class="menu-item editar" onclick="editarProyecto(${proyecto.ID_proyecto})">
-                                <i class="fas fa-edit"></i>
-                                Editar
-                            </button>
+                            ${puedeEditar ? `
+                                <button class="menu-item editar" onclick="editarProyecto(${proyecto.ID_proyecto})">
+                                    <i class="fas fa-edit"></i>
+                                    Editar
+                                </button>
+                            ` : `
+                                <button class="menu-item editar" disabled style="opacity:0.5; cursor:not-allowed;" title="Tiempo de edición expirado (15 min)">
+                                    <i class="fas fa-edit"></i>
+                                    Editar (Expirado)
+                                </button>
+                            `}
                             <button class="menu-item eliminar" onclick="eliminarProyecto(${proyecto.ID_proyecto})">
                                 <i class="fas fa-trash"></i>
                                 Eliminar
@@ -473,13 +707,13 @@
                         
                         <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
                     </div>
+                    ` : `
+                    <button class="proyecto-fav"><i class="fa-regular fa-star"></i></button>
+                    `}
                 </div>
                 
-                <!-- AUTOR Y CARRERA -->
                 <div class="proyecto-autor">${proyecto.autor_completo || (proyecto.nombre_autor + ' ' + proyecto.apellido_autor) || 'Autor no disponible'}</div>
                 <div class="proyecto-carrera">${proyecto.programa_autor || 'Tecnología en Desarrollo de Software'}</div>
-                
-                <!-- DESCRIPCIÓN -->
                 <div class="proyecto-desc">${proyecto.descripcion || 'Sin descripción'}</div>
                 
                 ${proyecto.github_url ? `
@@ -499,434 +733,405 @@
                 ` : ''}
                 
                 <div class="proyecto-footer">
-                    <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;">No hay comentarios</span>
-                    <button class="btn-abrir" onclick="abrirProyecto(${proyecto.ID_proyecto})">Abrir</button>
+                    <div class="proyecto-comentarios-container" id="comentarios-${proyecto.ID_proyecto}">
+                        <span class="proyecto-comentarios" style="cursor:pointer; font-weight:600;" 
+                              onclick="toggleComentariosProyecto(${proyecto.ID_proyecto})">
+                            Ver comentarios
+                        </span>
+                        <div class="mini-comentarios" id="mini-comentarios-${proyecto.ID_proyecto}" style="display:none;">
+                            <!-- Los comentarios se cargarán aquí -->
+                        </div>
+                    </div>
+                    <a href="/Detalles_Proyecto.html?id=${proyecto.ID_proyecto}" class="btn-abrir">Abrir</a>
                 </div>
             </div>
-        `).join('');
-    }
-
-    // Función para formatear fecha
-    function formatearFecha(fechaString) {
-        try {
-            const fecha = new Date(fechaString);
-            return fecha.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        } catch (error) {
-            return 'Fecha no disponible';
-        }
-    }
-
-    // Función para abrir proyecto
-    function abrirProyecto(proyectoId) {
-        alert(`Abriendo proyecto ${proyectoId} - Esta funcionalidad se implementará después`);
-    }
-
-    // ===== MANEJAR ENVÍO DEL FORMULARIO =====
-
-    document.getElementById('form-subir-proyecto').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const submitBtn = document.getElementById('btn-publicar');
-        
-        // Validar campos requeridos
-        const titulo = formData.get('titulo');
-        const descripcion = formData.get('descripcion');
-        const programa = formData.get('programa');
-        
-        if (!titulo || !descripcion || !programa) {
-            alert('❌ Por favor completa todos los campos requeridos');
-            return;
-        }
-        
-        // Mostrar loading
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
-        submitBtn.disabled = true;
-        
-        try {
-            console.log('Enviando formulario...');
-            
-            const response = await fetch('/api/proyectos/crear', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            console.log('Respuesta del servidor:', data);
-            
-            if (data.success) {
-                alert('✅ Proyecto publicado exitosamente!');
-                
-                // Cerrar modal
-                document.getElementById('modal-subir-proyecto').style.display = 'none';
-                
-                // Limpiar formulario
-                this.reset();
-                document.getElementById('pdf-name').textContent = '';
-                document.getElementById('pdf-preview').innerHTML = '';
-                
-                // Recargar proyectos
-                await cargarProyectos();
-            } else {
-                throw new Error(data.message || 'Error al publicar proyecto');
-            }
-            
-        } catch (error) {
-            console.error('Error al publicar proyecto:', error);
-            alert('❌ Error al publicar proyecto: ' + error.message);
-        } finally {
-            // Restaurar botón
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
+        `;
+    }).join('');
+    
+    aplicarEventListenersFavoritos();
+    iniciarActualizacionTiempo();
+    
+    // Cargar el contador de comentarios para cada proyecto
+    proyectos.forEach(proyecto => {
+        cargarComentariosProyecto(proyecto.ID_proyecto);
     });
+}
 
-    // ===== FUNCIONES PARA EDITAR Y ELIMINAR PROYECTOS =====
-
-    // FUNCIÓN PARA EDITAR PROYECTO
-    async function editarProyecto(proyectoId) {
-        try {
-            console.log('Editando proyecto:', proyectoId);
+// ==================== EDITAR PROYECTO ====================
+async function editarProyecto(proyectoId) {
+    try {
+        console.log('✏️ Editando proyecto:', proyectoId);
+        
+        const response = await fetch(`/api/proyectos/${proyectoId}`);
+        const data = await response.json();
+        
+        if (data.success && data.proyecto) {
+            const proyecto = data.proyecto;
             
-            // Obtener datos actuales del proyecto
-            const response = await fetch(`/api/proyectos/${proyectoId}`);
-            const data = await response.json();
-            
-            if (data.success && data.proyecto) {
-                const proyecto = data.proyecto;
-                
-                // Llenar el modal de edición con los datos actuales
-                document.getElementById('edit_proyecto_id').value = proyectoId;
-                document.getElementById('edit_titulo').value = proyecto.nombre || '';
-                document.getElementById('edit_descripcion').value = proyecto.descripcion || '';
-                document.getElementById('edit_programa').value = proyecto.programa_autor || '';
-                document.getElementById('edit_github_url').value = proyecto.github_url || '';
-                
-                // Mostrar imágenes actuales
-                const imagenesContainer = document.getElementById('edit_imagenes_actuales');
-                if (proyecto.imagenes && proyecto.imagenes.length > 0) {
-                    imagenesContainer.innerHTML = `
-                        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
-                            Imágenes actuales (se mantendrán si no seleccionas nuevas):
-                        </div>
-                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                            ${proyecto.imagenes.map(img => `
-                                <img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-                            `).join('')}
-                        </div>
-                    `;
-                } else {
-                    imagenesContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay imágenes actuales</div>';
-                }
-                
-                // Mostrar PDF actual
-                const pdfContainer = document.getElementById('edit_pdf_actual');
-                if (proyecto.documento_pdf) {
-                    pdfContainer.innerHTML = `
-                        <div style="font-size: 12px; color: #666;">
-                            PDF actual: <a href="${proyecto.documento_pdf}" target="_blank" style="color: #10b981;">Ver PDF actual</a>
-                        </div>
-                    `;
-                } else {
-                    pdfContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay PDF actual</div>';
-                }
-                
-                // Mostrar modal de edición
-                document.getElementById('modal-editar-proyecto').style.display = 'flex';
-            } else {
-                alert('Error al cargar proyecto para editar');
+            if (proyecto.ID_usuario !== usuarioActual.id) {
+                alert('❌ No tienes permisos para editar este proyecto');
+                return;
             }
-        } catch (error) {
-            console.error('Error:', error);
+            
+            if (!verificarTiempoEdicion(proyecto.fecha_creacion)) {
+                const minutosTranscurridos = Math.floor((Date.now() - new Date(proyecto.fecha_creacion).getTime()) / 60000);
+                alert(`❌ El tiempo límite para editar este proyecto (15 minutos) ha expirado.\n\nTiempo transcurrido: ${minutosTranscurridos} minutos`);
+                return;
+            }
+            
+            document.getElementById('edit_proyecto_id').value = proyectoId;
+            document.getElementById('edit_titulo').value = proyecto.nombre || '';
+            document.getElementById('edit_descripcion').value = proyecto.descripcion || '';
+            document.getElementById('edit_programa').value = proyecto.programa_autor || '';
+            document.getElementById('edit_github_url').value = proyecto.github_url || '';
+            
+            const imagenesContainer = document.getElementById('edit_imagenes_actuales');
+            if (proyecto.imagenes && proyecto.imagenes.length > 0) {
+                imagenesContainer.innerHTML = `
+                    <div style="font-size: 12px; color: #666; margin-bottom: 5px;">
+                        Imágenes actuales (se mantendrán si no seleccionas nuevas):
+                    </div>
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        ${proyecto.imagenes.map(img => `
+                            <img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                imagenesContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay imágenes actuales</div>';
+            }
+            
+            const pdfContainer = document.getElementById('edit_pdf_actual');
+            if (proyecto.documento_pdf) {
+                pdfContainer.innerHTML = `
+                    <div style="font-size: 12px; color: #666;">
+                        PDF actual: <a href="${proyecto.documento_pdf}" target="_blank" style="color: #10b981;">Ver PDF actual</a>
+                    </div>
+                `;
+            } else {
+                pdfContainer.innerHTML = '<div style="font-size: 12px; color: #666;">No hay PDF actual</div>';
+            }
+            
+            document.getElementById('modal-editar-proyecto').style.display = 'flex';
+        } else {
             alert('Error al cargar proyecto para editar');
         }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al cargar proyecto para editar');
     }
+}
 
-    // FUNCIÓN PARA ELIMINAR PROYECTO
-    async function eliminarProyecto(proyectoId) {
-        if (!confirm('¿Estás seguro de que quieres eliminar este proyecto?\nEsta acción no se puede deshacer.')) {
-            return;
-        }
+window.editarProyecto = editarProyecto;
 
-        try {
-            const user_id = document.getElementById('user_id').value;
-            
-            const response = await fetch(`/api/proyectos/${proyectoId}/eliminar`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ user_id })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                alert('✅ Proyecto eliminado exitosamente');
-                // Recargar la lista de proyectos
-                await cargarProyectos();
-            } else {
-                alert('❌ Error: ' + data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('❌ Error al eliminar proyecto');
-        }
-    }
-
-    // MANEJAR ENVÍO DEL FORMULARIO DE EDICIÓN
-    document.getElementById('form-editar-proyecto').addEventListener('submit', async function(e) {
-        e.preventDefault();
+// ==================== ACTUALIZAR PROYECTO ====================
+async function actualizarProyecto(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = document.getElementById('btn-actualizar');
+    const proyectoId = document.getElementById('edit_proyecto_id').value;
+    
+    formData.set('user_id', usuarioActual.id);
+    
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch(`/api/proyectos/${proyectoId}/editar`, {
+            method: 'PUT',
+            body: formData
+        });
         
-        const formData = new FormData(this);
-        const submitBtn = document.getElementById('btn-actualizar');
-        const proyectoId = document.getElementById('edit_proyecto_id').value;
+        const data = await response.json();
         
-        // Mostrar loading
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
-        submitBtn.disabled = true;
-        
-        try {
-            console.log('Actualizando proyecto...');
-            
-            const response = await fetch(`/api/proyectos/${proyectoId}/editar`, {
-                method: 'PUT',
-                body: formData
-            });
-            
-            const data = await response.json();
-            console.log('Respuesta del servidor:', data);
-            
-            if (data.success) {
-                alert('✅ Proyecto actualizado exitosamente!');
-                
-                // Cerrar modal
-                document.getElementById('modal-editar-proyecto').style.display = 'none';
-                
-                // Limpiar formulario
-                this.reset();
-                document.getElementById('edit_imagenes_actuales').innerHTML = '';
-                document.getElementById('edit_pdf_actual').innerHTML = '';
-                
-                // Recargar proyectos
-                await cargarProyectos();
-            } else {
-                throw new Error(data.message || 'Error al actualizar proyecto');
-            }
-            
-        } catch (error) {
-            console.error('Error al actualizar proyecto:', error);
-            alert('❌ Error al actualizar proyecto: ' + error.message);
-        } finally {
-            // Restaurar botón
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    });
-
-    // ===== FUNCIONALIDAD EXISTENTE =====
-
-    // MODAL SUBIR PROYECTO
-    document.querySelector('.btn-subir').addEventListener('click', function() {
-      document.getElementById('modal-subir-proyecto').style.display = 'flex';
-    });
-
-    // PDF personalizado
-    document.querySelector('.pdf-label').onclick = function() {
-      document.getElementById('pdf-doc').click();
-    };
-    document.getElementById('pdf-doc').addEventListener('change', function() {
-      const pdfName = document.getElementById('pdf-name');
-      const pdfPreview = document.getElementById('pdf-preview');
-      if (this.files.length > 0) {
-        pdfName.textContent = 'Archivo seleccionado: ' + this.files[0].name;
-        const file = this.files[0];
-        const url = URL.createObjectURL(file);
-        pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Ver PDF</a>`;
-      } else {
-        pdfName.textContent = '';
-        pdfPreview.innerHTML = '';
-      }
-    });
-
-    // PDF personalizado para edición
-    document.querySelector('label[for="edit_pdf-doc"]').onclick = function() {
-        document.getElementById('edit_pdf-doc').click();
-    };
-
-    document.getElementById('edit_pdf-doc').addEventListener('change', function() {
-        const pdfName = document.getElementById('edit_pdf-name');
-        const pdfPreview = document.getElementById('edit_pdf-preview');
-        if (this.files.length > 0) {
-            pdfName.textContent = 'Nuevo archivo seleccionado: ' + this.files[0].name;
-            const file = this.files[0];
-            const url = URL.createObjectURL(file);
-            pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Vista previa del nuevo PDF</a>`;
+        if (data.success) {
+            alert('✅ Proyecto actualizado exitosamente!');
+            document.getElementById('modal-editar-proyecto').style.display = 'none';
+            this.reset();
+            await cargarProyectos();
         } else {
-            pdfName.textContent = '';
-            pdfPreview.innerHTML = '';
+            throw new Error(data.message || 'Error al actualizar proyecto');
         }
-    });
-
-    // CERRAR MODAL DE EDICIÓN
-    document.getElementById('btn-cancelar-edicion').onclick = function() {
-        document.getElementById('modal-editar-proyecto').style.display = 'none';
-    };
-
-    document.getElementById('modal-editar-proyecto').addEventListener('click', function(e) {
-        if (e.target === this) this.style.display = 'none';
-    });
-
-    // Menú comentario
-    window.toggleMenu = function(btn) {
-      document.querySelectorAll('.comentario-menu').forEach(menu => menu.style.display = 'none');
-      var menu = btn.nextElementSibling;
-      menu.style.display = 'block';
-      window.currentMenu = menu;
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('❌ Error al actualizar proyecto: ' + error.message);
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
     }
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-      if (window.currentMenu && !window.currentMenu.contains(e.target) && e.target.className.indexOf('menu-btn') === -1) {
-        window.currentMenu.style.display = 'none';
-        window.currentMenu = null;
-      }
-    });
-    // Evitar cierre al hacer clic en el botón de menú
-    document.querySelectorAll('.publicacion-menu-btn, .comentario-menu-btn').forEach(btn => {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-      });
-    });
+}
 
-    // Mostrar/ocultar comentarios por publicación
-    function toggleComentarios(btn, listaId) {
-      var lista = document.getElementById(listaId);
-      if (lista.style.display === 'none' || lista.style.display === '') {
-        lista.style.display = 'block';
-      } else {
-        lista.style.display = 'none';
-      }
+// ==================== ELIMINAR PROYECTO ====================
+async function eliminarProyecto(proyectoId) {
+    if (!confirm('¿Estás seguro de que quieres eliminar este proyecto?\nEsta acción no se puede deshacer.')) {
+        return;
     }
 
-    // Ocultar modal al hacer clic en "Cancelar" o fuera del contenido
-    document.getElementById('btn-cancelar').onclick = function() {
-      document.getElementById('modal-subir-proyecto').style.display = 'none';
-    };
-    document.getElementById('modal-subir-proyecto').addEventListener('click', function(e) {
-      if (e.target === this) this.style.display = 'none';
-    });
+    try {
+        const response = await fetch(`/api/proyectos/${proyectoId}/eliminar`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ user_id: usuarioActual.id })
+        });
 
-    // Botón "Limpiar Filtros"
-    document.querySelector('.btn-limpiar').addEventListener('click', function(e) {
-      e.preventDefault();
-      document.querySelectorAll('.filtros-form input, .filtros-form select').forEach(function(el) {
-        if (!el.disabled) {
-          if (el.tagName === 'SELECT') el.selectedIndex = 0;
-          else el.value = '';
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Proyecto eliminado exitosamente');
+            await cargarProyectos();
+        } else {
+            alert('❌ Error: ' + data.message);
         }
-      });
-      alert('Filtros limpiados.');
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('❌ Error al eliminar proyecto');
+    }
+}
 
-    // Botones de estrella (favorito)
+window.eliminarProyecto = eliminarProyecto;
+
+// ==================== FUNCIONES DE COMENTARIOS ====================
+async function cargarComentariosProyecto(proyectoId) {
+    try {
+        const user_id = document.getElementById('user_id').value;
+        const response = await fetch(`/api/proyectos/${proyectoId}/comentarios?user_id=${user_id}`);
+        const data = await response.json();
+        
+        const contenedor = document.getElementById(`mini-comentarios-${proyectoId}`);
+        
+        if (data.success && data.comentarios && data.comentarios.length > 0) {
+            // Mostrar solo los primeros 2 comentarios
+            const comentariosLimitados = data.comentarios.slice(0, 2);
+            
+            contenedor.innerHTML = comentariosLimitados.map(comentario => `
+                <div class="mini-comentario">
+                    <strong>${comentario.nombre || 'Usuario'} ${comentario.apellido || ''}:</strong>
+                    <span>${comentario.contenido}</span>
+                    <small>${formatearFechaMini(comentario.fecha_creacion)}</small>
+                </div>
+            `).join('');
+            
+            // Actualizar el texto del botón
+            const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
+            boton.textContent = `${data.comentarios.length} comentarios`;
+            
+        } else {
+            const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
+            boton.textContent = 'No hay comentarios';
+        }
+        
+    } catch (error) {
+        console.error('Error al cargar comentarios:', error);
+        const boton = document.querySelector(`#comentarios-${proyectoId} .proyecto-comentarios`);
+        boton.textContent = 'Error al cargar';
+    }
+}
+
+function toggleComentariosProyecto(proyectoId) {
+    const contenedor = document.getElementById(`mini-comentarios-${proyectoId}`);
+    const estaVisible = contenedor.style.display === 'block';
+    
+    if (!estaVisible) {
+        // Cargar comentarios si no se han cargado
+        if (contenedor.innerHTML === '') {
+            cargarComentariosProyecto(proyectoId);
+        }
+        contenedor.style.display = 'block';
+    } else {
+        contenedor.style.display = 'none';
+    }
+}
+
+window.toggleComentariosProyecto = toggleComentariosProyecto;
+
+// ==================== FUNCIONES AUXILIARES ====================
+function formatearFecha(fechaString) {
+    try {
+        const fecha = new Date(fechaString);
+        return fecha.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (error) {
+        return 'Fecha no disponible';
+    }
+}
+
+function formatearFechaMini(fechaString) {
+    try {
+        const fecha = new Date(fechaString);
+        const ahora = new Date();
+        const diferencia = ahora - fecha;
+        const diferenciaMinutos = Math.floor(diferencia / (1000 * 60));
+        const diferenciaHoras = Math.floor(diferencia / (1000 * 60 * 60));
+        
+        // Si es hace menos de 1 minuto
+        if (diferenciaMinutos < 1) {
+            return 'Ahora';
+        }
+        // Si es hace menos de 1 hora
+        else if (diferenciaMinutos < 60) {
+            return `Hace ${diferenciaMinutos}m`;
+        }
+        // Si es hace menos de 24 horas
+        else if (diferenciaHoras < 24) {
+            return `Hace ${diferenciaHoras}h`;
+        }
+        // Si es de hoy
+        else if (fecha.toDateString() === ahora.toDateString()) {
+            return 'Hoy';
+        }
+        // Si es de ayer
+        else if (fecha.toDateString() === new Date(ahora - 86400000).toDateString()) {
+            return 'Ayer';
+        }
+        // Para fechas más antiguas
+        else {
+            return fecha.toLocaleDateString('es-ES', {
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+    } catch (error) {
+        return '';
+    }
+}
+
+function abrirProyecto(proyectoId) {
+    window.location.href = `/Detalles_Proyecto.html?id=${proyectoId}`;
+}
+
+window.abrirProyecto = abrirProyecto;
+
+// ==================== MENÚS INTERACTIVOS ====================
+function toggleProyectoMenu(proyectoId, event) {
+    event.stopPropagation();
+    const menu = document.getElementById(`menu-${proyectoId}`);
+    
+    // Cerrar menú anterior si hay uno abierto
+    if (menuAbierto && menuAbierto !== menu) {
+        menuAbierto.classList.remove('mostrar');
+    }
+    
+    // Alternar el menú actual
+    menu.classList.toggle('mostrar');
+    menuAbierto = menu.classList.contains('mostrar') ? menu : null;
+}
+
+window.toggleProyectoMenu = toggleProyectoMenu;
+
+function aplicarEventListenersFavoritos() {
     document.querySelectorAll('.proyecto-fav').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        btn.classList.toggle('active');
-        var icon = btn.querySelector('i');
-        if (btn.classList.contains('active')) {
-          icon.classList.remove('fa-regular');
-          icon.classList.add('fa-solid');
-        } else {
-          icon.classList.remove('fa-solid');
-          icon.classList.add('fa-regular');
-        }
-      });
+        btn.addEventListener('click', function() {
+            btn.classList.toggle('active');
+            var icon = btn.querySelector('i');
+            if (btn.classList.contains('active')) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+            } else {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+            }
+        });
     });
+}
 
-    // MENÚ POPOVER USUARIO
-    const perfilBtn = document.getElementById('perfil-btn');
-    const popoverMenu = document.getElementById('popover-menu');
+function configurarPDFInputs() {
+    const pdfLabel = document.querySelector('.pdf-label');
+    const pdfInput = document.getElementById('pdf-doc');
+    
+    if (pdfLabel && pdfInput) {
+        pdfLabel.onclick = function() {
+            pdfInput.click();
+        };
+        
+        pdfInput.addEventListener('change', function() {
+            const pdfName = document.getElementById('pdf-name');
+            const pdfPreview = document.getElementById('pdf-preview');
+            
+            if (this.files.length > 0) {
+                pdfName.textContent = 'Archivo seleccionado: ' + this.files[0].name;
+                const url = URL.createObjectURL(this.files[0]);
+                pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Ver PDF</a>`;
+            } else {
+                pdfName.textContent = '';
+                pdfPreview.innerHTML = '';
+            }
+        });
+    }
+    
+    const editPdfLabel = document.querySelector('label[for="edit_pdf-doc"]');
+    const editPdfInput = document.getElementById('edit_pdf-doc');
+    
+    if (editPdfLabel && editPdfInput) {
+        editPdfLabel.onclick = function() {
+            editPdfInput.click();
+        };
+        
+        editPdfInput.addEventListener('change', function() {
+            const pdfName = document.getElementById('edit_pdf-name');
+            const pdfPreview = document.getElementById('edit_pdf-preview');
+            
+            if (this.files.length > 0) {
+                pdfName.textContent = 'Nuevo archivo: ' + this.files[0].name;
+                const url = URL.createObjectURL(this.files[0]);
+                pdfPreview.innerHTML = `<a href="${url}" target="_blank" style="color:#10b981;font-weight:600;">Ver PDF</a>`;
+            } else {
+                pdfName.textContent = '';
+                pdfPreview.innerHTML = '';
+            }
+        });
+    }
+}
 
-    perfilBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (popoverMenu.style.display === 'block') {
-        popoverMenu.style.display = 'none';
-      } else {
-        const rect = perfilBtn.getBoundingClientRect();
-        popoverMenu.style.display = 'block';
-        popoverMenu.style.position = 'absolute';
-        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
-      }
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-        popoverMenu.style.display = 'none';
-      }
-    });
-
-    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-      li.addEventListener('click', () => {
-        switch(idx) {
-          case 0: alert('Ir al Perfil'); break;
-          case 1: alert('Ir a Configuración'); break;
-          case 2: alert('Ir a Favoritos'); break;
-          case 3: alert('Ir a Ayuda'); break;
-        }
-        popoverMenu.style.display = 'none';
-      });
-    });
-
-    // Notificaciones Popover
+function configurarNotificaciones() {
     const notiBtn = document.getElementById('notificaciones-btn');
     const notiPopover = document.getElementById('notificaciones-popover');
-    notiBtn.onclick = function(e) {
-      e.stopPropagation();
-      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
-      popoverMenu.style.display = 'none';
-    };
-    notiPopover.onclick = function(e) {
-      e.stopPropagation();
-    };
-
-    // ===== INICIALIZAR =====
-
-    // Cargar proyectos cuando la página se carga
-    document.addEventListener('DOMContentLoaded', function() {
-        cargarProyectos();
+    
+    if (notiBtn && notiPopover) {
+        notiBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = notiPopover.style.display === 'block';
+            
+            // Cerrar menú de perfil si está abierto
+            document.getElementById('popover-menu').style.display = 'none';
+            
+            notiPopover.style.display = isVisible ? 'none' : 'block';
+        });
+    }
+    
+    document.addEventListener('click', function(e) {
+        if (notiPopover && !notiPopover.contains(e.target) && e.target !== notiBtn) {
+            notiPopover.style.display = 'none';
+        }
     });
+}
 
-     
-    const selected = document.querySelector('.select-selected');
-    const items = document.querySelector('.select-items');
-
-    selected.addEventListener('click', () => {
-      items.classList.toggle('select-hide');
+function limpiarFiltros() {
+    document.querySelectorAll('.filtros-form input, .filtros-form select').forEach(function(el) {
+        if (!el.disabled) {
+            if (el.tagName === 'SELECT') el.selectedIndex = 0;
+            else el.value = '';
+        }
     });
+    alert('Filtros limpiados.');
+}
 
-    items.querySelectorAll('div').forEach(option => {
-      option.addEventListener('click', () => {
-        selected.textContent = option.textContent;
-        items.classList.add('select-hide');
-      });
-    });
-
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.custom-select')) {
-        items.classList.add('select-hide');
-      }
-    });
-
-
+// ==================== EVENT LISTENERS GLOBALES ====================
+document.addEventListener('click', function(e) {
+    // Cerrar menú de proyectos al hacer clic fuera
+    if (menuAbierto && !e.target.closest('.proyecto-acciones')) {
+        menuAbierto.classList.remove('mostrar');
+        menuAbierto = null;
+    }
+});
   </script>
 </body>
 </html>

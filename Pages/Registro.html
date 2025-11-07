@@ -16,7 +16,7 @@
             <h1 class="title" style="margin-bottom: 0;">Bienvenido</h1>
             <p class="form-subtitle" style="margin-top: 0;">Registrarse en SIP</p>
             
-            <!-- ✅ FORMULARIO DE REGISTRO CORREGIDO -->
+            <!-- ✅ FORMULARIO DE REGISTRO CON SELECT DE PROGRAMAS -->
             <form id="register-form" class="form" action="javascript:void(0);" method="POST">
                 
                 <!-- ✅ Campo: Documento -->
@@ -52,13 +52,47 @@
                     required
                 >
                 
-                <!-- ✅ Campo: Programa -->
-                <input 
-                    type="text" 
+                <!-- 🔥 CAMBIO: Campo Programa ahora es SELECT -->
+                <select 
                     name="programa" 
-                    placeholder="Nombre del programa" 
-                    required
-                >
+                    required 
+                    style="width:100%; padding:10px 12px; border-radius:6px; border:none; background:#fff; font-size:15px; margin-bottom:5px; box-sizing:border-box; color:#333;">
+                    <option value="">Selecciona tu programa</option>
+                    <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
+                    <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
+                    <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
+                    <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
+                    <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
+                    <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
+                    <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
+                    <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
+                    <option value="Tecnólogo en Gestión de Redes de Datos">Tecnólogo en Gestión de Redes de Datos</option>
+                    <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
+                    <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
+                    <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
+                    <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
+                    <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
+                    <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
+                    <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
+                    <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
+                    <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
+                    <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
+                    <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
+                    <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
+                    <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
+                    <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
+                    <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
+                    <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
+                    <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
+                    <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
+                    <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
+                    <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
+                    <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
+                    <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
+                    <option value="Técnico en Programación de Software">Técnico en Programación de Software</option>
+                    <option value="Técnico en Programación para Analítica de Datos">Técnico en Programación para Analítica de Datos</option>
+                    <option value="Técnico en Recursos Humanos">Técnico en Recursos Humanos</option>
+                </select>
                 
                 <!-- ✅ Campo: Contraseña -->
                 <input 

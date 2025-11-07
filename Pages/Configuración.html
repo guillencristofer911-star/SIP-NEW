@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIP - Proyecto Individual</title>
+  <title>SIP - Configuración</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link rel="stylesheet" href="/Public/Configuracion.css">
+  <link rel="stylesheet" href="/configuracion.css">
 </head>
 <body>
   <div class="main-container">
     <!-- Header -->
     <header class="header">
-      <img src="../../../3-registro/html/img/logo.png" alt="SIP Logo" class="logo-header">
+      <img src="/img/logo.png" alt="SIP Logo" class="logo-header">
       <nav class="nav-header">
-        <a href="#"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="/feed-proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
         <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
         <div class="user-info" id="perfil-btn">
           <span class="user-avatar">D</span>
@@ -21,8 +21,7 @@
         </div>
       </nav>
       
-      </div>
-    </header>
+      <!-- Notificaciones Popover -->
       <div id="notificaciones-popover" class="notificaciones-popover">
         <div class="notificaciones-arrow"></div>
         <h3>Notificaciones</h3>
@@ -49,6 +48,7 @@
         </div>
       </div>
     </header>
+
     <!-- Menú Popover de Usuario -->
     <div id="popover-menu" class="popover-menu">
       <div class="popover-arrow"></div>
@@ -80,34 +80,123 @@
           </li>
         </ul>
         <form action="/api/logout" method="POST" id="logoutForm">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="email" value="pazdaniela1193@gmail.com">
+          <input type="hidden" name="user_id" id="logout_user_id">
+          <input type="hidden" name="email" id="logout_email">
           <button type="submit" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
         </form>
       </div>
     </div>
-    <!-- Solo la sección de configuración de perfil -->
+
+    <!-- Sección de configuración de perfil -->
     <main class="main-content config-main">
       <div class="config-container">
         <h1 class="config-title">Configuración</h1>
         <div class="config-panels">
           <div class="profile-card">
-            <div class="profile-avatar">D</div>
-            <div class="profile-name">Daniela Alejandra Paz Tellez</div>
-            <div class="profile-status">Egresado</div>
-            <div class="profile-info">1193324003</div>
-            <div class="profile-info">pazdaniela1193@gmail.com</div>
-            <div class="profile-info">3155577843</div>
+            <div class="profile-avatar" id="profile-avatar">D</div>
+            <div class="profile-name" id="profile-name">Cargando...</div>
+            <div class="profile-status" id="profile-status">Cargando...</div>
+            <div class="profile-info" id="profile-documento">Cargando...</div>
+            <div class="profile-info" id="profile-email">Cargando...</div>
+            <div class="profile-info" id="profile-programa">Cargando...</div>
             <button class="profile-extra-btn" id="btn-eliminar-cuenta">Eliminar cuenta</button>
           </div>
           <div class="profile-form-card">
             <h2 class="profile-form-title">Editar Datos Perfil</h2>
             <form class="profile-form" action="#" method="POST" id="form-editar-perfil">
-              <input type="hidden" name="user_id" value="1193324003">
-              <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
-              <input type="email" name="email" class="profile-input" placeholder="correo electronico..." required>
-              <input type="email" name="email_confirm" class="profile-input" placeholder="confirmar correo electronico..." required>
-              <input type="tel" name="telefono" class="profile-input" placeholder="numero telefono..." pattern="[0-9]{10}" required>
+              <input type="hidden" name="user_id" id="form-user-id">
+              
+              <!-- Información personal (solo lectura) -->
+              <div class="form-section">
+                <h3 class="form-section-title">Información Personal</h3>
+                <div class="profile-input-group">
+                  <label for="form-nombre">Nombre Completo</label>
+                  <input type="text" name="nombre" id="form-nombre" class="profile-input" readonly>
+                </div>
+                <div class="profile-input-group">
+                  <label for="form-documento">Documento</label>
+                  <input type="text" name="documento" id="form-documento" class="profile-input" readonly>
+                </div>
+                <div class="profile-input-group">
+                  <label for="form-rol">Rol</label>
+                  <input type="text" name="rol" id="form-rol" class="profile-input" readonly>
+                  <div class="role-change-notice">
+                    Para cambiar tu rol, envía un correo a tps2127@gmail.com solicitando el cambio.
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Programa -->
+              <div class="profile-input-group">
+                <label for="form-programa">Programa</label>
+                <select name="programa" id="form-programa" class="profile-select">
+                  <option value="">Selecciona un programa</option>
+                  <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
+                  <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
+                  <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
+                  <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
+                  <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
+                  <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
+                  <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
+                  <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
+                  <option value="Tecnólogo en Gestión de Redes de Datos">Tecnólogo en Gestión de Redes de Datos</option>
+                  <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
+                  <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
+                  <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
+                  <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
+                  <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
+                  <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
+                  <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
+                  <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
+                  <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
+                  <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
+                  <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
+                  <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
+                  <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
+                  <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
+                  <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
+                  <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
+                  <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
+                  <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
+                  <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
+                  <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
+                  <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
+                  <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
+                  <option value="Técnico en Programación de Software">Tecnico en Programación de Software</option>
+                  <option value="Técnico en Programación para Aplicaciones">Técnico en Programación para Aplicaciones</option>
+                </select>
+              </div>
+              
+              <!-- Cambio de correo -->
+              <div class="form-section">
+                <h3 class="form-section-title">Cambiar Correo Electrónico</h3>
+                <div class="profile-input-group">
+                  <label for="form-email">Nuevo Correo Electrónico</label>
+                  <input type="email" name="email" id="form-email" class="profile-input" placeholder="nuevo@ejemplo.com" required>
+                </div>
+                <div class="profile-input-group">
+                  <label for="form-email-confirm">Confirmar Nuevo Correo</label>
+                  <input type="email" name="email_confirm" id="form-email-confirm" class="profile-input" placeholder="nuevo@ejemplo.com" required>
+                </div>
+              </div>
+              
+              <!-- Cambio de contraseña -->
+              <div class="form-section">
+                <h3 class="form-section-title">Cambiar Contraseña</h3>
+                <div class="profile-input-group">
+                  <label for="form-password-actual">Contraseña Actual</label>
+                  <input type="password" name="password_actual" id="form-password-actual" class="profile-input" placeholder="Ingresa tu contraseña actual">
+                </div>
+                <div class="profile-input-group">
+                  <label for="form-password-nueva">Nueva Contraseña</label>
+                  <input type="password" name="password_nueva" id="form-password-nueva" class="profile-input" placeholder="Ingresa tu nueva contraseña">
+                </div>
+                <div class="profile-input-group">
+                  <label for="form-password-confirm">Confirmar Nueva Contraseña</label>
+                  <input type="password" name="password_confirm" id="form-password-confirm" class="profile-input" placeholder="Confirma tu nueva contraseña">
+                </div>
+              </div>
+              
               <button type="submit" class="profile-save-btn">Guardar cambios</button>
             </form>
           </div>
@@ -123,9 +212,9 @@
       <div class="modal-eliminar-content">
         <div class="modal-eliminar-title">¿Esta seguro de eliminar cuenta?</div>
         <form action="/api/cuenta/eliminar" method="POST" id="form-eliminar-cuenta">
-          <input type="hidden" name="user_id" value="1193324003">
-          <input type="hidden" name="email" value="pazdaniela1193@gmail.com">
-          <input type="hidden" name="nombre" value="Daniela Alejandra Paz Tellez">
+          <input type="hidden" name="user_id" id="eliminar-user-id">
+          <input type="hidden" name="email" id="eliminar-email">
+          <input type="hidden" name="nombre" id="eliminar-nombre">
           <input type="hidden" name="confirmacion" value="true">
           <div class="modal-eliminar-btns">
             <button type="submit" id="btn-confirmar-eliminar" class="btn-eliminar">Eliminar</button>
@@ -155,102 +244,484 @@
       </div>
     </footer>
   </div>
+
   <script>
-    // Interceptar todos los formularios para mostrar el tráfico de datos
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('form').forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          const formData = new FormData(form);
-          const method = form.method.toUpperCase();
-          const action = form.action;
-          
-          console.log('=== ENVÍO DE FORMULARIO ===');
-          console.log('Método:', method);
-          console.log('Action:', action);
-          console.log('Datos enviados:');
-          
-          const data = {};
-          for (let [key, value] of formData.entries()) {
-            data[key] = value;
-            console.log(`  ${key}: ${value}`);
-          }
-          
-          alert(`Formulario enviado!\nMétodo: ${method}\nAction: ${action}\n\nRevisa la consola (F12) para ver todos los datos`);
-        });
-      });
-    });
-
-    // Notificaciones Popover
-    const notiBtn = document.getElementById('notificaciones-btn');
-    const notiPopover = document.getElementById('notificaciones-popover');
-    notiBtn.onclick = function(e) {
-      e.stopPropagation();
-      notiPopover.style.display = notiPopover.style.display === 'block' ? 'none' : 'block';
-      const popoverMenu = document.getElementById('popover-menu');
-      if (popoverMenu) popoverMenu.style.display = 'none';
-    };
-    notiPopover.onclick = function(e) {
-      e.stopPropagation();
-    };
-  document.addEventListener('DOMContentLoaded', function() {
+    // ==================== VARIABLES GLOBALES ====================
+    let usuarioActual = null;
+    let token = null;
     
-
-    // ===== MENÚ POPOVER USUARIO =====
-    const perfilBtn = document.getElementById('perfil-btn');
-    const popoverMenu = document.getElementById('popover-menu');
-
-    perfilBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (popoverMenu.style.display === 'block') {
-        popoverMenu.style.display = 'none';
-      } else {
-        // Calcula posición
-        const rect = perfilBtn.getBoundingClientRect();
-        popoverMenu.style.display = 'block';
-        popoverMenu.style.position = 'absolute';
-        popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
-        popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px'; // ancho aprox: 320px/2
-      }
+    // ==================== INICIALIZACIÓN ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 Iniciando página de configuración...');
+        
+        // Verificar autenticación
+        verificarAutenticacion();
+        
+        // Configurar event listeners
+        configurarEventListeners();
+        
+        // Cargar datos del usuario
+        cargarDatosUsuario();
     });
-
-    // Cerrar menú al hacer clic fuera
-    document.addEventListener('click', function(e) {
-      if (!popoverMenu.contains(e.target) && e.target !== perfilBtn) {
-        popoverMenu.style.display = 'none';
-      }
-    });
-
-    // Opciones del menú (puedes personalizar acciones)
-    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
-      li.addEventListener('click', () => {
-        switch(idx) {
-          case 0: alert('Ir al Perfil'); break;
-          case 1: alert('Ir a Configuración'); break;
-          case 2: alert('Ir a Favoritos'); break;
-          case 3: alert('Ir a Ayuda'); break;
+    
+    // ==================== AUTENTICACIÓN ====================
+    function verificarAutenticacion() {
+        token = localStorage.getItem('token');
+        const usuarioStr = localStorage.getItem('usuario');
+        
+        if (!token || !usuarioStr) {
+            console.log('❌ No hay sesión activa, redirigiendo al login...');
+            alert('Debes iniciar sesión para acceder a esta página');
+            window.location.href = '/login';
+            return;
         }
-        popoverMenu.style.display = 'none';
-      });
+        
+        try {
+            usuarioActual = JSON.parse(usuarioStr);
+            console.log('✅ Usuario autenticado:', usuarioActual);
+            
+            // Actualizar header con info del usuario
+            actualizarHeaderUsuario();
+            
+        } catch (error) {
+            console.error('Error al parsear usuario:', error);
+            alert('Error en la sesión. Por favor inicia sesión nuevamente.');
+            window.location.href = '/login';
+        }
+    }
+    
+    function actualizarHeaderUsuario() {
+        const userNameElement = document.querySelector('.user-name');
+        const userAvatarElement = document.querySelector('.user-avatar');
+        
+        if (userNameElement && usuarioActual) {
+            const nombreCorto = usuarioActual.nombre_corto || 
+                               usuarioActual.nombre?.split(' ')[0] || 
+                               'Usuario';
+            userNameElement.textContent = nombreCorto;
+        }
+        
+        if (userAvatarElement && usuarioActual) {
+            const inicial = (usuarioActual.nombre_corto || 
+                            usuarioActual.nombre?.charAt(0) || 
+                            'U').toUpperCase();
+            userAvatarElement.textContent = inicial;
+        }
+    }
+    
+    // ==================== CARGAR DATOS DEL USUARIO ====================
+    async function cargarDatosUsuario() {
+        try {
+            console.log('📖 Cargando datos del usuario...');
+            
+            if (usuarioActual) {
+                console.log('✅ Usando datos de localStorage:', usuarioActual);
+                
+                // Crear nombre completo
+                const nombreCompleto = `${usuarioActual.nombre || ''} ${usuarioActual.apellido || ''}`.trim() || 
+                                     usuarioActual.nombre_completo || 
+                                     'Nombre no disponible';
+                
+                // Obtener el rol
+                const tipoUsuario = usuarioActual.rol_nombre || 
+                                  (usuarioActual.rol === 3 ? 'Egresado' : 
+                                   usuarioActual.rol === 2 ? 'Aprendiz' : 
+                                   usuarioActual.rol === 1 ? 'Administrador' : 'Usuario');
+                
+                // Obtener el documento
+                const documento = usuarioActual.documento || 
+                                usuarioActual.numero_documento || 
+                                'Documento no disponible';
+                
+                // Obtener el correo
+                const correo = usuarioActual.correo || 
+                             usuarioActual.email || 
+                             'Email no disponible';
+                
+                // Obtener el programa
+                const programa = usuarioActual.programa_autor || 
+                               usuarioActual.programa || 
+                               usuarioActual.nombre_programa ||
+                               usuarioActual.programa_formacion ||
+                               'Programa no especificado';
+                
+                console.log('📋 Datos extraídos:', { nombreCompleto, tipoUsuario, documento, correo, programa });
+                
+                // Mostrar los datos en la tarjeta de perfil
+                document.getElementById('profile-avatar').textContent = nombreCompleto.charAt(0).toUpperCase();
+                document.getElementById('profile-name').textContent = nombreCompleto;
+                document.getElementById('profile-status').textContent = tipoUsuario;
+                document.getElementById('profile-documento').textContent = `Documento: ${documento}`;
+                document.getElementById('profile-email').textContent = `Correo: ${correo}`;
+                document.getElementById('profile-programa').textContent = `Programa: ${programa}`;
+                
+                // Actualizar formularios
+                document.getElementById('form-user-id').value = documento;
+                document.getElementById('form-nombre').value = nombreCompleto;
+                document.getElementById('form-documento').value = documento;
+                document.getElementById('form-rol').value = tipoUsuario;
+                document.getElementById('form-programa').value = programa;
+                document.getElementById('form-email').value = correo;
+                document.getElementById('form-email-confirm').value = correo;
+                
+                // Actualizar formulario de eliminación
+                document.getElementById('eliminar-user-id').value = documento;
+                document.getElementById('eliminar-email').value = correo;
+                document.getElementById('eliminar-nombre').value = nombreCompleto;
+                
+                // Actualizar formulario de logout
+                document.getElementById('logout_user_id').value = documento;
+                document.getElementById('logout_email').value = correo;
+                
+                return;
+            }
+            
+            // Si no hay usuarioActual, cargar desde API
+            console.log('🔄 Cargando datos desde API...');
+            await cargarDatosDesdeAPI();
+            
+        } catch (error) {
+            console.error('❌ Error al cargar datos:', error);
+            alert('Error al cargar los datos del perfil. Por favor recarga la página.');
+        }
+    }
+    
+    // ==================== CARGAR DATOS DESDE API ====================
+    async function cargarDatosDesdeAPI() {
+        try {
+            const response = await fetch('/api/usuario/perfil', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('Error al obtener datos del usuario');
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && data.usuario) {
+                usuarioActual = data.usuario;
+                localStorage.setItem('usuario', JSON.stringify(usuarioActual));
+                
+                // Recargar datos con la nueva información
+                cargarDatosUsuario();
+            } else {
+                throw new Error(data.message || 'Error en la respuesta del servidor');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al cargar desde API:', error);
+            alert('Error de autenticación. Por favor inicia sesión nuevamente.');
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/login';
+        }
+    }
+    
+    // ==================== EVENT LISTENERS ====================
+    function configurarEventListeners() {
+        // Menú de perfil
+        configurarMenuPerfil();
+        
+        // Notificaciones
+        configurarNotificaciones();
+        
+        // Formulario editar perfil
+        document.getElementById('form-editar-perfil').addEventListener('submit', editarPerfil);
+        
+        // Formulario eliminar cuenta
+        document.getElementById('form-eliminar-cuenta').addEventListener('submit', eliminarCuenta);
+        
+        // Modal eliminar cuenta
+        const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
+        const modalEliminar = document.getElementById('modal-eliminar-cuenta');
+        const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
+    
+        btnEliminarCuenta.addEventListener('click', function() {
+            modalEliminar.style.display = 'flex';
+        });
+        
+        btnCancelarEliminar.addEventListener('click', function() {
+            modalEliminar.style.display = 'none';
+        });
+        
+        // Cerrar modal al hacer click fuera del contenido
+        modalEliminar.addEventListener('click', function(e) {
+            if (e.target === modalEliminar) modalEliminar.style.display = 'none';
+        });
+    }
+    
+    // ==================== CONFIGURACIÓN DEL MENÚ DE PERFIL ====================
+    function configurarMenuPerfil() {
+        const perfilBtn = document.getElementById('perfil-btn');
+        const popoverMenu = document.getElementById('popover-menu');
+    
+        if (perfilBtn && popoverMenu) {
+            perfilBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isVisible = popoverMenu.style.display === 'block';
+                
+                // Cerrar notificaciones si están abiertas
+                document.getElementById('notificaciones-popover').style.display = 'none';
+                
+                popoverMenu.style.display = isVisible ? 'none' : 'block';
+                
+                if (!isVisible) {
+                    const rect = perfilBtn.getBoundingClientRect();
+                    popoverMenu.style.position = 'fixed';
+                    popoverMenu.style.top = (rect.bottom + window.scrollY + 10) + 'px';
+                    popoverMenu.style.left = (rect.left + window.scrollX - 100) + 'px';
+                    popoverMenu.style.zIndex = '1000';
+                }
+            });
+    
+            // Configurar items del menú
+            document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+                li.addEventListener('click', () => {
+                    switch(idx) {
+                        case 0: 
+                            window.location.href = '/perfil';
+                            break;
+                        case 1: 
+                            // Ya estamos en configuración
+                            break;
+                        case 2: 
+                            window.location.href = '/favoritos';
+                            break;
+                        case 3: 
+                            window.location.href = '/ayuda';
+                            break;
+                    }
+                    popoverMenu.style.display = 'none';
+                });
+            });
+    
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (popoverMenu && !popoverMenu.contains(e.target) && e.target !== perfilBtn) {
+                    popoverMenu.style.display = 'none';
+                }
+            });
+        }
+    }
+    
+    // ==================== EDITAR PERFIL ====================
+    async function editarPerfil(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const submitBtn = this.querySelector('.profile-save-btn');
+        
+        const email = formData.get('email');
+        const emailConfirm = formData.get('email_confirm');
+        const passwordActual = formData.get('password_actual');
+        const passwordNueva = formData.get('password_nueva');
+        const passwordConfirm = formData.get('password_confirm');
+        const programa = formData.get('programa');
+        
+        // Validaciones
+        if (email !== emailConfirm) {
+            alert('❌ Los correos electrónicos no coinciden');
+            return;
+        }
+        
+        if (!validarEmail(email)) {
+            alert('❌ Por favor ingresa un correo electrónico válido');
+            return;
+        }
+        
+        // Validar contraseña si se está intentando cambiar
+        if (passwordNueva || passwordActual || passwordConfirm) {
+            if (!passwordActual) {
+                alert('❌ Para cambiar la contraseña, debes ingresar tu contraseña actual');
+                return;
+            }
+            
+            if (!passwordNueva) {
+                alert('❌ Debes ingresar una nueva contraseña');
+                return;
+            }
+            
+            if (passwordNueva !== passwordConfirm) {
+                alert('❌ Las contraseñas no coinciden');
+                return;
+            }
+            
+            if (!validarPassword(passwordNueva)) {
+                alert('❌ La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número');
+                return;
+            }
+        }
+        
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Enviar datos en el formato correcto
+            const datosActualizacion = {
+                correo: email,
+                programa: programa
+            };
+            
+            // Solo incluir datos de contraseña si se están cambiando
+            if (passwordNueva) {
+                datosActualizacion.password_actual = passwordActual;
+                datosActualizacion.password_nueva = passwordNueva;
+            }
+            
+            console.log('📤 Actualizando perfil:', datosActualizacion);
+            
+            const response = await fetch('/api/usuario/editar', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(datosActualizacion)
+            });
+            
+            const data = await response.json();
+            console.log('📥 Respuesta del servidor:', data);
+            
+            if (data.success) {
+                alert('✅ Perfil actualizado exitosamente!');
+                
+                // Actualizar datos en localStorage
+                if (usuarioActual) {
+                    usuarioActual.email = email;
+                    usuarioActual.correo = email;
+                    usuarioActual.programa = programa;
+                    localStorage.setItem('usuario', JSON.stringify(usuarioActual));
+                }
+                
+                // Recargar datos
+                cargarDatosUsuario();
+                
+            } else {
+                throw new Error(data.message || 'Error al actualizar perfil');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al actualizar perfil:', error);
+            alert('❌ Error al actualizar perfil: ' + error.message);
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+    
+    // ==================== ELIMINAR CUENTA ====================
+    async function eliminarCuenta(e) {
+        e.preventDefault();
+        
+        if (!confirm('⚠️ ¿ESTÁS ABSOLUTAMENTE SEGURO/A?\n\nEsta acción eliminará permanentemente tu cuenta y todos tus datos.\nNO podrás recuperar tu cuenta después de esto.')) {
+            return;
+        }
+        
+        const submitBtn = document.querySelector('#btn-confirmar-eliminar');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Eliminando...';
+        submitBtn.disabled = true;
+        
+        try {
+            console.log('🗑️ Intentando eliminar cuenta...');
+            
+            // SOLO enviar confirmación - el backend obtiene el usuario del token
+            const response = await fetch('/api/usuario/eliminar', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ 
+                    confirmacion: true
+                })
+            });
+            
+            const data = await response.json();
+            console.log('📥 Respuesta del servidor:', data);
+            
+            if (data.success) {
+                alert('✅ Cuenta eliminada exitosamente');
+                
+                // Limpiar localStorage y redirigir al login
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                window.location.href = '/login';
+                
+            } else {
+                throw new Error(data.message || 'Error al eliminar cuenta');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al eliminar cuenta:', error);
+            alert('❌ Error al eliminar cuenta: ' + error.message);
+        } finally {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            document.getElementById('modal-eliminar-cuenta').style.display = 'none';
+        }
+    }
+    
+    // ==================== FUNCIONES DE VALIDACIÓN ====================
+    function validarEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+    
+    function validarPassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+        return regex.test(password);
+    }
+    
+    // ==================== NOTIFICACIONES ====================
+    function configurarNotificaciones() {
+        const notiBtn = document.getElementById('notificaciones-btn');
+        const notiPopover = document.getElementById('notificaciones-popover');
+        
+        if (notiBtn && notiPopover) {
+            notiBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const isVisible = notiPopover.style.display === 'block';
+                
+                // Cerrar menú de perfil si está abierto
+                document.getElementById('popover-menu').style.display = 'none';
+                
+                notiPopover.style.display = isVisible ? 'none' : 'block';
+            });
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (notiPopover && !notiPopover.contains(e.target) && e.target !== notiBtn) {
+                notiPopover.style.display = 'none';
+            }
+        });
+    }
+    
+    // ==================== CERRAR SESIÓN ====================
+    document.getElementById('logoutForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            window.location.href = '/login';
+        }
     });
-
-    // Modal eliminar cuenta
-    const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
-    const modalEliminar = document.getElementById('modal-eliminar-cuenta');
-    const btnCancelarEliminar = document.getElementById('btn-cancelar-eliminar');
-
-    btnEliminarCuenta.addEventListener('click', function() {
-      modalEliminar.style.display = 'flex';
+    
+    // ==================== MANEJO DE ERRORES GLOBAL ====================
+    window.addEventListener('error', function(e) {
+        console.error('Error global:', e.error);
     });
-    btnCancelarEliminar.addEventListener('click', function() {
-      modalEliminar.style.display = 'none';
+    
+    window.addEventListener('unhandledrejection', function(e) {
+        console.error('Promise rechazada:', e.reason);
     });
-    // Cerrar modal al hacer click fuera del contenido
-    modalEliminar.addEventListener('click', function(e) {
-      if (e.target === modalEliminar) modalEliminar.style.display = 'none';
-    });
-  });
-  </script>
+</script>
 </body>
 </html>

@@ -1317,4 +1317,46 @@ body, html {
   display: none;
 }
 
+.mini-comentarios {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border-left: 3px solid #3ec9a7;
+}
 
+.mini-comentario {
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.mini-comentario:last-child {
+  border-bottom: none;
+}
+
+.mini-comentario strong {
+  color: #184C3A;
+  font-size: 0.9em;
+}
+
+.mini-comentario span {
+  color: #555;
+  font-size: 0.9em;
+  margin-left: 5px;
+}
+
+.mini-comentario small {
+  display: block;
+  color: #888;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+.proyecto-comentarios {
+  color: #3ec9a7;
+  transition: color 0.3s;
+}
+
+.proyecto-comentarios:hover {
+  color: #184C3A;
+}
