@@ -6,6 +6,7 @@ import filtroRoutes from "./routes/filtro.routes.js";
 import middlewareFiltroContenido from './middlewares/filtroPalabrasMiddleware.js';
 import { methods as authController } from "./controllers/authentication.controller.js";
 import { methods as proyectosController } from "./controllers/proyectos.controller.js";
+import { methods as reportesController } from "./controllers/reportes.controller.js";
 import { methods as publicacionController } from "./controllers/publications.controller.js";
 import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/authMiddleware.js";
 import { upload } from './middlewares/upload.js';
@@ -15,6 +16,14 @@ import db from "./database/db.js";
 dotenv.config();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
+app.set("port", process.env.PORT || 4000);
+
+app.use(express.static('public'));
+
+
+// Middlewares
+=======
 
 // Inicializa la aplicación Express y configura el puerto
 const app = express();
@@ -233,6 +242,12 @@ app.put("/api/usuario/editar", verificarToken, async (req, res) => {
         });
       }
 
+// ==================== RUTAS DE REPORTES ====================
+app.post("/api/publicaciones/:id/reportar", verificarToken, reportesController.reportarPublicacion);
+app.get("/api/reportes", verificarToken, verificarAdmin, reportesController.obtenerReportes);
+
+
+=======
       // Validar nueva contraseña
       if (password_nueva.length < 8) {
         return res.status(400).json({
@@ -459,6 +474,15 @@ app.post("/api/logout", verificarToken, (req, res) => {
   });
 });
 
+// ==================== PANEL DE ADMINISTRACIÓN ====================
+
+app.get("/admin/panel", (req, res) => {
+  res.sendFile(path.join(__dirname, "Pages", "Admin_Panel.html"));
+});
+
+// Favoritos (router separado)
+app.use("/api/favoritos", favoritosRoutes);
+=======
 // ==================== RUTAS DE PUBLICACIONES ====================
 
 app.get("/api/publicaciones", publicacionController.obtenerPublicaciones);

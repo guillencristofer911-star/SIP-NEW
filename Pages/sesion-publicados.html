@@ -156,7 +156,35 @@
     </footer>
   </div>
 
-  <!-- ⚠️ AGREGAR ESTE SCRIPT AL FINAL DEL BODY -->
+feature/redireccion-admin-reportes
+
+  <!-- Modal Reportar Publicación -->
+<div id="modal-reportar-publicacion" class="modal-publicacion" style="display:none;">
+  <div class="modal-content">
+    <h2>Reportar Publicación</h2>
+    <p style="color:#666; font-size:0.95rem; margin-bottom:20px;">
+      Ayúdanos a mantener una comunidad segura. Tu reporte será revisado por un administrador.
+    </p>
+    
+    <select id="motivo-reporte-publicacion" style="width:100%; border:1.5px solid #3ec9a7; border-radius:12px; padding:10px; margin-bottom:15px; font-size:1rem;">
+      <option value="">Seleccione un motivo</option>
+      <option value="Contenido inapropiado">Contenido inapropiado</option>
+      <option value="Spam o publicidad">Spam o publicidad</option>
+      <option value="Información falsa">Información falsa</option>
+      <option value="Acoso o bullying">Acoso o bullying</option>
+      <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+      <option value="Otro">Otro</option>
+    </select>
+    
+    <textarea id="descripcion-reporte-publicacion" placeholder="Describe brevemente el problema (opcional)..." style="width:100%; border:1.5px solid #3ec9a7; border-radius:12px; padding:10px; font-size:1rem; min-height:80px; resize:vertical; margin-bottom:15px;"></textarea>
+    
+    <div class="modal-btns">
+      <button id="btn-enviar-reporte-publicacion" class="btn-modal reportar-btn">Enviar Reporte</button>
+      <button id="btn-cancelar-reporte-publicacion" class="btn-modal cancelar">Cancelar</button>
+    </div>
+  </div>
+</div>
+  
   <script src="/JS/sesion-publicados.js"></script>
 </body>
 </html>
