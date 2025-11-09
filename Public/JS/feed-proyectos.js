@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     verificarAutenticacion();
     configurarEventListeners();
     cargarProyectos();
-    
-    // 🔥 CONFIGURAR BÚSQUEDA (COPIADO DE PUBLICACIONES)
-    configurarBusqueda();
+    configurarBusqueda(); // 🔥 AGREGADO
     
     setInterval(actualizarContadoresTiempo, 60000);
 });
@@ -593,7 +591,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// ==================== 🔥 SISTEMA DE BÚSQUEDA (COPIADO DE PUBLICACIONES) ====================
+// ==================== 🔥 SISTEMA DE BÚSQUEDA ====================
 
 function configurarBusqueda() {
     const inputBusqueda = document.getElementById('input-busqueda');
@@ -601,10 +599,11 @@ function configurarBusqueda() {
     const inputFecha = document.getElementById('input-fecha');
     const btnLimpiar = document.querySelector('.btn-limpiar');
 
-    console.log('🔧 Configurando búsqueda...', { 
+    console.log('🔧 Configurando búsqueda de proyectos...', { 
         inputBusqueda: !!inputBusqueda, 
         selectPrograma: !!selectPrograma, 
-        inputFecha: !!inputFecha 
+        inputFecha: !!inputFecha,
+        btnLimpiar: !!btnLimpiar
     });
 
     // Búsqueda por palabra clave (presionar Enter)
@@ -612,7 +611,7 @@ function configurarBusqueda() {
         inputBusqueda.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                console.log('⌨️ Enter presionado, realizando búsqueda...');
+                console.log('⌨️ Enter presionado en búsqueda de proyectos');
                 realizarBusqueda();
             }
         });
@@ -636,10 +635,13 @@ function configurarBusqueda() {
 
     // Limpiar filtros
     if (btnLimpiar) {
-        btnLimpiar.removeEventListener('click', limpiarFiltrosBusqueda);
-        btnLimpiar.addEventListener('click', function(e) {
+        // Remover listeners anteriores
+        const nuevoBtnLimpiar = btnLimpiar.cloneNode(true);
+        btnLimpiar.parentNode.replaceChild(nuevoBtnLimpiar, btnLimpiar);
+        
+        nuevoBtnLimpiar.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('🧹 Limpiando filtros...');
+            console.log('🧹 Limpiando filtros de proyectos...');
             limpiarFiltrosBusqueda();
         });
     }
@@ -652,13 +654,12 @@ async function realizarBusqueda() {
         const inputFecha = document.getElementById('input-fecha');
         const fecha = inputFecha?.value;
 
-        console.log('🔍 Datos de búsqueda RAW:', { 
+        console.log('🔍 Búsqueda de PROYECTOS:', { 
             keyword, 
             programa, 
             fecha,
             keywordLength: keyword?.length,
-            programaLength: programa?.length,
-            fechaValue: inputFecha?.value
+            programaLength: programa?.length
         });
 
         // Si no hay filtros, mostrar todos los proyectos
@@ -684,7 +685,6 @@ async function realizarBusqueda() {
 
         if (data.success) {
             console.log(`✅ ${data.proyectos.length} proyectos encontrados`);
-            console.log('📋 Proyectos recibidos:', data.proyectos);
             
             // 🔥 CRÍTICO: Usar la función unificada de renderizado
             renderizarProyectos(data.proyectos);
@@ -693,7 +693,7 @@ async function realizarBusqueda() {
         }
 
     } catch (error) {
-        console.error('❌ Error en búsqueda:', error);
+        console.error('❌ Error en búsqueda de proyectos:', error);
         const listaProyectos = document.getElementById('proyectos-lista');
         if (listaProyectos) {
             listaProyectos.innerHTML = `
@@ -712,7 +712,7 @@ function limpiarFiltrosBusqueda() {
     const selectPrograma = document.querySelector('.filtros-form select[name="programa"]');
     const inputFecha = document.getElementById('input-fecha');
 
-    console.log('🧹 Limpiando todos los filtros...');
+    console.log('🧹 Limpiando todos los filtros de proyectos...');
 
     if (inputBusqueda) {
         inputBusqueda.value = '';
@@ -734,4 +734,4 @@ function limpiarFiltrosBusqueda() {
     cargarProyectos();
 }
 
-console.log('✅ Script de búsqueda cargado correctamente');
+console.log('✅ Script de búsqueda de proyectos cargado correctamente');

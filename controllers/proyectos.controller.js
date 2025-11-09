@@ -101,6 +101,8 @@ export const methods = {
 
     obtenerProyectos: async (req, res) => {
         try {
+            console.log('📚 Obteniendo TODOS los proyectos (sin filtros)');
+            
             // 🔥 CONSULTA MEJORADA: Solo proyectos activos
             const [proyectos] = await pool.execute(`
                 SELECT 
@@ -125,7 +127,7 @@ export const methods = {
                 ORDER BY p.fecha_creacion DESC
             `);
 
-            console.log(`📚 Se encontraron ${proyectos.length} proyectos activos`);
+            console.log(`✅ Se encontraron ${proyectos.length} proyectos activos (ENDPOINT: /api/proyectos)`);
 
             const proyectosConImagenes = proyectos.map(proyecto => ({
                 ID_proyecto: proyecto.ID_proyecto,
@@ -157,9 +159,111 @@ export const methods = {
         }
     },
 
+    // 🔥 FUNCIÓN DE BÚSQUEDA COMPLETAMENTE NUEVA
+    buscarProyectos: async (req, res) => {
+        try {
+            const { keyword, programa, fecha } = req.query;
+
+            console.log('🔍 BÚSQUEDA DE PROYECTOS (ENDPOINT: /api/proyectos/buscar)');
+            console.log('📊 Parámetros recibidos:', { keyword, programa, fecha });
+
+            let query = `
+                SELECT 
+                    p.ID_proyecto,
+                    p.nombre as titulo_proyecto,
+                    p.descripcion,
+                    p.github_url,
+                    p.documento_pdf,
+                    p.imagenes,
+                    p.fecha_creacion,
+                    p.programa_autor,
+                    p.rol_autor,
+                    u.ID_usuario,
+                    u.nombre as nombre_autor,
+                    u.apellido as apellido_autor,
+                    u.ID_rol,
+                    r.nombre as rol_usuario
+                FROM proyecto p 
+                JOIN usuario u ON p.ID_usuario = u.ID_usuario
+                LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+                WHERE p.estado = 'activo' AND p.ID_estado_proyecto = 1
+            `;
+
+            const params = [];
+
+            // Búsqueda por palabra clave
+            if (keyword && keyword.trim() !== '') {
+                console.log('🔤 Aplicando filtro por keyword:', keyword);
+                query += ` AND (
+                    p.nombre LIKE ? OR 
+                    p.descripcion LIKE ? OR 
+                    CONCAT(u.nombre, ' ', u.apellido) LIKE ?
+                )`;
+                const keywordParam = `%${keyword}%`;
+                params.push(keywordParam, keywordParam, keywordParam);
+            }
+
+            // Búsqueda por programa
+            if (programa && programa.trim() !== '') {
+                console.log('📚 Aplicando filtro por programa:', programa);
+                query += ` AND p.programa_autor = ?`;
+                params.push(programa);
+            }
+
+            // Búsqueda por fecha
+            if (fecha && fecha.trim() !== '') {
+                console.log('📅 Aplicando filtro por fecha:', fecha);
+                query += ` AND DATE(p.fecha_creacion) = ?`;
+                params.push(fecha);
+            }
+
+            query += ` ORDER BY p.fecha_creacion DESC`;
+
+            console.log('📝 Query SQL:', query);
+            console.log('📝 Parámetros SQL:', params);
+
+            const [proyectos] = await pool.execute(query, params);
+
+            console.log(`✅ ${proyectos.length} proyectos encontrados con los filtros aplicados`);
+
+            const proyectosConImagenes = proyectos.map(proyecto => ({
+                ID_proyecto: proyecto.ID_proyecto,
+                ID_usuario: proyecto.ID_usuario,
+                nombre: proyecto.titulo_proyecto,
+                descripcion: proyecto.descripcion,
+                github_url: proyecto.github_url,
+                documento_pdf: proyecto.documento_pdf,
+                imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : [],
+                fecha_creacion: proyecto.fecha_creacion,
+                programa_autor: proyecto.programa_autor,
+                rol_autor: proyecto.rol_usuario || proyecto.rol_autor,
+                nombre_autor: proyecto.nombre_autor,
+                apellido_autor: proyecto.apellido_autor,
+                autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
+            }));
+
+            res.json({
+                success: true,
+                proyectos: proyectosConImagenes,
+                filtros: { keyword, programa, fecha },
+                total: proyectosConImagenes.length
+            });
+
+        } catch (error) {
+            console.error('❌ Error en búsqueda de proyectos:', error);
+            console.error('Stack:', error.stack);
+            res.status(500).json({
+                success: false,
+                message: 'Error al buscar proyectos: ' + error.message
+            });
+        }
+    },
+
     obtenerProyectoPorId: async (req, res) => {
         try {
             const proyectoId = req.params.id;
+            
+            console.log('📖 Obteniendo proyecto por ID:', proyectoId);
             
             const [proyectos] = await pool.execute(`
                 SELECT 
@@ -175,6 +279,7 @@ export const methods = {
             `, [proyectoId]);
 
             if (proyectos.length === 0) {
+                console.log('❌ Proyecto no encontrado:', proyectoId);
                 return res.status(404).json({
                     success: false,
                     message: 'Proyecto no encontrado'
@@ -192,6 +297,8 @@ export const methods = {
                     imagenesArray = [proyecto.imagenes];
                 }
             }
+
+            console.log('✅ Proyecto encontrado:', proyecto.nombre);
 
             res.json({
                 success: true,
@@ -319,7 +426,6 @@ export const methods = {
             }
 
             // 🔥 BORRADO LÓGICO: Cambiar estado a "inactivo"
-            // El proyecto NO se elimina de la base de datos, solo se oculta
             await pool.execute(
                 `UPDATE proyecto 
                  SET estado = 'inactivo', 
@@ -345,17 +451,16 @@ export const methods = {
         }
     },
 
-    // ===== NUEVOS MÉTODOS PARA COMENTARIOS =====
+    // ===== MÉTODOS PARA COMENTARIOS =====
     obtenerComentariosProyecto: async (req, res) => {
         try {
             const proyectoId = req.params.id;
-            const user_id = req.query.user_id; // Obtener user_id desde query params
+            const user_id = req.query.user_id;
             
             console.log('=== DEBUG COMENTARIOS ===');
             console.log('1. Proyecto ID recibido:', proyectoId);
             console.log('2. User ID recibido:', user_id);
             
-            // CONSULTA MEJORADA CON INFORMACIÓN DE AUTORÍA
             const query = `
                 SELECT 
                     cp.ID_comentario,
@@ -367,7 +472,6 @@ export const methods = {
                     u.nombre,
                     u.apellido,
                     COALESCE(r.Nombre, 'Aprendiz') as rol,
-                    -- Verificar si el usuario actual es el autor del comentario
                     CASE WHEN cp.ID_usuario = ? THEN 1 ELSE 0 END as es_autor
                 FROM comentario_proyecto cp
                 LEFT JOIN usuario u ON cp.ID_usuario = u.ID_usuario
@@ -405,68 +509,51 @@ export const methods = {
             console.log('User ID:', user_id);
             console.log('Contenido:', contenido);
     
-            // Validaciones más estrictas
             if (!contenido || !user_id) {
                 return res.status(400).json({
                     success: false,
                     message: 'Contenido y user_id son requeridos'
                 });
             }
-    
+
             if (contenido.trim().length === 0) {
                 return res.status(400).json({
                     success: false,
                     message: 'El comentario no puede estar vacío'
                 });
             }
-    
-            // Validar longitud máxima
+
             if (contenido.length > 100) {
                 return res.status(400).json({
                     success: false,
                     message: 'El comentario no puede tener más de 100 caracteres'
                 });
             }
-    
-            // VERIFICAR QUE EL PROYECTO EXISTA
+
             const [proyectos] = await pool.execute(
                 'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
                 [proyectoId]
             );
-    
+
             if (proyectos.length === 0) {
                 return res.status(404).json({
                     success: false,
                     message: 'Proyecto no encontrado'
                 });
             }
-    
-            // VERIFICAR QUE EL USUARIO EXISTA
+
             const [usuarios] = await pool.execute(
                 'SELECT ID_usuario FROM usuario WHERE ID_usuario = ?',
                 [user_id]
             );
-    
+
             if (usuarios.length === 0) {
                 return res.status(404).json({
                     success: false,
                     message: 'Usuario no encontrado'
                 });
             }
-    
-            // VERIFICAR QUE EL ESTADO COMENTARIO EXISTA
-            const [estados] = await pool.execute(
-                'SELECT ID_estado_comentario FROM estado_comentario WHERE ID_estado_comentario = 1'
-            );
-    
-            if (estados.length === 0) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'Estado de comentario no configurado en el sistema'
-                });
-            }
-    
-            // CONSULTA CORREGIDA - Usando NOW() para fecha y asegurando ID_estado_comentario
+
             const query = `
                 INSERT INTO comentario_proyecto 
                 (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
@@ -477,8 +564,7 @@ export const methods = {
             const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
             
             console.log('✅ Comentario creado con ID:', result.insertId);
-    
-            // Obtener el comentario recién creado con datos del usuario
+
             const [comentariosCreados] = await pool.execute(`
                 SELECT 
                     cp.ID_comentario,
@@ -493,7 +579,7 @@ export const methods = {
                 INNER JOIN rol r ON u.ID_rol = r.ID_rol
                 WHERE cp.ID_comentario = ?
             `, [result.insertId]);
-    
+
             res.json({
                 success: true,
                 message: 'Comentario publicado exitosamente',
@@ -502,24 +588,13 @@ export const methods = {
             
         } catch (error) {
             console.error('❌ Error al crear comentario:', error);
-            console.error('Código de error:', error.code);
-            console.error('Detalles completos:', error);
-            
-            // Manejar errores específicos de MySQL
-            if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Error de referencia: Verifique que el proyecto y usuario existan'
-                });
-            }
-    
             res.status(500).json({
                 success: false,
                 message: 'Error interno del servidor: ' + error.message
             });
         }
     },
-        // ===== MÉTODOS PARA EDITAR Y ELIMINAR COMENTARIOS =====
+
     editarComentario: async (req, res) => {
         try {
             const comentarioId = parseInt(req.params.id);
@@ -530,7 +605,6 @@ export const methods = {
             console.log('User ID:', user_id);
             console.log('Nuevo contenido:', contenido);
 
-            // Validaciones
             if (!contenido || !user_id) {
                 return res.status(400).json({
                     success: false,
@@ -552,7 +626,6 @@ export const methods = {
                 });
             }
 
-            // Verificar que el comentario existe y pertenece al usuario
             const [comentarios] = await pool.execute(
                 'SELECT * FROM comentario_proyecto WHERE ID_comentario = ? AND ID_usuario = ?',
                 [comentarioId, user_id]
@@ -565,7 +638,6 @@ export const methods = {
                 });
             }
 
-            // Actualizar el comentario
             const [result] = await pool.execute(
                 'UPDATE comentario_proyecto SET contenido = ? WHERE ID_comentario = ? AND ID_usuario = ?',
                 [contenido.trim(), comentarioId, user_id]
@@ -594,7 +666,6 @@ export const methods = {
 
             console.log('=== ELIMINANDO COMENTARIO ===', { comentarioId, user_id });
 
-            // Verificar que el comentario existe y pertenece al usuario
             const [comentarios] = await pool.execute(
                 'SELECT * FROM comentario_proyecto WHERE ID_comentario = ? AND ID_usuario = ?',
                 [comentarioId, user_id]
@@ -607,7 +678,6 @@ export const methods = {
                 });
             }
 
-            // Eliminar el comentario (borrado físico)
             const [result] = await pool.execute(
                 'DELETE FROM comentario_proyecto WHERE ID_comentario = ? AND ID_usuario = ?',
                 [comentarioId, user_id]
@@ -627,94 +697,5 @@ export const methods = {
                 message: 'Error interno del servidor: ' + error.message
             });
         }
-    },
-    
-    
-
-
-    buscarProyectos: async (req, res) => {
-    try {
-        const { keyword, programa, fecha } = req.query;
-
-        console.log('🔍 Búsqueda de proyectos:', { keyword, programa, fecha });
-
-        let query = `
-            SELECT 
-                p.ID_proyecto,
-                p.nombre as titulo_proyecto,
-                p.descripcion,
-                p.github_url,
-                p.documento_pdf,
-                p.imagenes,
-                p.fecha_creacion,
-                p.programa_autor,
-                p.rol_autor,
-                u.ID_usuario,
-                u.nombre as nombre_autor,
-                u.apellido as apellido_autor,
-                u.ID_rol,
-                r.nombre as rol_usuario
-            FROM proyecto p 
-            JOIN usuario u ON p.ID_usuario = u.ID_usuario
-            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
-            WHERE p.estado = 'activo' AND p.ID_estado_proyecto = 1
-        `;
-
-        const params = [];
-
-        if (keyword) {
-            query += ` AND (
-                p.nombre LIKE ? OR 
-                p.descripcion LIKE ? OR 
-                CONCAT(u.nombre, ' ', u.apellido) LIKE ?
-            )`;
-            const keywordParam = `%${keyword}%`;
-            params.push(keywordParam, keywordParam, keywordParam);
-        }
-
-        if (programa) {
-            query += ` AND p.programa_autor = ?`;
-            params.push(programa);
-        }
-
-        if (fecha) {
-            query += ` AND DATE(p.fecha_creacion) = ?`;
-            params.push(fecha);
-        }
-
-        query += ` ORDER BY p.fecha_creacion DESC`;
-
-        const [proyectos] = await pool.execute(query, params);
-
-        const proyectosConImagenes = proyectos.map(proyecto => ({
-            ID_proyecto: proyecto.ID_proyecto,
-            ID_usuario: proyecto.ID_usuario,
-            nombre: proyecto.titulo_proyecto,
-            descripcion: proyecto.descripcion,
-            github_url: proyecto.github_url,
-            documento_pdf: proyecto.documento_pdf,
-            imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : [],
-            fecha_creacion: proyecto.fecha_creacion,
-            programa_autor: proyecto.programa_autor,
-            rol_autor: proyecto.rol_usuario || proyecto.rol_autor,
-            nombre_autor: proyecto.nombre_autor,
-            apellido_autor: proyecto.apellido_autor,
-            autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
-        }));
-
-        res.json({
-            success: true,
-            proyectos: proyectosConImagenes,
-            filtros: { keyword, programa, fecha }
-        });
-
-    } catch (error) {
-        console.error('❌ Error en búsqueda de proyectos:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al buscar proyectos: ' + error.message
-        });
     }
 }
-}
-
