@@ -627,8 +627,94 @@ export const methods = {
                 message: 'Error interno del servidor: ' + error.message
             });
         }
+    },
+    
+    
+
+
+    buscarProyectos: async (req, res) => {
+    try {
+        const { keyword, programa, fecha } = req.query;
+
+        console.log('🔍 Búsqueda de proyectos:', { keyword, programa, fecha });
+
+        let query = `
+            SELECT 
+                p.ID_proyecto,
+                p.nombre as titulo_proyecto,
+                p.descripcion,
+                p.github_url,
+                p.documento_pdf,
+                p.imagenes,
+                p.fecha_creacion,
+                p.programa_autor,
+                p.rol_autor,
+                u.ID_usuario,
+                u.nombre as nombre_autor,
+                u.apellido as apellido_autor,
+                u.ID_rol,
+                r.nombre as rol_usuario
+            FROM proyecto p 
+            JOIN usuario u ON p.ID_usuario = u.ID_usuario
+            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+            WHERE p.estado = 'activo' AND p.ID_estado_proyecto = 1
+        `;
+
+        const params = [];
+
+        if (keyword) {
+            query += ` AND (
+                p.nombre LIKE ? OR 
+                p.descripcion LIKE ? OR 
+                CONCAT(u.nombre, ' ', u.apellido) LIKE ?
+            )`;
+            const keywordParam = `%${keyword}%`;
+            params.push(keywordParam, keywordParam, keywordParam);
+        }
+
+        if (programa) {
+            query += ` AND p.programa_autor = ?`;
+            params.push(programa);
+        }
+
+        if (fecha) {
+            query += ` AND DATE(p.fecha_creacion) = ?`;
+            params.push(fecha);
+        }
+
+        query += ` ORDER BY p.fecha_creacion DESC`;
+
+        const [proyectos] = await pool.execute(query, params);
+
+        const proyectosConImagenes = proyectos.map(proyecto => ({
+            ID_proyecto: proyecto.ID_proyecto,
+            ID_usuario: proyecto.ID_usuario,
+            nombre: proyecto.titulo_proyecto,
+            descripcion: proyecto.descripcion,
+            github_url: proyecto.github_url,
+            documento_pdf: proyecto.documento_pdf,
+            imagenes: proyecto.imagenes ? JSON.parse(proyecto.imagenes) : [],
+            fecha_creacion: proyecto.fecha_creacion,
+            programa_autor: proyecto.programa_autor,
+            rol_autor: proyecto.rol_usuario || proyecto.rol_autor,
+            nombre_autor: proyecto.nombre_autor,
+            apellido_autor: proyecto.apellido_autor,
+            autor_completo: `${proyecto.nombre_autor} ${proyecto.apellido_autor}`
+        }));
+
+        res.json({
+            success: true,
+            proyectos: proyectosConImagenes,
+            filtros: { keyword, programa, fecha }
+        });
+
+    } catch (error) {
+        console.error('❌ Error en búsqueda de proyectos:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al buscar proyectos: ' + error.message
+        });
     }
-    
-    
+}
 }
 

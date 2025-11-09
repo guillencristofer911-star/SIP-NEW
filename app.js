@@ -388,6 +388,11 @@ app.delete("/api/usuario/eliminar", verificarToken, async (req, res) => {
   }
 });
 
+// ==================== RUTAS DE Búsqueda de publicaciones ====================
+app.get("/api/publicaciones/buscar", publicacionController.buscarPublicaciones);
+
+// ==================== RUTAS DE Búsqueda de proyectos ====================
+app.get("/api/proyectos/buscar", proyectosController.buscarProyectos);
 // ==================== RUTAS DE REPORTES ====================
 app.post("/api/publicaciones/:id/reportar", verificarToken, reportesController.reportarPublicacion);
 app.get("/api/reportes", verificarToken, verificarAdmin, reportesController.obtenerReportes);

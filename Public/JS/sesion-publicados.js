@@ -1243,9 +1243,262 @@ async function enviarReportePublicacion() {
     alert('Error de conexión con el servidor');
   }
 }
+// ========== FIX COMPLETO PARA BÚSQUEDA DE PUBLICACIONES ==========
+// REEMPLAZAR LAS FUNCIONES DE BÚSQUEDA EN: Public/JS/sesion-publicados.js
+
+// ========== CONFIGURAR EVENT LISTENERS DE BÚSQUEDA ==========
+function configurarBusqueda() {
+  const inputBusqueda = document.getElementById('input-busqueda');
+  const selectPrograma = document.querySelector('.filtros-form select[name="programa"]');
+  const inputFecha = document.getElementById('input-fecha');
+  const btnLimpiar = document.querySelector('.btn-limpiar');
+
+  console.log('🔧 Configurando búsqueda...', { 
+    inputBusqueda: !!inputBusqueda, 
+    selectPrograma: !!selectPrograma, 
+    inputFecha: !!inputFecha 
+  });
+
+  // Búsqueda por palabra clave (presionar Enter)
+  if (inputBusqueda) {
+    inputBusqueda.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        console.log('⌨️ Enter presionado, realizando búsqueda...');
+        realizarBusqueda();
+      }
+    });
+  }
+
+  // Búsqueda automática por programa
+  if (selectPrograma) {
+    selectPrograma.addEventListener('change', function() {
+      console.log('📚 Programa seleccionado:', this.value);
+      realizarBusqueda();
+    });
+  }
+
+  // Búsqueda automática por fecha
+  if (inputFecha) {
+    inputFecha.addEventListener('change', function() {
+      console.log('📅 Fecha seleccionada:', this.value);
+      realizarBusqueda();
+    });
+  }
+
+  // Limpiar filtros
+  if (btnLimpiar) {
+    btnLimpiar.removeEventListener('click', limpiarFiltrosBusqueda);
+    btnLimpiar.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log('🧹 Limpiando filtros...');
+      limpiarFiltrosBusqueda();
+    });
+  }
+}
+
+// ========== REALIZAR BÚSQUEDA ==========
+async function realizarBusqueda() {
+  try {
+    const keyword = document.getElementById('input-busqueda')?.value.trim();
+    const programa = document.querySelector('.filtros-form select[name="programa"]')?.value;
+    const inputFecha = document.getElementById('input-fecha');
+    const fecha = inputFecha?.value;
+
+    console.log('🔍 Datos de búsqueda RAW:', { 
+      keyword, 
+      programa, 
+      fecha,
+      keywordLength: keyword?.length,
+      programaLength: programa?.length,
+      fechaValue: inputFecha?.value
+    });
+
+    // Si no hay filtros, mostrar todas las publicaciones
+    if (!keyword && !programa && !fecha) {
+      console.log('⚠️ No hay filtros, cargando todas las publicaciones');
+      await cargarPublicaciones();
+      return;
+    }
+
+    // Construir URL con parámetros de búsqueda
+    const params = new URLSearchParams();
+    if (keyword) params.append('keyword', keyword);
+    if (programa) params.append('programa', programa);
+    if (fecha) params.append('fecha', fecha);
+
+    const url = `/api/publicaciones/buscar?${params.toString()}`;
+    console.log('📡 Llamando a:', url);
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    console.log('📥 Respuesta del servidor:', data);
+
+    if (data.success) {
+      console.log(`✅ ${data.publicaciones.length} publicaciones encontradas`);
+      console.log('📋 Publicaciones recibidas:', data.publicaciones);
+      
+      // 🔥 CRÍTICO: Llamar a la función correcta
+      renderizarPublicacionesBusqueda(data.publicaciones);
+    } else {
+      throw new Error(data.message || 'Error en la búsqueda');
+    }
+
+  } catch (error) {
+    console.error('❌ Error en búsqueda:', error);
+    const listaPublicaciones = document.getElementById('proyectos-lista');
+    if (listaPublicaciones) {
+      listaPublicaciones.innerHTML = `
+        <div style="text-align:center; padding:40px; color:#dc3545;">
+          <i class="fa fa-exclamation-triangle" style="font-size:48px;"></i><br><br>
+          <strong>Error al realizar la búsqueda</strong><br>
+          ${error.message}
+        </div>
+      `;
+    }
+  }
+}
+
+// ========== RENDERIZAR RESULTADOS DE BÚSQUEDA ==========
+function renderizarPublicacionesBusqueda(publicaciones) {
+  const listaPublicaciones = document.getElementById('proyectos-lista');
+  
+  if (!listaPublicaciones) {
+    console.error('❌ No se encontró el contenedor #proyectos-lista');
+    return;
+  }
+
+  console.log('🎨 Renderizando', publicaciones.length, 'publicaciones');
+
+  // 🔥 LIMPIAR COMPLETAMENTE EL CONTENEDOR
+  listaPublicaciones.innerHTML = '';
+
+  // Si no hay resultados
+  if (!publicaciones || publicaciones.length === 0) {
+    console.log('⚠️ No hay publicaciones para mostrar');
+    listaPublicaciones.innerHTML = `
+      <div style="text-align:center; padding:60px 20px; color:#666; background:white; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+        <i class="fa fa-search" style="font-size:64px; opacity:0.3; color:#10b981; margin-bottom:20px;"></i>
+        <h3 style="color:#184C3A; margin-bottom:10px;">No se encontraron publicaciones</h3>
+        <p style="color:#666;">Intenta con otros criterios de búsqueda</p>
+      </div>
+    `;
+    return;
+  }
+
+  // 🔥 RENDERIZAR CADA PUBLICACIÓN
+  publicaciones.forEach((pub, index) => {
+    console.log(`📝 Renderizando publicación ${index + 1}:`, pub.titulo);
+    
+    const esAutor = usuarioActual && usuarioActual.id === pub.ID_usuario;
+    const puedeEditarPublicacion = esAutor && pub.puedeEditar;
+    const tiempoRestante = pub.minutosRestantes || 0;
+    
+    let rolMostrar = 'Usuario';
+    if (pub.rol_nombre) {
+      rolMostrar = pub.rol_nombre.charAt(0).toUpperCase() + pub.rol_nombre.slice(1).toLowerCase();
+    } else if (pub.rol) {
+      rolMostrar = pub.rol.charAt(0).toUpperCase() + pub.rol.slice(1).toLowerCase();
+    }
+    
+    let indicadorTiempo = '';
+    if (esAutor && tiempoRestante > 0) {
+      indicadorTiempo = `<span style="color:#28a745; font-size:12px; margin-left:8px;">⏱️ ${tiempoRestante} min para editar</span>`;
+    }
+    
+    const publicacionHTML = `
+      <div class="proyecto-card" 
+           data-id="${pub.ID_publicacion}" 
+           data-timestamp="${pub.fecha_creacion_timestamp}">
+        <div class="proyecto-header">
+          <span class="proyecto-titulo">${escapeHtml(pub.titulo)}</span>
+          <span class="proyecto-fecha">${formatearFecha(pub.fecha_creacion)}${indicadorTiempo}</span>
+          <button class="proyecto-fav" type="button"><i class="fa-regular fa-star"></i></button>
+          ${!esAutor ? `
+            <button class="publicacion-reportar-btn" onclick="mostrarModalReportarPublicacion(${pub.ID_publicacion})" title="Reportar publicación">⋮</button>
+          ` : ''}
+          ${esAutor ? `
+            <button class="publicacion-menu-btn" onclick="togglePublicacionMenu(this)">...</button>
+            <div class="publicacion-menu" style="display:none;">
+              <div class="popover-arrow"></div>
+              ${puedeEditarPublicacion ? `
+                <button class="menu-btn editar" onclick="editarPublicacion(${pub.ID_publicacion})">Editar</button>
+              ` : `
+                <button disabled style="opacity:0.5; cursor:not-allowed;" title="Tiempo de edición expirado (15 min)">Editar (Expirado)</button>
+              `}
+              <button class="menu-btn eliminar" onclick="eliminarPublicacion(${pub.ID_publicacion})">Eliminar</button>
+            </div>
+          ` : ''}
+        </div>
+        <div class="proyecto-autor">
+          ${escapeHtml(pub.nombre)} ${escapeHtml(pub.apellido)}
+          <span class="proyecto-etiqueta egresado">${rolMostrar}</span>
+        </div>
+        <div class="proyecto-carrera">${escapeHtml(pub.programa || 'Sin programa')}</div>
+        <div class="proyecto-desc">
+          ${escapeHtml(pub.contenido)}
+        </div>
+        <div class="proyecto-footer">
+          <span class="proyecto-comentarios" id="contador-${pub.ID_publicacion}">...</span>
+          <button class="btn-abrir" type="button" onclick="verRespuestas(${pub.ID_publicacion})">Ver Respuestas</button>
+        </div>
+      </div>
+    `;
+    
+    // 🔥 AGREGAR AL CONTENEDOR
+    listaPublicaciones.insertAdjacentHTML('beforeend', publicacionHTML);
+    
+    // Cargar contador de respuestas
+    setTimeout(() => {
+      actualizarContador(pub.ID_publicacion);
+    }, 100);
+  });
+
+  console.log('✅ Renderizado completado');
+  
+  // Aplicar event listeners de favoritos
+  aplicarEventListenersFavoritos();
+}
+
+// ========== LIMPIAR FILTROS ==========
+function limpiarFiltrosBusqueda() {
+  const inputBusqueda = document.getElementById('input-busqueda');
+  const selectPrograma = document.querySelector('.filtros-form select[name="programa"]');
+  const inputFecha = document.getElementById('input-fecha');
+
+  console.log('🧹 Limpiando todos los filtros...');
+
+  if (inputBusqueda) {
+    inputBusqueda.value = '';
+    console.log('✅ Input búsqueda limpiado');
+  }
+  
+  if (selectPrograma) {
+    selectPrograma.selectedIndex = 0;
+    console.log('✅ Select programa limpiado');
+  }
+  
+  if (inputFecha) {
+    inputFecha.value = '';
+    console.log('✅ Input fecha limpiado');
+  }
+
+  // Recargar todas las publicaciones
+  console.log('🔄 Recargando todas las publicaciones...');
+  cargarPublicaciones();
+}
+
+// ========== INICIALIZAR EN DOMContentLoaded ==========
+// AGREGAR ESTA LÍNEA EN TU FUNCIÓN DOMContentLoaded EXISTENTE:
+// configurarBusqueda();
+
+console.log('✅ Script de búsqueda cargado correctamente');
+
 
 // Configurar eventos del modal de reporte
 document.addEventListener('DOMContentLoaded', function() {
+  configurarBusqueda(); 
   const btnEnviarReporte = document.getElementById('btn-enviar-reporte-publicacion');
   const btnCancelarReporte = document.getElementById('btn-cancelar-reporte-publicacion');
   const modalReportar = document.getElementById('modal-reportar-publicacion');

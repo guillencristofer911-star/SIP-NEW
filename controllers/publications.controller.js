@@ -467,10 +467,111 @@ async function eliminarPublicacion(req, res) {
   }
 }
 
+
+async function buscarPublicaciones(req, res) {
+  try {
+    const { keyword, programa, fecha } = req.query;
+
+    console.log('🔍 Búsqueda de publicaciones:', { keyword, programa, fecha });
+
+    let query = `
+      SELECT 
+        p.ID_publicacion,
+        p.titulo,
+        p.contenido,
+        UNIX_TIMESTAMP(p.fecha_creacion) as fecha_creacion_timestamp,
+        p.fecha_creacion,
+        p.fecha_ultima_edicion,
+        p.ID_usuario,
+        p.ID_estado_publicacion,
+        u.nombre,
+        u.apellido,
+        u.programa,
+        u.ID_rol,
+        r.nombre as rol_nombre
+      FROM publicacion p
+      INNER JOIN usuario u ON p.ID_usuario = u.ID_usuario
+      LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+      WHERE p.ID_estado_publicacion = 1
+    `;
+
+    const params = [];
+
+    if (keyword) {
+      query += ` AND (
+        p.titulo LIKE ? OR 
+        p.contenido LIKE ? OR 
+        CONCAT(u.nombre, ' ', u.apellido) LIKE ?
+      )`;
+      const keywordParam = `%${keyword}%`;
+      params.push(keywordParam, keywordParam, keywordParam);
+    }
+
+    if (programa) {
+      query += ` AND u.programa = ?`;
+      params.push(programa);
+    }
+
+    if (fecha) {
+      query += ` AND DATE(p.fecha_creacion) = ?`;
+      params.push(fecha);
+    }
+
+    query += ` ORDER BY p.fecha_creacion DESC`;
+
+    const [publicaciones] = await db.query(query, params);
+
+    const [tiempoServidor] = await db.query('SELECT UNIX_TIMESTAMP() as ahora');
+    const ahoraTimestamp = tiempoServidor[0].ahora;
+
+    for (let pub of publicaciones) {
+      try {
+        const [etiquetas] = await db.query(`
+          SELECT e.ID_etiqueta, e.nombre
+          FROM publicacion_etiqueta pe
+          INNER JOIN etiqueta e ON pe.ID_etiqueta = e.ID_etiqueta
+          WHERE pe.ID_publicacion = ?
+        `, [pub.ID_publicacion]);
+        
+        pub.etiquetas = etiquetas;
+
+        const diferenciaSegundos = ahoraTimestamp - pub.fecha_creacion_timestamp;
+        const diferenciaMinutos = diferenciaSegundos / 60;
+        const minutosRestantes = Math.max(0, Math.floor(15 - diferenciaMinutos));
+        
+        pub.puedeEditar = diferenciaMinutos <= 15;
+        pub.minutosRestantes = minutosRestantes;
+        pub.rol = pub.rol_nombre || 'usuario';
+
+      } catch (etiquetaError) {
+        pub.etiquetas = [];
+        pub.puedeEditar = false;
+        pub.minutosRestantes = 0;
+        pub.rol = 'usuario';
+      }
+    }
+
+    res.json({
+      success: true,
+      publicaciones,
+      filtros: { keyword, programa, fecha }
+    });
+
+  } catch (error) {
+    console.error("❌ Error en búsqueda de publicaciones:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error en el servidor al buscar publicaciones",
+      error: error.message
+    });
+  }
+}
+
 export const methods = {
   crearPublicacion,
   obtenerPublicaciones,
   obtenerPublicacionPorId,
   editarPublicacion,
-  eliminarPublicacion
+  eliminarPublicacion,
+  buscarPublicaciones 
 };
