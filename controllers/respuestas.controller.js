@@ -117,16 +117,25 @@ async function obtenerRespuestas(req, res) {
 
     console.log('📖 Obteniendo respuestas de publicación:', ID_publicacion);
 
+    // 🔥 VALIDAR QUE ID_publicacion ES VÁLIDO
+    if (!ID_publicacion || isNaN(parseInt(ID_publicacion))) {
+      return res.status(400).json({
+        success: false,
+        message: "ID de publicación inválido"
+      });
+    }
+
     const [respuestas] = await db.query(`
       SELECT 
         r.ID_respuesta,
         r.ID_publicacion,
         r.contenido,
-        DATE_FORMAT(r.fecha_creacion, '%Y-%m-%d %H:%i:%s') as fecha_creacion,
+        r.fecha_creacion,
         UNIX_TIMESTAMP(r.fecha_creacion) as fecha_creacion_timestamp,
-        DATE_FORMAT(r.fecha_ultima_edicion, '%Y-%m-%d %H:%i:%s') as fecha_ultima_edicion,
+        r.fecha_ultima_edicion,
         UNIX_TIMESTAMP(r.fecha_ultima_edicion) as fecha_edicion_timestamp,
         r.token_expiracion,
+        UNIX_TIMESTAMP(NOW()) as ahora_timestamp,
         r.ID_usuario,
         u.nombre,
         u.apellido,
@@ -140,70 +149,79 @@ async function obtenerRespuestas(req, res) {
       ORDER BY r.fecha_creacion DESC
     `, [ID_publicacion]);
 
-    const ahora = new Date();
+    console.log(`✅ ${respuestas.length} respuestas encontradas para publicación ${ID_publicacion}`);
     
-    // 🔥 PROCESAR CADA RESPUESTA
+    // 🔥 PROCESAR CADA RESPUESTA CON VALIDACIONES
     const respuestasProcesadas = respuestas.map(respuesta => {
-      const expiracion = new Date(respuesta.token_expiracion);
-      const puedeEditar = ahora < expiracion;
-      
-      // Calcular minutos restantes
-      const diferenciaMs = expiracion - ahora;
-      const minutosRestantes = Math.max(0, Math.floor(diferenciaMs / 60000));
-      
-      // 🔥 USAR TIMESTAMP DIRECTO DE MYSQL (en segundos) y convertir a milisegundos
-      let fecha_creacion_js = 0;
-      
-      if (respuesta.fecha_creacion_timestamp) {
-        // MySQL UNIX_TIMESTAMP devuelve segundos, convertir a milisegundos
-        fecha_creacion_js = respuesta.fecha_creacion_timestamp * 1000;
+      try {
+        // Obtener timestamp actual del servidor
+        const ahoraTimestamp = respuesta.ahora_timestamp;
+        
+        // Calcular si puede editar usando token_expiracion
+        const expiracionTimestamp = Math.floor(new Date(respuesta.token_expiracion).getTime() / 1000);
+        const puedeEditar = ahoraTimestamp < expiracionTimestamp;
+        
+        // Calcular minutos restantes
+        const diferenciaSegundos = expiracionTimestamp - ahoraTimestamp;
+        const minutosRestantes = Math.max(0, Math.floor(diferenciaSegundos / 60));
+        
+        // 🔥 CONVERTIR TIMESTAMP A MILISEGUNDOS PARA JAVASCRIPT
+        const fecha_creacion_js = respuesta.fecha_creacion_timestamp * 1000;
+        
+        // Verificar si fue editada
+        let fue_editada = false;
+        if (respuesta.fecha_edicion_timestamp && respuesta.fecha_creacion_timestamp) {
+          const diferenciaSeg = Math.abs(respuesta.fecha_edicion_timestamp - respuesta.fecha_creacion_timestamp);
+          fue_editada = diferenciaSeg > 2;
+        }
+        
+        return {
+          ID_respuesta: respuesta.ID_respuesta,
+          ID_publicacion: respuesta.ID_publicacion,
+          contenido: respuesta.contenido,
+          fecha_creacion: respuesta.fecha_creacion,
+          fecha_creacion_js: fecha_creacion_js,
+          fecha_ultima_edicion: respuesta.fecha_ultima_edicion,
+          fue_editada: fue_editada,
+          puedeEditar: puedeEditar,
+          minutosRestantes: minutosRestantes,
+          ID_usuario: respuesta.ID_usuario,
+          nombre: respuesta.nombre,
+          apellido: respuesta.apellido,
+          programa: respuesta.programa,
+          ID_rol: respuesta.ID_rol,
+          rol: respuesta.rol_nombre || 'Usuario',
+          rol_nombre: respuesta.rol_nombre
+        };
+      } catch (processingError) {
+        console.error('❌ Error procesando respuesta:', processingError);
+        // Devolver respuesta básica si hay error
+        return {
+          ID_respuesta: respuesta.ID_respuesta,
+          contenido: respuesta.contenido,
+          fecha_creacion: respuesta.fecha_creacion,
+          fecha_creacion_js: Date.now(),
+          puedeEditar: false,
+          minutosRestantes: 0,
+          ID_usuario: respuesta.ID_usuario,
+          nombre: respuesta.nombre || 'Usuario',
+          apellido: respuesta.apellido || '',
+          rol: 'Usuario'
+        };
       }
-      
-      // 🔥 VERIFICAR SI FUE EDITADA
-      let fue_editada = false;
-      if (respuesta.fecha_edicion_timestamp && respuesta.fecha_creacion_timestamp) {
-        // Comparar timestamps en segundos
-        const diferenciaSeg = Math.abs(respuesta.fecha_edicion_timestamp - respuesta.fecha_creacion_timestamp);
-        fue_editada = diferenciaSeg > 2; // Más de 2 segundos de diferencia
-      }
-      
-      console.log(`📝 Respuesta ${respuesta.ID_respuesta}:`, {
-        fecha_creacion: respuesta.fecha_creacion,
-        fecha_creacion_timestamp: respuesta.fecha_creacion_timestamp,
-        fecha_creacion_js: fecha_creacion_js,
-        fecha_edicion_timestamp: respuesta.fecha_edicion_timestamp,
-        fue_editada: fue_editada
-      });
-      
-      return {
-        ID_respuesta: respuesta.ID_respuesta,
-        ID_publicacion: respuesta.ID_publicacion,
-        contenido: respuesta.contenido,
-        fecha_creacion: respuesta.fecha_creacion,
-        fecha_creacion_js: fecha_creacion_js, // 🔥 TIMESTAMP EN MILISEGUNDOS
-        fecha_ultima_edicion: respuesta.fecha_ultima_edicion,
-        fue_editada: fue_editada, // 🔥 BOOLEAN
-        puedeEditar: puedeEditar,
-        minutosRestantes: minutosRestantes,
-        ID_usuario: respuesta.ID_usuario,
-        nombre: respuesta.nombre,
-        apellido: respuesta.apellido,
-        programa: respuesta.programa,
-        ID_rol: respuesta.ID_rol,
-        rol: respuesta.rol_nombre || 'Usuario',
-        rol_nombre: respuesta.rol_nombre
-      };
     });
 
-    console.log(`✅ ${respuestasProcesadas.length} respuestas encontradas y procesadas`);
+    console.log(`✅ Respuestas procesadas exitosamente`);
 
     res.json({
       success: true,
-      respuestas: respuestasProcesadas
+      respuestas: respuestasProcesadas,
+      total: respuestasProcesadas.length
     });
 
   } catch (error) {
     console.error("❌ Error al obtener respuestas:", error);
+    console.error("Stack:", error.stack);
     res.status(500).json({
       success: false,
       message: "Error en el servidor al obtener las respuestas",
@@ -211,6 +229,7 @@ async function obtenerRespuestas(req, res) {
     });
   }
 }
+
 
 /**
  * Obtener el conteo de respuestas de una publicación
@@ -371,7 +390,7 @@ async function eliminarRespuesta(req, res) {
 
 export const methods = {
   crearRespuesta,
-  obtenerRespuestas,
+  obtenerRespuestas, // <-- Esta función actualizada
   contarRespuestas,
   editarRespuesta,
   eliminarRespuesta

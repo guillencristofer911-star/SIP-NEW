@@ -836,19 +836,124 @@ window.verRespuestas = async function(idPublicacion) {
   console.log('👀 Cargando respuestas de publicación:', idPublicacion);
   
   try {
-    const response = await fetch(`/api/publicaciones/${idPublicacion}/respuestas`);
-    const data = await response.json();
-    
-    if (data.success) {
-      mostrarModalRespuestas(idPublicacion, data.respuestas);
-    } else {
-      alert('Error al cargar las respuestas');
+    // 🔥 VALIDAR ID ANTES DE HACER LA PETICIÓN
+    if (!idPublicacion || isNaN(parseInt(idPublicacion))) {
+      throw new Error('ID de publicación inválido');
     }
+    
+    console.log('📡 Enviando petición a:', `/api/publicaciones/${idPublicacion}/respuestas`);
+    
+    const response = await fetch(`/api/publicaciones/${idPublicacion}/respuestas`);
+    
+    console.log('📥 Respuesta recibida, status:', response.status);
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorData.message || `Error ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('✅ Datos parseados:', data);
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Error al cargar respuestas');
+    }
+    
+    // 🔥 VALIDAR QUE RESPUESTAS ES UN ARRAY
+    const respuestas = Array.isArray(data.respuestas) ? data.respuestas : [];
+    console.log(`📊 Total de respuestas: ${respuestas.length}`);
+    
+    mostrarModalRespuestas(idPublicacion, respuestas);
+    
   } catch (error) {
-    console.error('❌ Error:', error);
-    alert('Error de conexión con el servidor');
+    console.error('❌ Error completo:', error);
+    console.error('Stack:', error.stack);
+    alert('❌ Error al cargar las respuestas: ' + error.message);
   }
 };
+
+// 🔥 FUNCIÓN AUXILIAR MEJORADA PARA CREAR HTML DE RESPUESTA
+function crearHTMLRespuesta(respuesta) {
+  try {
+    const esAutorRespuesta = usuarioActual && usuarioActual.id === respuesta.ID_usuario;
+    const puedeEditar = esAutorRespuesta && (respuesta.puedeEditar || false);
+    const tiempoRestante = respuesta.minutosRestantes || 0;
+    
+    // Obtener rol de manera segura
+    let rolMostrar = 'Usuario';
+    if (respuesta.rol_nombre) {
+      rolMostrar = respuesta.rol_nombre.charAt(0).toUpperCase() + respuesta.rol_nombre.slice(1).toLowerCase();
+    } else if (respuesta.rol) {
+      rolMostrar = respuesta.rol.charAt(0).toUpperCase() + respuesta.rol.slice(1).toLowerCase();
+    }
+    
+    // Formatear fecha de manera segura
+    let fechaMostrar = 'Fecha no disponible';
+    
+    if (respuesta.fecha_creacion_js && !isNaN(respuesta.fecha_creacion_js)) {
+      try {
+        const fecha = new Date(respuesta.fecha_creacion_js);
+        if (fecha.toString() !== 'Invalid Date') {
+          fechaMostrar = formatearFechaCompleta(fecha);
+        }
+      } catch (e) {
+        console.warn('Error formateando fecha:', e);
+      }
+    } else if (respuesta.fecha_creacion) {
+      try {
+        const fecha = new Date(respuesta.fecha_creacion);
+        if (fecha.toString() !== 'Invalid Date') {
+          fechaMostrar = formatearFechaCompleta(fecha);
+        }
+      } catch (e) {
+        console.warn('Error formateando fecha:', e);
+      }
+    }
+    
+    // Indicador de tiempo
+    let indicadorTiempo = '';
+    if (esAutorRespuesta && tiempoRestante > 0) {
+      indicadorTiempo = `<span style="color:#28a745; font-size:11px; margin-left:8px;">⏱️ ${tiempoRestante} min para editar</span>`;
+    }
+    
+    // Nombre completo del autor
+    const nombreAutor = `${respuesta.nombre || ''} ${respuesta.apellido || ''}`.trim() || 'Usuario Anónimo';
+    
+    return `
+      <div class="comentario-card" style="margin-bottom:14px;">
+        <div class="comentario-header">
+          <span class="comentario-autor">${escapeHtml(nombreAutor)}</span>
+          <span class="comentario-etiqueta aprendiz">${rolMostrar}</span>
+          <span class="comentario-fecha">${fechaMostrar}${indicadorTiempo}</span>
+          
+          ${esAutorRespuesta ? `
+            <button class="comentario-menu-btn" onclick="toggleComentarioMenu(this)">...</button>
+            <div class="comentario-menu" style="display:none;">
+              ${puedeEditar ? `
+                <button class="menu-btn editar" onclick="editarRespuesta(${respuesta.ID_respuesta})">Editar</button>
+              ` : `
+                <button disabled style="opacity:0.5; cursor:not-allowed;" title="Tiempo de edición expirado">Editar (Expirado)</button>
+              `}
+              <button class="menu-btn eliminar" onclick="eliminarRespuesta(${respuesta.ID_respuesta}, ${respuesta.ID_publicacion})">Eliminar</button>
+            </div>
+          ` : ''}
+        </div>
+        <div class="comentario-texto" id="respuesta-texto-${respuesta.ID_respuesta}">
+          ${escapeHtml(respuesta.contenido || 'Sin contenido')}
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error('❌ Error creando HTML de respuesta:', error);
+    return `
+      <div class="comentario-card" style="margin-bottom:14px;">
+        <div class="comentario-texto">Error al mostrar esta respuesta</div>
+      </div>
+    `;
+  }
+}
+
+console.log('✅ Funciones de respuestas actualizadas correctamente');
 
 // 🔥 FUNCIÓN: Mostrar modal con todas las respuestas
 function mostrarModalRespuestas(idPublicacion, respuestas) {
