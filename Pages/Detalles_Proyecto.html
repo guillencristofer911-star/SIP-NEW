@@ -788,6 +788,17 @@ function formatearFecha(fechaString) {
       }
     });
 
+    // ===== REDIRECCIÓN DEL LOGO =====
+document.addEventListener('DOMContentLoaded', function() {
+  const logoHeader = document.querySelector('.logo-header');
+  if (logoHeader) {
+    logoHeader.style.cursor = 'pointer';
+    logoHeader.addEventListener('click', function() {
+      window.location.href = '/publicaciones';
+    });
+  }
+});
+
     // ===== INICIALIZAR =====
     document.addEventListener('DOMContentLoaded', function() {
       cargarDetallesProyecto();

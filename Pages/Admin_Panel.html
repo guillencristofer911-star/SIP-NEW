@@ -575,6 +575,19 @@
             
             console.log('Panel de administración unificado cargado correctamente');
         });
+
+    // Redirección del logo (ADMIN)
+document.addEventListener('DOMContentLoaded', function() {
+  const logoImg = document.querySelector('.logo-img');
+  if (logoImg) {
+    logoImg.style.cursor = 'pointer';
+    logoImg.addEventListener('click', function() {
+      if (confirm('¿Deseas salir del panel de administración y volver a publicaciones?')) {
+        window.location.href = '/publicaciones';
+      }
+    });
+  }
+});
     </script>
 </body>
 </html>

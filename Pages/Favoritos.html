@@ -542,6 +542,18 @@
         }
       });
     });
+
+
+// Redirección del logo
+document.addEventListener('DOMContentLoaded', function() {
+  const logoHeader = document.querySelector('.logo-header');
+  if (logoHeader) {
+    logoHeader.style.cursor = 'pointer';
+    logoHeader.addEventListener('click', function() {
+      window.location.href = '/publicaciones';
+    });
+  }
+});
   </script>
 </body>
 </html>

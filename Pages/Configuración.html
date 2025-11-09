@@ -719,6 +719,19 @@
         console.error('Error global:', e.error);
     });
     
+    // ==================== REDIRECCIÓN DEL LOGO ====================
+document.addEventListener('DOMContentLoaded', function() {
+  const logoHeader = document.querySelector('.logo-header');
+  if (logoHeader) {
+    logoHeader.style.cursor = 'pointer';
+    logoHeader.addEventListener('click', function() {
+      console.log('🏠 Redirigiendo a publicaciones');
+      window.location.href = '/publicaciones';
+    });
+  }
+});
+
+
     window.addEventListener('unhandledrejection', function(e) {
         console.error('Promise rechazada:', e.reason);
     });

@@ -12,7 +12,7 @@ import { verificarToken, verificarAdmin, verificarRol } from "./middlewares/auth
 import { upload } from './middlewares/upload.js';
 import bcrypt from 'bcrypt';
 import db from "./database/db.js";
-import favoritosRoutes from "./routes/favoritos.routes.js"; // agregado import faltante
+import favoritosRoutes from "./routes/favoritos.routes.js";
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ app.set("port", process.env.PORT || 4000);
 
 // Middlewares
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "Public"))); // unificar carpeta pública
+app.use(express.static(path.join(__dirname, "Public")));
 app.use('/uploads', express.static(path.join(__dirname, 'Public', 'uploads')));
 
 // Si deseas aplicar el filtro globalmente, dejarlo; si no, moverlo solo a rutas que lo requieran
@@ -70,6 +70,10 @@ app.get("/crear-publicacion", (req, res) => {
 // Autenticación
 app.post("/api/login", authController.login);
 app.post("/api/register", authController.register);
+
+// 🔥 RUTAS DE BÚSQUEDA (DEBEN IR PRIMERO) 🔥
+app.get("/api/publicaciones/buscar", publicacionController.buscarPublicaciones);
+app.get("/api/proyectos/buscar", proyectosController.buscarProyectos);
 
 // Proyectos
 app.post("/api/proyectos/crear",
@@ -388,11 +392,6 @@ app.delete("/api/usuario/eliminar", verificarToken, async (req, res) => {
   }
 });
 
-// ==================== RUTAS DE Búsqueda de publicaciones ====================
-app.get("/api/publicaciones/buscar", publicacionController.buscarPublicaciones);
-
-// ==================== RUTAS DE Búsqueda de proyectos ====================
-app.get("/api/proyectos/buscar", proyectosController.buscarProyectos);
 // ==================== RUTAS DE REPORTES ====================
 app.post("/api/publicaciones/:id/reportar", verificarToken, reportesController.reportarPublicacion);
 app.get("/api/reportes", verificarToken, verificarAdmin, reportesController.obtenerReportes);
@@ -469,5 +468,3 @@ app.use((err, req, res, next) => {
 app.listen(app.get("port"), () => {
   console.log(`✅ Servidor corriendo en http://localhost:${app.get("port")}`);
 });
-
-// ...existing code...

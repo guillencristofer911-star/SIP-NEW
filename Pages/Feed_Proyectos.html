@@ -204,6 +204,17 @@
     </footer>
   </div>
 
-  <script src="/JS/feed-proyectos.js"></script>
-</body>
+<script src="/JS/feed-proyectos.js"></script>
+<script>
+  // Redirección del logo
+  document.addEventListener('DOMContentLoaded', function() {
+    const logoHeader = document.querySelector('.logo-header');
+    if (logoHeader) {
+      logoHeader.style.cursor = 'pointer';
+      logoHeader.addEventListener('click', function() {
+        window.location.href = '/publicaciones';
+      });
+    }
+  });
+</script>
 </html>
