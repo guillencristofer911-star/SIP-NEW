@@ -554,101 +554,175 @@ crearProyecto: async (req, res) => {
         }
     },
 
-    crearComentario: async (req, res) => {
-        try {
-            const proyectoId = parseInt(req.params.id);
-            const { contenido, user_id } = req.body;
-            
-            console.log('=== CREANDO COMENTARIO ===');
-            console.log('Proyecto ID:', proyectoId);
-            console.log('User ID:', user_id);
-            console.log('Contenido:', contenido);
-    
-            if (!contenido || !user_id) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Contenido y user_id son requeridos'
-                });
-            }
-
-            if (contenido.trim().length === 0) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'El comentario no puede estar vacío'
-                });
-            }
-
-            if (contenido.length > 100) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'El comentario no puede tener más de 100 caracteres'
-                });
-            }
-
-            const [proyectos] = await pool.execute(
-                'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
-                [proyectoId]
-            );
-
-            if (proyectos.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Proyecto no encontrado'
-                });
-            }
-
-            const [usuarios] = await pool.execute(
-                'SELECT ID_usuario FROM usuario WHERE ID_usuario = ?',
-                [user_id]
-            );
-
-            if (usuarios.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Usuario no encontrado'
-                });
-            }
-
-            const query = `
-                INSERT INTO comentario_proyecto 
-                (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
-                VALUES (?, ?, ?, NOW(), 1)
-            `;
-            
-            console.log('Ejecutando inserción de comentario...');
-            const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
-            
-            console.log('✅ Comentario creado con ID:', result.insertId);
-
-            const [comentariosCreados] = await pool.execute(`
-                SELECT 
-                    cp.ID_comentario,
-                    cp.contenido,
-                    cp.fecha_creacion,
-                    u.ID_usuario,
-                    u.nombre,
-                    u.apellido,
-                    r.nombre as rol
-                FROM comentario_proyecto cp
-                INNER JOIN usuario u ON cp.ID_usuario = u.ID_usuario
-                INNER JOIN rol r ON u.ID_rol = r.ID_rol
-                WHERE cp.ID_comentario = ?
-            `, [result.insertId]);
-
-            res.json({
-                success: true,
-                message: 'Comentario publicado exitosamente',
-                comentario: comentariosCreados[0]
-            });
-            
-        } catch (error) {
-            console.error('❌ Error al crear comentario:', error);
-            res.status(500).json({
+crearComentario: async (req, res) => {
+    try {
+        const proyectoId = parseInt(req.params.id);
+        const { contenido, user_id } = req.body;
+        
+        console.log('=== CREANDO COMENTARIO ===');
+        console.log('📝 Proyecto ID:', proyectoId);
+        console.log('👤 User ID:', user_id);
+        console.log('💬 Contenido:', contenido ? contenido.substring(0, 50) + '...' : 'vacío');
+        
+        // ==================== VALIDACIONES INICIALES ====================
+        
+        // Validar que contenido y user_id existen
+        if (!contenido || !user_id) {
+            console.error('❌ Faltan parámetros requeridos:', { contenido: !!contenido, user_id: !!user_id });
+            return res.status(400).json({
                 success: false,
-                message: 'Error interno del servidor: ' + error.message
+                message: 'Contenido y user_id son requeridos'
             });
         }
-    },
+
+        // Validar que contenido no está vacío
+        if (contenido.trim().length === 0) {
+            console.error('❌ Contenido vacío después de trim');
+            return res.status(400).json({
+                success: false,
+                message: 'El comentario no puede estar vacío'
+            });
+        }
+
+        // Validar longitud máxima (100 caracteres)
+        if (contenido.length > 100) {
+            console.error('❌ Contenido excede 100 caracteres:', contenido.length);
+            return res.status(400).json({
+                success: false,
+                message: 'El comentario no puede tener más de 100 caracteres'
+            });
+        }
+
+        // Validar que proyectoId es un número válido
+        if (isNaN(proyectoId) || proyectoId <= 0) {
+            console.error('❌ ID de proyecto inválido:', proyectoId);
+            return res.status(400).json({
+                success: false,
+                message: 'ID de proyecto inválido'
+            });
+        }
+
+        // ==================== VERIFICAR PROYECTO EXISTE ====================
+        
+        console.log('🔍 Verificando que el proyecto existe...');
+        const [proyectos] = await pool.execute(
+            'SELECT ID_proyecto FROM proyecto WHERE ID_proyecto = ? AND estado = "activo"',
+            [proyectoId]
+        );
+
+        if (proyectos.length === 0) {
+            console.error('❌ Proyecto no encontrado o inactivo:', proyectoId);
+            return res.status(404).json({
+                success: false,
+                message: 'Proyecto no encontrado'
+            });
+        }
+        
+        console.log('✅ Proyecto encontrado:', proyectoId);
+
+        // ==================== VERIFICAR USUARIO EXISTE ====================
+        
+        console.log('🔍 Verificando que el usuario existe...');
+        const [usuarios] = await pool.execute(
+            'SELECT ID_usuario, nombre, apellido FROM usuario WHERE ID_usuario = ?',
+            [user_id]
+        );
+
+        if (usuarios.length === 0) {
+            console.error('❌ Usuario no encontrado con ID:', user_id);
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado con ID: ' + user_id
+            });
+        }
+        
+        console.log('✅ Usuario encontrado:', usuarios[0].nombre, usuarios[0].apellido);
+
+        // ==================== INSERTAR COMENTARIO ====================
+        
+        const query = `
+            INSERT INTO comentario_proyecto 
+            (ID_proyecto, ID_usuario, contenido, fecha_creacion, ID_estado_comentario)
+            VALUES (?, ?, ?, NOW(), 1)
+        `;
+        
+        console.log('💾 Insertando comentario en la base de datos...');
+        const [result] = await pool.execute(query, [proyectoId, user_id, contenido.trim()]);
+        
+        const comentarioId = result.insertId;
+        console.log('✅ Comentario creado exitosamente con ID:', comentarioId);
+
+        // ==================== OBTENER COMENTARIO COMPLETO ====================
+        
+        console.log('📖 Obteniendo datos completos del comentario creado...');
+        const [comentariosCreados] = await pool.execute(`
+            SELECT 
+                cp.ID_comentario,
+                cp.contenido,
+                cp.fecha_creacion,
+                cp.ID_usuario,
+                u.ID_usuario as usuario_id,
+                u.nombre,
+                u.apellido,
+                COALESCE(r.nombre, 'Usuario') as rol
+            FROM comentario_proyecto cp
+            INNER JOIN usuario u ON cp.ID_usuario = u.ID_usuario
+            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+            WHERE cp.ID_comentario = ?
+        `, [comentarioId]);
+
+        if (comentariosCreados.length === 0) {
+            console.error('❌ No se pudo recuperar el comentario creado');
+            return res.status(500).json({
+                success: false,
+                message: 'Comentario creado pero no se pudo recuperar'
+            });
+        }
+
+        const comentarioCreado = comentariosCreados[0];
+        
+        console.log('📊 Datos del comentario creado:', {
+            ID: comentarioCreado.ID_comentario,
+            autor: `${comentarioCreado.nombre} ${comentarioCreado.apellido}`,
+            rol: comentarioCreado.rol,
+            fecha: comentarioCreado.fecha_creacion
+        });
+
+        // ==================== RESPUESTA EXITOSA ====================
+        
+        res.status(201).json({
+            success: true,
+            message: 'Comentario publicado exitosamente',
+            comentario: {
+                ID_comentario: comentarioCreado.ID_comentario,
+                contenido: comentarioCreado.contenido,
+                fecha_creacion: comentarioCreado.fecha_creacion,
+                ID_usuario: comentarioCreado.ID_usuario,
+                nombre: comentarioCreado.nombre,
+                apellido: comentarioCreado.apellido,
+                rol: comentarioCreado.rol
+            }
+        });
+        
+        console.log('✅ Respuesta enviada correctamente');
+        
+    } catch (error) {
+        console.error('❌ ERROR CRÍTICO al crear comentario:', error);
+        console.error('📋 Stack trace:', error.stack);
+        console.error('📋 Error completo:', {
+            message: error.message,
+            code: error.code,
+            errno: error.errno,
+            sqlMessage: error.sqlMessage
+        });
+        
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor al crear el comentario',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Error al procesar la solicitud'
+        });
+    }
+},
 
     editarComentario: async (req, res) => {
         try {
