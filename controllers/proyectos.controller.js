@@ -1,66 +1,103 @@
 import pool from '../database/db.js';
 
 export const methods = {
-    crearProyecto: async (req, res) => {
+crearProyecto: async (req, res) => {
+    try {
+        console.log('=== INICIANDO CREACIÓN DE PROYECTO ===');
+        console.log('📦 Body recibido:', req.body);
+        console.log('📎 Archivos recibidos:', req.files ? 'Sí' : 'No');
+        
+        if (req.files) {
+            console.log('📷 Imágenes:', req.files.imagenes ? req.files.imagenes.length : 0);
+            console.log('📄 PDF:', req.files.documento_pdf ? 'Sí' : 'No');
+        }
+
+        const {
+            user_id,
+            titulo,
+            descripcion,
+            github_url,
+            programa
+        } = req.body;
+
+        // 🔥 VALIDACIÓN MEJORADA
+        if (!user_id) {
+            console.error('❌ Falta user_id');
+            return res.status(400).json({
+                success: false,
+                message: 'ID de usuario no proporcionado. Por favor recarga la página e intenta nuevamente.'
+            });
+        }
+
+        if (!titulo || !descripcion || !programa) {
+            console.error('❌ Faltan campos requeridos:', { titulo: !!titulo, descripcion: !!descripcion, programa: !!programa });
+            return res.status(400).json({
+                success: false,
+                message: 'Todos los campos son requeridos (título, descripción y programa)'
+            });
+        }
+
+        // 🔥 OBTENER DATOS DEL USUARIO
+        console.log('👤 Buscando usuario con ID:', user_id);
+        const [usuarios] = await pool.execute(`
+            SELECT u.nombre, u.apellido, u.ID_rol, r.nombre as rol_nombre
+            FROM usuario u
+            LEFT JOIN rol r ON u.ID_rol = r.ID_rol
+            WHERE u.ID_usuario = ?
+        `, [user_id]);
+
+        if (usuarios.length === 0) {
+            console.error('❌ Usuario no encontrado:', user_id);
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado. Por favor inicia sesión nuevamente.'
+            });
+        }
+
+        const usuario = usuarios[0];
+        const nombreAutor = `${usuario.nombre} ${usuario.apellido}`;
+        const rolAutor = usuario.rol_nombre;
+
+        console.log(`👤 Autor: ${nombreAutor}, Rol: ${rolAutor}`);
+
+        // 🔥 PROCESAR ARCHIVOS CON VALIDACIÓN
+        let imagenesPaths = [];
+        let pdfPath = null;
+
+        if (req.files) {
+            if (req.files.imagenes) {
+                console.log('📷 Procesando imágenes...');
+                imagenesPaths = req.files.imagenes.map(file => {
+                    const ruta = `/uploads/${file.filename}`;
+                    console.log('  ✅ Imagen guardada:', ruta);
+                    return ruta;
+                });
+            }
+            
+            if (req.files.documento_pdf && req.files.documento_pdf[0]) {
+                pdfPath = `/uploads/${req.files.documento_pdf[0].filename}`;
+                console.log('📄 PDF guardado:', pdfPath);
+            }
+        } else {
+            console.log('⚠️ No se recibieron archivos');
+        }
+
+        // 🔥 CONVERTIR ARRAY A JSON STRING
+        const imagenesJSON = imagenesPaths.length > 0 ? JSON.stringify(imagenesPaths) : null;
+        
+        console.log('💾 Datos a insertar:', {
+            user_id,
+            titulo,
+            descripcion: descripcion.substring(0, 50) + '...',
+            github_url: github_url || 'null',
+            pdfPath: pdfPath || 'null',
+            imagenesJSON: imagenesJSON || 'null',
+            programa,
+            rolAutor
+        });
+
+        // 🔥 INSERT CON MANEJO DE ERRORES
         try {
-            console.log('=== INICIANDO CREACIÓN DE PROYECTO ===');
-            console.log('Datos recibidos:', req.body);
-            console.log('Archivos recibidos:', req.files);
-
-            const {
-                user_id,
-                titulo,
-                descripcion,
-                github_url,
-                programa
-            } = req.body;
-
-            // Validar campos requeridos
-            if (!user_id || !titulo || !descripcion || !programa) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Todos los campos son requeridos'
-                });
-            }
-
-            // 🔥 OBTENER DATOS DEL USUARIO CON SU ROL
-            const [usuarios] = await pool.execute(`
-                SELECT u.nombre, u.apellido, u.ID_rol, r.nombre as rol_nombre
-                FROM usuario u
-                LEFT JOIN rol r ON u.ID_rol = r.ID_rol
-                WHERE u.ID_usuario = ?
-            `, [user_id]);
-
-            if (usuarios.length === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Usuario no encontrado'
-                });
-            }
-
-            const usuario = usuarios[0];
-            const nombreAutor = `${usuario.nombre} ${usuario.apellido}`;
-            const rolAutor = usuario.rol_nombre;
-
-            console.log(`👤 Autor: ${nombreAutor}, Rol: ${rolAutor}`);
-
-            // Procesar archivos subidos
-            let imagenesPaths = [];
-            let pdfPath = null;
-
-            if (req.files) {
-                if (req.files.imagenes) {
-                    imagenesPaths = req.files.imagenes.map(file => `/uploads/${file.filename}`);
-                    console.log('📷 Imágenes guardadas:', imagenesPaths);
-                }
-                
-                if (req.files.documento_pdf) {
-                    pdfPath = `/uploads/${req.files.documento_pdf[0].filename}`;
-                    console.log('📄 PDF guardado:', pdfPath);
-                }
-            }
-
-            // 🔥 INSERT con timestamp
             const [result] = await pool.execute(
                 `INSERT INTO proyecto 
                 (ID_usuario, nombre, descripcion, github_url, documento_pdf, imagenes, 
@@ -73,7 +110,7 @@ export const methods = {
                     descripcion, 
                     github_url || null, 
                     pdfPath, 
-                    JSON.stringify(imagenesPaths),
+                    imagenesJSON,
                     programa,
                     rolAutor,
                     usuario.ID_rol
@@ -87,17 +124,35 @@ export const methods = {
                 message: 'Proyecto creado exitosamente',
                 proyecto_id: result.insertId,
                 autor: nombreAutor,
-                rol: rolAutor
+                rol: rolAutor,
+                imagenes: imagenesPaths,
+                pdf: pdfPath
             });
 
-        } catch (error) {
-            console.error('❌ Error al crear proyecto:', error);
-            res.status(500).json({
+        } catch (dbError) {
+            console.error('❌ Error en INSERT a BD:', dbError);
+            console.error('SQL Error Code:', dbError.code);
+            console.error('SQL Error Message:', dbError.sqlMessage);
+            
+            return res.status(500).json({
                 success: false,
-                message: 'Error interno del servidor: ' + error.message
+                message: 'Error al guardar el proyecto en la base de datos',
+                error: dbError.sqlMessage || dbError.message
             });
         }
-    },
+
+    } catch (error) {
+        console.error('❌ Error general al crear proyecto:', error);
+        console.error('Stack trace:', error.stack);
+        
+        res.status(500).json({
+            success: false,
+            message: 'Error interno del servidor al crear el proyecto',
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+},
 
     obtenerProyectos: async (req, res) => {
         try {
