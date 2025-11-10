@@ -111,6 +111,33 @@
       </div>
     </div>
 
+    <!-- 🔥 MODAL REPORTAR PROYECTO (NUEVO) -->
+    <div id="modal-reportar-proyecto" class="modal-publicacion" style="display:none;">
+      <div class="modal-content">
+        <h2>Reportar Proyecto</h2>
+        <p style="color:#666; font-size:0.95rem; margin-bottom:20px;">
+          Ayúdanos a mantener una comunidad segura. Tu reporte será revisado por un administrador.
+        </p>
+        
+        <select id="motivo-reporte-proyecto" style="width:100%; border:1.5px solid #3ec9a7; border-radius:12px; padding:10px; margin-bottom:15px; font-size:1rem;">
+          <option value="">Seleccione un motivo</option>
+          <option value="Contenido inapropiado">Contenido inapropiado</option>
+          <option value="Spam o publicidad">Spam o publicidad</option>
+          <option value="Información falsa">Información falsa</option>
+          <option value="Plagio">Plagio</option>
+          <option value="Lenguaje ofensivo">Lenguaje ofensivo</option>
+          <option value="Otro">Otro</option>
+        </select>
+        
+        <textarea id="descripcion-reporte-proyecto" placeholder="Describe brevemente el problema (opcional)..." style="width:100%; border:1.5px solid #3ec9a7; border-radius:12px; padding:10px; font-size:1rem; min-height:80px; resize:vertical; margin-bottom:15px;"></textarea>
+        
+        <div class="modal-btns">
+          <button id="btn-enviar-reporte-proyecto" class="btn-modal reportar-btn">Enviar Reporte</button>
+          <button id="btn-cancelar-reporte-proyecto" class="btn-modal cancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Menú Popover de Usuario -->
     <div id="popover-menu" class="popover-menu">
       <div class="popover-arrow"></div>
@@ -139,37 +166,6 @@
     <option value="">Todos los programas</option>
     <option value="Tecnólogo en Análisis y Desarrollo de Software">Tecnólogo en Análisis y Desarrollo de Software</option>
     <option value="Tecnólogo en Animación Digital">Tecnólogo en Animación Digital</option>
-    <option value="Tecnólogo en Automatización de Sistemas Mecatrónicos">Tecnólogo en Automatización de Sistemas Mecatrónicos</option>
-    <option value="Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales">Tecnólogo en Desarrollo de Sistemas Electrónicos Industriales</option>
-    <option value="Tecnólogo en Desarrollo Multimedia y Web">Tecnólogo en Desarrollo Multimedia y Web</option>
-    <option value="Tecnólogo en Electricidad Industrial">Tecnólogo en Electricidad Industrial</option>
-    <option value="Tecnólogo en Gestión de la Producción Industrial">Tecnólogo en Gestión de la Producción Industrial</option>
-    <option value="Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social">Tecnólogo en Gestión de Proyectos de Desarrollo Económico y Social</option>
-    <option value="Tecnólogo en Gestión de Redes de Datos">Tecnólogo en Gestión de Redes de Datos</option>
-    <option value="Tecnólogo en Gestión eficiente de la energía">Tecnólogo en Gestión eficiente de la energía</option>
-    <option value="Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones">Tecnólogo en Implementación de Infraestructura de Tecnologías de la Información y las Comunicaciones</option>
-    <option value="Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales">Tecnólogo en Implementación y Mantenimiento de Sistemas de Instrumentación y Control de Procesos Industriales</option>
-    <option value="Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica">Tecnólogo en Supervisión de Redes de Distribución de Energía Eléctrica</option>
-    <option value="Técnico en Instalación de Redes Internas de Telecomunicaciones">Técnico en Instalación de Redes Internas de Telecomunicaciones</option>
-    <option value="Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales">Técnico en Instalación de Sistemas Eléctricos Residenciales y Comerciales</option>
-    <option value="Técnico en Instrumentación Industrial">Técnico en Instrumentación Industrial</option>
-    <option value="Técnico en Integración de Contenidos Digitales">Técnico en Integración de Contenidos Digitales</option>
-    <option value="Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos">Técnico en Mantenimiento e Instalación de Sistemas Solares Fotovoltaicos</option>
-    <option value="Técnico en Asistencia Administrativa">Técnico en Asistencia Administrativa</option>
-    <option value="Técnico en Atención Integral al Cliente">Técnico en Atención Integral al Cliente</option>
-    <option value="Técnico en Control de la Seguridad Digital">Técnico en Control de la Seguridad Digital</option>
-    <option value="Técnico en Dibujo Mecánico">Técnico en Dibujo Mecánico</option>
-    <option value="Técnico en Electricista Industrial">Técnico en Electricista Industrial</option>
-    <option value="Técnico en Mantenimiento y Ensamble de Equipos Electrónicos">Técnico en Mantenimiento y Ensamble de Equipos Electrónicos</option>
-    <option value="Técnico en Modelado 3D para la Industria">Técnico en Modelado 3D para la Industria</option>
-    <option value="Técnico en Monitoreo Ambiental">Técnico en Monitoreo Ambiental</option>
-    <option value="Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica">Técnico en Montaje y Mantenimiento de Redes Aéreas de Distribución de Energía Eléctrica</option>
-    <option value="Técnico en Procesos de Manufactura">Técnico en Procesos de Manufactura</option>
-    <option value="Técnico en Servicios y Operaciones Microfinancieras">Técnico en Servicios y Operaciones Microfinancieras</option>
-    <option value="Técnico en Sistemas teleinformáticos">Técnico en Sistemas teleinformáticos</option>
-    <option value="Técnico en Programación de Aplicaciones para Dispositivos Móviles">Técnico en Programación de Aplicaciones para Dispositivos Móviles</option>
-    <option value="Técnico en Programación de Software">Técnico en Programación de Software</option>
-    <option value="Técnico en Programación para Aplicaciones">Técnico en Programación para Aplicaciones</option>
   </select>
   
   <input type="date" id="input-fecha" name="fecha" placeholder="dd/mm/aaaa">

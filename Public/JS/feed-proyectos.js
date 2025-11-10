@@ -68,17 +68,49 @@ function configurarEventListeners() {
         });
     }
     
+    // 🔥 NUEVO: Configurar navegación de opciones del menú
+    document.querySelectorAll('.popover-list li').forEach((li, idx) => {
+        li.addEventListener('click', () => {
+            console.log('📍 Click en opción del menú:', idx);
+            
+            switch(idx) {
+                case 0: // Perfil
+                    console.log('👤 Redirigiendo a perfil...');
+                    window.location.href = '/perfil';
+                    break;
+                case 1: // Configuración
+                    console.log('⚙️ Redirigiendo a configuración...');
+                    window.location.href = '/Configuracion';
+                    break;
+                case 2: // Favoritos
+                    console.log('⭐ Redirigiendo a favoritos...');
+                    window.location.href = '/favoritos';
+                    break;
+                case 3: // Ayuda
+                    console.log('❓ Redirigiendo a ayuda...');
+                    window.location.href = '/ayuda';
+                    break;
+            }
+            
+            // Cerrar menú después de hacer clic
+            popoverMenu.style.display = 'none';
+        });
+    });
+    
+    // Cerrar popover al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (popoverMenu && !popoverMenu.contains(e.target) && e.target !== perfilBtn) {
             popoverMenu.style.display = 'none';
         }
     });
     
+    // Logout
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', cerrarSesion);
     }
     
+    // Otros configuraciones
     configurarModalProyecto();
     configurarModalEdicion();
     configurarNotificaciones();

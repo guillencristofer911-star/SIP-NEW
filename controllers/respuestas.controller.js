@@ -390,7 +390,7 @@ async function eliminarRespuesta(req, res) {
 
 export const methods = {
   crearRespuesta,
-  obtenerRespuestas, // <-- Esta función actualizada
+  obtenerRespuestas,
   contarRespuestas,
   editarRespuesta,
   eliminarRespuesta
