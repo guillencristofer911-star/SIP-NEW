@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP - Mi Perfil</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="Sesion_perfil.css">
+</head>
+<body>
+  <div class="main-container">
+    <!-- Header -->
+    <header class="header">
+      <img src="img/Logo SIP.png" alt="SIP Logo" class="logo-header">
+      <nav class="nav-header">
+        <a href="/feed-proyectos"><i class="fa-solid fa-layer-group"></i> Proyectos</a>
+        <a href="#" id="notificaciones-btn"><i class="fa-regular fa-bell"></i> Notificaciones</a>
+        <div class="user-info" id="perfil-btn">
+          <span class="user-avatar">U</span>
+          <span class="user-name">Usuario</span>
+        </div>
+      </nav>
+
+      <!-- Popover Notificaciones -->
+      <div id="notificaciones-popover" class="notificaciones-popover" style="display:none;">
+        <div class="notificaciones-content">
+          <div class="notificaciones-titulo">Notificaciones</div>
+          <div class="notificacion-item">
+            <span class="notificacion-avatar">S</span>
+            <div>
+              <div class="notificacion-tipo">Nueva notificación</div>
+              <div class="notificacion-texto">No tienes notificaciones nuevas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu Popover Usuario -->
+      <div id="popover-menu" class="popover-menu" style="display:none;">
+        <div class="popover-arrow"></div>
+        <div class="popover-content">
+          <ul class="popover-list">
+            <li><span class="icon"><i class="fa-regular fa-user"></i></span><span>Perfil</span></li>
+            <li><span class="icon"><i class="fa-solid fa-gear"></i></span><span>Configuración</span></li>
+            <li><span class="icon"><i class="fa-regular fa-star"></i></span><span>Favoritos</span></li>
+            <li><span class="icon"><i class="fa-regular fa-circle-question"></i></span><span>Ayuda</span></li>
+          </ul>
+          <button type="button" class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Perfil -->
+    <main class="perfil-main">
+      <!-- Panel de perfil -->
+      <section class="perfil-panel">
+        <div class="perfil-avatar">U</div>
+        <div class="perfil-nombre">Cargando...</div>
+        <span class="perfil-etiqueta">Usuario</span>
+        <div class="perfil-datos">Cargando datos...</div>
+        <button class="btn-eliminar-cuenta" id="btn-eliminar-cuenta">Eliminar cuenta</button>
+      </section>
+
+      <!-- Historial -->
+      <section class="perfil-historial">
+        <h2 class="perfil-historial-titulo">Mi Historial</h2>
+        <p style="color: #666;">Cargando historial...</p>
+      </section>
+    </main>
+
+    <!-- Modal Eliminar Cuenta -->
+    <div id="modal-eliminar-cuenta" class="modal-eliminar-cuenta" style="display:none;">
+      <div class="modal-eliminar-content">
+        <div class="modal-eliminar-title">¿Está seguro de eliminar cuenta?</div>
+        <div class="modal-eliminar-btns">
+          <button type="button" id="btn-confirmar-eliminar" class="btn-eliminar">Eliminar</button>
+          <button type="button" id="btn-cancelar-eliminar" class="btn-cancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <hr class="footer-line">
+        <div class="footer-icons">
+          <i class="fab fa-twitter"></i>
+          <i class="fab fa-facebook-f"></i>
+          <i class="fab fa-instagram"></i>
+        </div>
+        <hr class="footer-line">
+      </div>
+      <div class="footer-text">Copyright © 2025 SENA INTERACTIVE PORTAL</div>
+      <div class="footer-links">
+        <span>Información legal</span>
+        <span>Política de privacidad</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script externo -->
+  <script src="js/perfil.js"></script>
+</body>
+</html>

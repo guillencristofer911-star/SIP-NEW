@@ -1,16 +1,18 @@
+// ============================================================
+// 🚫 Filtro avanzado de palabras prohibidas
+// ============================================================
+
 const palabrasProhibidas = {
   leve: [
-    'idiota', 'tonto', 'estúpido', 'imbécil', 'pendejo',
+    'idiota', 'tonto', 'estupido', 'imbecil', 'pendejo',
     'baboso', 'menso', 'bobo', 'tarado', 'gil', 'guevon',
     'huevon', 'weon', 'boludo', 'pelotudo'
   ],
-  
   medio: [
-    'puto', 'puta', 'cabrón', 'cabron', 'hijo de puta', 'hdp',
+    'puto', 'puta', 'cabron', 'hijo de puta', 'hdp',
     'coño', 'carajo', 'joder', 'mierda', 'cagada', 'gonorrea',
     'malparido', 'hijueputa', 'hp', 'verga', 'chimba', 'berraco'
   ],
-  
   grave: [
     'negro', 'negra', 'indio', 'india', 'marica', 'maricon',
     'pirobo', 'sapo', 'rata', 'mk', 'malparido',
@@ -18,6 +20,28 @@ const palabrasProhibidas = {
   ]
 };
 
+// ============================================================
+// 🔤 Normaliza texto (quita tildes y símbolos usados para disimular)
+// ============================================================
+function normalizarTexto(texto) {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // elimina tildes
+    .replace(/[@$!*#%&_.\-]/g, "a")  // reemplaza símbolos comunes
+    .replace(/[0o]/g, "o")
+    .replace(/[1íìïîl|!]/g, "i")
+    .replace(/[3eèéêë]/g, "e")
+    .replace(/[4áàäâ]/g, "a")
+    .replace(/[5s$]/g, "s")
+    .replace(/[7t+]/g, "t")
+    .replace(/[8b]/g, "b")
+    .replace(/[9g]/g, "g")
+    .toLowerCase();
+}
+
+// ============================================================
+// 🧠 Clase principal del filtro
+// ============================================================
 class FiltroPalabrasProhibidas {
   constructor(palabras = palabrasProhibidas) {
     this.palabras = palabras;
@@ -25,46 +49,58 @@ class FiltroPalabrasProhibidas {
     this.regexMedio = this.crearRegex(palabras.medio);
     this.regexGrave = this.crearRegex(palabras.grave);
   }
-  
+
   crearRegex(listaPalabras) {
     const pattern = listaPalabras
-      .map(palabra => palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-      .join('|');
-    
-    return new RegExp(`\\b(${pattern})\\b`, 'gi');
+      .map(p => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|");
+    return new RegExp(`\\b(${pattern})\\b`, "gi");
   }
-  
+
   detectarNivel(texto) {
-    if (this.regexGrave.test(texto)) return 'grave';
-    if (this.regexMedio.test(texto)) return 'medio';
-    if (this.regexLeve.test(texto)) return 'leve';
-    return 'limpio';
+    const limpio = normalizarTexto(texto);
+    if (this.regexGrave.test(limpio)) return "grave";
+    if (this.regexMedio.test(limpio)) return "medio";
+    if (this.regexLeve.test(limpio)) return "leve";
+    return "limpio";
   }
-  
+
+  // 🔥 Censura respetando las tildes o símbolos
   censurarTexto(texto) {
     let textoCensurado = texto;
-    
-    textoCensurado = textoCensurado.replace(this.regexLeve, (match) => {
-      return match[0] + '*'.repeat(match.length - 1);
-    });
-    
-    textoCensurado = textoCensurado.replace(this.regexMedio, (match) => {
-      return match[0] + '*'.repeat(match.length - 1);
-    });
-    
-    textoCensurado = textoCensurado.replace(this.regexGrave, (match) => {
-      return match[0] + '*'.repeat(match.length - 1);
-    });
-    
+
+    const censurar = (listaPalabras) => {
+      for (const palabra of listaPalabras) {
+        // crear regex tolerante a tildes o símbolos dentro de las letras
+        const pattern = palabra
+          .split("")
+          .map(letra => {
+            const base = letra.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return `[${base}${base.toUpperCase()}${letra.toUpperCase()}${letra}]([@#$*!.,_\\-0-9]*)?`;
+          })
+          .join("");
+
+        const regex = new RegExp(pattern, "gi");
+
+        textoCensurado = textoCensurado.replace(regex, match => {
+          return match[0] + "*".repeat(match.length - 1);
+        });
+      }
+    };
+
+    censurar(this.palabras.leve);
+    censurar(this.palabras.medio);
+    censurar(this.palabras.grave);
+
     return textoCensurado;
   }
-  
+
   analizarContenido(texto) {
-    if (!texto || typeof texto !== 'string') {
+    if (!texto || typeof texto !== "string") {
       return {
         original: texto,
         censurado: texto,
-        nivel: 'limpio',
+        nivel: "limpio",
         requiereModeracion: false,
         esLimpio: true
       };
@@ -72,18 +108,21 @@ class FiltroPalabrasProhibidas {
 
     const nivel = this.detectarNivel(texto);
     const textoCensurado = this.censurarTexto(texto);
-    const requiereModeracion = nivel === 'grave';
-    
+    const requiereModeracion = nivel === "grave";
+
     return {
       original: texto,
       censurado: textoCensurado,
-      nivel: nivel,
-      requiereModeracion: requiereModeracion,
-      esLimpio: nivel === 'limpio'
+      nivel,
+      requiereModeracion,
+      esLimpio: nivel === "limpio"
     };
   }
 }
 
+// ============================================================
+// Exportación
+// ============================================================
 const filtro = new FiltroPalabrasProhibidas();
 
 export { FiltroPalabrasProhibidas, filtro, palabrasProhibidas };

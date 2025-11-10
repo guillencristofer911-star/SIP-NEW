@@ -223,6 +223,99 @@ function limpiarFormularioProyecto() {
     document.getElementById('pdf-name').textContent = '';
     document.getElementById('pdf-preview').innerHTML = '';
 }
+// ==================== AÑADIR ESTA FUNCIÓN A TODOS LOS ARCHIVOS JS ====================
+// (sesion-publicados.js, feed-proyectos.js, detalles-proyectos.js)
+
+// 🔥 ACTUALIZAR LA FUNCIÓN configurarMenuPerfil() CON ESTA:
+
+function configurarMenuPerfil() {
+    const perfilBtn = document.getElementById('perfil-btn');
+    const popoverMenu = document.getElementById('popover-menu');
+    
+    if (!perfilBtn || !popoverMenu) {
+        console.warn('⚠️ No se encontró el botón de perfil o el menú');
+        return;
+    }
+    
+    perfilBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isVisible = popoverMenu.style.display === 'block';
+        
+        // Cerrar notificaciones si están abiertas
+        const notifPopover = document.getElementById('notificaciones-popover');
+        if (notifPopover) {
+            notifPopover.style.display = 'none';
+        }
+        
+        // Toggle menú
+        popoverMenu.style.display = isVisible ? 'none' : 'block';
+        
+        if (!isVisible) {
+            const rect = perfilBtn.getBoundingClientRect();
+            popoverMenu.style.position = 'fixed';
+            popoverMenu.style.top = (rect.bottom + 10) + 'px';
+            popoverMenu.style.left = (rect.left + rect.width/2 - 160) + 'px';
+            popoverMenu.style.zIndex = '1000';
+        }
+    });
+    
+    // 🔥 CONFIGURAR NAVEGACIÓN DE LAS OPCIONES DEL MENÚ
+    const menuItems = document.querySelectorAll('.popover-list li');
+    menuItems.forEach((li, idx) => {
+        li.addEventListener('click', () => {
+            console.log('📍 Click en opción del menú:', idx);
+            
+            switch(idx) {
+                case 0: // Perfil
+                    window.location.href = '/perfil';
+                    break;
+                case 1: // Configuración
+                    window.location.href = '/configuracion';
+                    break;
+                case 2: // Favoritos
+                    window.location.href = '/favoritos';
+                    break;
+                case 3: // Ayuda
+                    window.location.href = '/ayuda';
+                    break;
+            }
+            
+            popoverMenu.style.display = 'none';
+        });
+    });
+    
+    // Cerrar menú al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (popoverMenu && !popoverMenu.contains(e.target) && !perfilBtn.contains(e.target)) {
+            popoverMenu.style.display = 'none';
+        }
+    });
+}
+
+// ==================== ASEGURAR QUE SE MUESTRE EL USUARIO ====================
+// 🔥 ACTUALIZAR LA FUNCIÓN actualizarHeaderUsuario() CON ESTA:
+
+function actualizarHeaderUsuario() {
+    const userNameElement = document.querySelector('.user-name');
+    const userAvatarElement = document.querySelector('.user-avatar');
+    
+    if (userNameElement && usuarioActual) {
+        const nombreCorto = usuarioActual.nombre_corto || 
+                           usuarioActual.nombre?.split(' ')[0] || 
+                           usuarioActual.nombre || 
+                           'Usuario';
+        userNameElement.textContent = nombreCorto;
+        console.log('✅ Nombre actualizado:', nombreCorto);
+    }
+    
+    if (userAvatarElement && usuarioActual) {
+        const inicial = (usuarioActual.nombre_corto || 
+                        usuarioActual.nombre?.charAt(0) || 
+                        'U').toUpperCase();
+        userAvatarElement.textContent = inicial;
+        console.log('✅ Avatar actualizado:', inicial);
+    }
+}
 
 // ==================== CARGAR PROYECTOS ====================
 async function cargarProyectos() {
