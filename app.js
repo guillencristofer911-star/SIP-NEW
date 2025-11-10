@@ -65,6 +65,39 @@ app.get("/Detalles_Proyecto.html", (req, res) => {
 app.get("/crear-publicacion", (req, res) => {
   res.sendFile(path.join(__dirname, "Pages", "sesion-publicados.html"));
 });
+// ==================== AGREGAR ESTA RUTA EN app.js ====================
+// 🔥 Agregar después de las rutas de páginas HTML (cerca de la línea 700)
+
+/**
+ * Página de perfil de usuario
+ */
+app.get('/perfil', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Pages/Sesion_De_Perfil.html'));
+});
+
+// ==================== TAMBIÉN ASEGURAR ESTAS RUTAS ====================
+
+/**
+ * Página de configuración
+ */
+app.get('/configuracion', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Pages/Configuración.html'));
+});
+
+/**
+ * Página de favoritos
+ */
+app.get('/favoritos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Pages/Favoritos.html'));
+});
+
+/**
+ * Página de ayuda
+ */
+app.get('/ayuda', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Pages/Ayuda.html'));
+});
+
 
 // ==================== API PÚBLICA ====================
 // Autenticación
